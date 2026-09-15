@@ -475,15 +475,18 @@
                 <label>Foto do Servidor:</label>
                 <div style="display: flex; gap: 8px; margin-bottom: 10px;">
                     <button type="button" class="btn btn-info" style="flex:1;" onclick="iniciarWebcam()">📷 Câmera</button>
-                    <input type="file" id="cad-foto" accept="image/*" capture="user" onchange="previewFoto(event)" style="display:none;">
+                    <input type="file" id="cad-foto" accept="image/*" style="display:none;" onchange="previewFoto(event)">
                     <button type="button" class="btn btn-secondary" style="flex:1; height:38px; font-size:0.85rem;" onclick="document.getElementById('cad-foto').click()">📂 Galeria</button>
                 </div>
 
                 <div id="webcam-box">
                     <video id="webcam-video" autoplay playsinline></video>
-                    <div style="margin-top: 8px; display: flex; gap: 8px;">
-                        <button type="button" class="btn btn-success" style="height: 38px; font-size: 0.85rem;" onclick="capturarFotoWebcam()">📸 Tirar Foto</button>
-                        <button type="button" class="btn btn-danger" style="height: 38px; font-size: 0.85rem;" onclick="pararWebcam()">Fechar</button>
+                    <div style="margin-top: 8px; display: flex; flex-direction: column; gap: 8px;">
+                        <div style="display: flex; gap: 8px;">
+                            <button type="button" class="btn btn-success" style="height: 38px; font-size: 0.85rem; flex: 1;" onclick="capturarFotoWebcam()">📸 Tirar Foto</button>
+                            <button type="button" class="btn btn-key" style="height: 38px; font-size: 0.85rem; flex: 1;" onclick="alternarCamera()">🔄 Alternar Câmera</button>
+                        </div>
+                        <button type="button" class="btn btn-danger" style="height: 38px; font-size: 0.85rem;" onclick="pararWebcam()">Fechar Câmera</button>
                     </div>
                 </div>
 
@@ -627,7 +630,6 @@
     </div>
 </div>
 
-<!-- MODAL RECUPERAÇÃO DE SENHA -->
 <div id="modal-recuperar" class="modal">
     <div class="modal-content">
         <h3>Recuperar Senha</h3>
@@ -693,6 +695,7 @@
     let isAdmin = false;
     let fotoBase64 = "";
     let mediaStream = null;
+    let cameraFacingMode = "user"; // Padrão Inicial: Frontal ("user" / "environment")
 
     let dbPessoas = JSON.parse(localStorage.getItem('estande_pessoas')) || {};
     let dbAcessos = JSON.parse(localStorage.getItem('estande_acessos')) || [];
@@ -769,13 +772,22 @@
     }
 
     async function iniciarWebcam() {
+        pararWebcam();
         try {
-            mediaStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" }, audio: false });
+            mediaStream = await navigator.mediaDevices.getUserMedia({ 
+                video: { facingMode: cameraFacingMode }, 
+                audio: false 
+            });
             document.getElementById('webcam-video').srcObject = mediaStream;
             document.getElementById('webcam-box').style.display = 'block';
         } catch (err) {
-            mostrarAlerta("Utilize o botão 'Galeria' para escolher uma foto.");
+            mostrarAlerta("Não foi possível acessar a câmera do dispositivo. Utilize a opção 'Galeria'.");
         }
+    }
+
+    function alternarCamera() {
+        cameraFacingMode = (cameraFacingMode === "user") ? "environment" : "user";
+        iniciarWebcam();
     }
 
     function capturarFotoWebcam() {
