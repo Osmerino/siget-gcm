@@ -2,108 +2,197 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Controle de Acesso - Estande de Tiro</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>SIGET Mobile - GCM Mariana</title>
+    
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#070d19">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="SIGET">
+    <link rel="apple-touch-icon" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512' width='512' height='512'><rect width='512' height='512' rx='100' fill='%23070d19'/><circle cx='256' cy='256' r='180' fill='none' stroke='%23d4af37' stroke-width='16'/><circle cx='256' cy='256' r='120' fill='none' stroke='%23d4af37' stroke-width='12'/><circle cx='256' cy='256' r='60' fill='none' stroke='%23d4af37' stroke-width='8'/><circle cx='256' cy='256' r='20' fill='%23d4af37'/><line x1='256' y1='30' x2='256' y2='482' stroke='%23d4af37' stroke-width='12'/><line x1='30' y1='256' x2='482' y2='256' stroke='%23d4af37' stroke-width='12'/></svg>">
+
     <style>
         :root {
-            --primary-color: #1b2a47;
-            --secondary-color: #2c3e50;
-            --accent-color: #27ae60;
+            --primary-color: #0b1325;
+            --secondary-color: #1b2a47;
+            --accent-color: #d4af37;
+            --warning-color: #e67e22;
             --danger-color: #c0392b;
-            --bg-color: #f4f6f9;
-            --card-bg: #ffffff;
-            --text-color: #333333;
-            --border-color: #cccccc;
+            --info-color: #2980b9;
+            --bg-color: #070d19;
+            --card-bg: rgba(13, 27, 50, 0.95);
+            --text-color: #e0e6ed;
+            --border-color: rgba(212, 175, 55, 0.3);
         }
 
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            -webkit-tap-highlight-color: transparent;
         }
 
         body {
             background-color: var(--bg-color);
             color: var(--text-color);
+            min-height: 100vh;
+            padding-bottom: 20px;
+        }
+
+        #sec-login {
+            display: flex;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(135deg, #070d19 0%, #0d1b32 100%);
+            color: #ffffff;
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
             padding: 20px;
         }
 
-        .container {
-            max-width: 950px;
-            margin: 0 auto;
-            background: var(--card-bg);
-            padding: 30px;
+        .login-box {
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        .login-brand {
+            font-size: 2.8rem;
+            font-weight: 900;
+            letter-spacing: 2px;
+            color: #ffffff;
+        }
+
+        .login-divider {
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, var(--accent-color) 0%, transparent 100%);
+            margin: 10px 0 15px 0;
+        }
+
+        .login-sub {
+            font-size: 0.75rem;
+            letter-spacing: 1px;
+            color: #a0b2ce;
+            text-transform: uppercase;
+        }
+
+        .login-org {
+            font-size: 0.7rem;
+            color: var(--accent-color);
+            letter-spacing: 1px;
+            margin-bottom: 25px;
+        }
+
+        .login-card {
+            background: rgba(13, 27, 50, 0.85);
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            backdrop-filter: blur(10px);
+            text-align: left;
+        }
+
+        .login-card input {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid var(--border-color);
+            color: #fff;
+            margin-bottom: 15px;
+            height: 48px;
+            font-size: 1rem;
+            padding: 0 12px;
+            border-radius: 6px;
+        }
+
+        .btn-tatico {
+            background: var(--accent-color);
+            color: #0b1325;
+            font-weight: bold;
+            letter-spacing: 1px;
+            border: none;
+            height: 50px;
             border-radius: 8px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+            width: 100%;
+            font-size: 1rem;
+            transition: all 0.2s;
+        }
+
+        .container {
+            width: 100%;
+            padding: 15px;
+            display: none;
         }
 
         header {
             text-align: center;
-            margin-bottom: 25px;
-            padding-bottom: 15px;
-            border-bottom: 2px solid var(--primary-color);
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--accent-color);
         }
 
         header h1 {
-            color: var(--primary-color);
-            font-size: 1.8rem;
-            margin-bottom: 5px;
+            color: var(--accent-color);
+            font-size: 1.4rem;
+            letter-spacing: 1px;
         }
 
         header p {
-            color: #666;
-            font-size: 0.95rem;
+            color: #a0b2ce;
+            font-size: 0.8rem;
         }
 
         nav {
             display: flex;
-            justify-content: space-between;
-            align-items: center;
+            flex-direction: column;
+            gap: 8px;
             margin-bottom: 20px;
-            background: #eef2f5;
-            padding: 10px 15px;
-            border-radius: 6px;
+            background: rgba(27, 42, 71, 0.9);
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            text-align: center;
+        }
+
+        .nav-links-row {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 5px;
+            font-size: 0.85rem;
         }
 
         .nav-link {
-            color: var(--primary-color);
+            color: var(--accent-color);
             text-decoration: none;
             font-weight: bold;
             cursor: pointer;
         }
 
-        .nav-link:hover {
-            text-decoration: underline;
-        }
-
         .user-badge {
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             padding: 4px 8px;
             border-radius: 4px;
             font-weight: bold;
+            display: inline-block;
         }
 
-        .badge-op { background: #d0e1fd; color: #1b2a47; }
-        .badge-admin { background: #d4edda; color: #155724; }
+        .badge-op { background: #1b2a47; color: var(--accent-color); border: 1px solid var(--border-color); }
+        .badge-admin { background: #155724; color: #d4edda; border: 1px solid #28a745; }
 
-        .section {
-            display: none;
-        }
+        .section { display: none; }
+        .section.active { display: block; }
 
-        .section.active {
-            display: block;
-        }
-
-        .form-group {
-            margin-bottom: 15px;
-        }
+        .form-group { margin-bottom: 15px; }
 
         label {
             display: block;
-            margin-bottom: 5px;
+            margin-bottom: 6px;
             font-weight: 600;
-            color: var(--secondary-color);
+            color: var(--accent-color);
+            font-size: 0.9rem;
         }
 
         input[type="text"],
@@ -115,322 +204,436 @@
         select,
         textarea {
             width: 100%;
-            padding: 10px;
+            height: 48px;
+            padding: 0 12px;
+            background: rgba(255, 255, 255, 0.05);
             border: 1px solid var(--border-color);
-            border-radius: 4px;
+            border-radius: 6px;
             font-size: 1rem;
+            color: #ffffff;
         }
 
-        .form-row {
+        textarea {
+            height: 80px;
+            padding: 10px 12px;
+        }
+
+        select option {
+            background-color: #0b1325;
+            color: #ffffff;
+        }
+
+        .btn-group-row {
             display: flex;
-            gap: 15px;
-        }
-
-        .form-row .form-group {
-            flex: 1;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 15px;
         }
 
         .btn {
-            background-color: var(--primary-color);
-            color: white;
-            padding: 12px 20px;
+            background-color: var(--accent-color);
+            color: #0b1325;
+            height: 50px;
             border: none;
-            border-radius: 4px;
+            border-radius: 8px;
             font-size: 1rem;
             cursor: pointer;
             width: 100%;
             font-weight: bold;
-            transition: background 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
-        .btn:hover {
-            background-color: var(--secondary-color);
-        }
-
-        .btn-success { background-color: var(--accent-color); }
-        .btn-success:hover { background-color: #219150; }
-
-        .btn-danger { background-color: var(--danger-color); color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; }
-        .btn-danger:hover { background-color: #a93226; }
+        .btn-secondary { background-color: #4a5568; color: #ffffff; }
+        .btn-success { background-color: #27ae60; color: #fff; }
+        .btn-warning { background-color: var(--warning-color); color: white; }
+        .btn-danger { background-color: var(--danger-color); color: white; height: 36px; font-size: 0.8rem; border-radius: 4px; padding: 0 8px; }
+        .btn-info { background-color: var(--info-color); color: white; height: 36px; font-size: 0.8rem; border-radius: 4px; padding: 0 8px; }
+        .btn-key { background-color: #8e44ad; color: white; height: 36px; font-size: 0.8rem; border-radius: 4px; padding: 0 8px; }
 
         .btn-export {
-            width: auto;
-            padding: 8px 15px;
-            font-size: 0.9rem;
-            margin-bottom: 15px;
-            float: right;
+            width: 100%;
+            height: 40px;
+            font-size: 0.85rem;
+            margin-bottom: 8px;
         }
 
         .tabs {
             display: flex;
             border-bottom: 2px solid var(--border-color);
-            margin-bottom: 20px;
+            margin-bottom: 15px;
         }
 
         .tab {
-            padding: 10px 20px;
+            flex: 1;
+            text-align: center;
+            padding: 10px 5px;
             cursor: pointer;
             font-weight: bold;
-            color: #666;
+            font-size: 0.85rem;
+            color: #a0b2ce;
         }
 
         .tab.active {
-            color: var(--primary-color);
-            border-bottom: 3px solid var(--primary-color);
-            background: #eef2f5;
+            color: var(--accent-color);
+            border-bottom: 3px solid var(--accent-color);
+            background: rgba(27, 42, 71, 0.5);
         }
 
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 10px;
-            font-size: 0.9rem;
-        }
-
-        table th, table td {
-            border: 1px solid #dddddd;
-            padding: 10px;
-            text-align: left;
-        }
-
-        table th {
-            background-color: var(--primary-color);
-            color: white;
-        }
-
-        table tr:nth-child(even) { background-color: #f9f9f9; }
-
-        .user-card {
-            background: #e8edf3;
-            padding: 15px;
-            border-radius: 6px;
+        .dash-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
             margin-bottom: 20px;
-            border-left: 4px solid var(--primary-color);
         }
 
-        .clear { clear: both; }
-
-        .toggle-box {
-            background: #f0f4f8;
+        .dash-card {
+            background: rgba(27, 42, 71, 0.7);
+            border: 1px solid var(--border-color);
             padding: 12px;
-            border-radius: 4px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .dash-card h3 {
+            font-size: 0.7rem;
+            color: #a0b2ce;
+            text-transform: uppercase;
+        }
+
+        .dash-card .number {
+            font-size: 1.5rem;
+            font-weight: 900;
+            color: var(--accent-color);
+        }
+
+        .user-card, .warning-card {
+            background: rgba(27, 42, 71, 0.7);
+            padding: 12px;
+            border-radius: 8px;
             margin-bottom: 15px;
+            border-left: 4px solid var(--accent-color);
+            border-top: 1px solid var(--border-color);
+            border-right: 1px solid var(--border-color);
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 0.85rem;
+        }
+
+        .user-avatar {
+            width: 55px;
+            height: 55px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--accent-color);
+            background: #1b2a47;
+            flex-shrink: 0;
+        }
+
+        .user-avatar-tb {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .webcam-box {
+            display: none;
+            text-align: center;
+            margin-top: 10px;
+            background: #000;
+            padding: 10px;
+            border-radius: 8px;
+        }
+
+        .webcam-video {
+            width: 100%;
+            max-width: 280px;
+            border-radius: 6px;
         }
 
         .modal {
             display: none;
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.5);
+            background: rgba(0, 0, 0, 0.88);
             justify-content: center;
             align-items: center;
+            z-index: 10000;
+            padding: 20px;
         }
 
         .modal-content {
-            background: white;
-            padding: 25px;
-            border-radius: 8px;
-            max-width: 400px;
+            background: #0d1b32;
+            color: #fff;
+            padding: 20px;
+            border-radius: 12px;
             width: 100%;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            max-width: 360px;
+            border: 1px solid var(--border-color);
         }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.8rem;
+        }
+
+        table th, table td {
+            border: 1px solid var(--border-color);
+            padding: 8px;
+            text-align: left;
+        }
+
+        table th {
+            background-color: var(--secondary-color);
+            color: var(--accent-color);
+        }
+
+        /* ESTILO DO CARD DE ARMACÃO DINÂMICA */
+        .arma-card-item {
+            background: rgba(11, 19, 37, 0.8);
+            border: 1px dashed var(--accent-color);
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            position: relative;
+        }
+
+        .btn-remove-arma {
+            position: absolute;
+            top: 8px; right: 8px;
+            background: var(--danger-color);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 2px 6px;
+            font-size: 0.75rem;
+            cursor: pointer;
+        }
+
+        @media print {
+            body { background-color: #ffffff !important; color: #000000 !important; }
+            #sec-login, nav, header, .tabs, .btn-export, .btn-group-row, #modal-auth, #modal-alert, #modal-confirm, #modal-recuperar, .btn-danger, .btn-info, .btn-key { display: none !important; }
+            .container { display: block !important; padding: 0 !important; }
+            .section { display: none !important; }
+            .section.active { display: block !important; }
+            .print-header { display: block !important; text-align: center; border-bottom: 2px solid #000; padding-bottom: 10px; margin-bottom: 15px; }
+            .print-header h2 { font-size: 16pt; margin-bottom: 4px; }
+            .print-header p { font-size: 10pt; }
+            table { width: 100% !important; border-collapse: collapse !important; }
+            table th, table td { border: 1px solid #000 !important; color: #000 !important; background: none !important; padding: 6px !important; font-size: 9pt !important; }
+        }
+
+        .print-header { display: none; }
     </style>
 </head>
 <body>
 
-<div class="container">
+<div id="sec-login">
+    <div class="login-box">
+        <div class="login-brand">SIGET</div>
+        <div class="login-divider"></div>
+        <div class="login-sub">ESTANDE INSTITUCIONAL DE TIRO</div>
+        <div class="login-org">GCM MARIANA — MG</div>
+
+        <div class="login-card">
+            <form onsubmit="autenticarOperador(event)">
+                <div class="form-group">
+                    <label>MATRÍCULA FUNCIONAL:</label>
+                    <input type="text" id="login-usuario" required placeholder="Digite sua matrícula">
+                </div>
+                <div class="form-group">
+                    <label>SENHA DE ACESSO:</label>
+                    <input type="password" id="login-senha" required placeholder="••••••••">
+                </div>
+                <button type="submit" id="btn-login" class="btn-tatico">ENTRAR NO SISTEMA</button>
+            </form>
+            <div style="display: flex; justify-content: space-between; margin-top: 15px; font-size: 0.78rem;">
+                <a href="#" style="color: var(--accent-color);" onclick="irParaPrimeiroAcesso()">Primeiro acesso?</a>
+                <a href="#" style="color: #a0b2ce;" onclick="abrirModalRecuperacao()">Esqueceu a senha?</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="app-container" class="container">
     <header>
-        <h1>Estande de Tiro - Sistema de Acesso</h1>
-        <p>Livro de Utilização Digital e Integrado ao Google Sheets</p>
+        <h1>ESTANDE DE TIRO</h1>
+        <p>GCM Mariana - MG | Versão Mobile & PC</p>
     </header>
 
     <nav>
         <div>
-            <span id="user-status" class="user-badge badge-op">Sessão: Operador</span>
+            <span id="user-status" class="user-badge badge-op">Operador Conectado</span>
         </div>
-        <div>
-            <a class="nav-link" onclick="showSection('sec-busca')">Início / Busca</a> | 
-            <a class="nav-link" onclick="solicitarAcessoAdmin()">Ver Relatórios (Área Restrita)</a>
+        <div class="nav-links-row">
+            <a class="nav-link" onclick="showSection('sec-busca')">Início</a> | 
+            <a class="nav-link" onclick="solicitarAcessoAdmin()">Relatórios</a> | 
+            <a class="nav-link" style="color: var(--danger-color);" onclick="solicitarEncerramentoSessao()">Sair</a>
         </div>
     </nav>
 
-    <!-- TELA 1: BUSCA DE MATRÍCULA -->
     <div id="sec-busca" class="section active">
         <h2>Identificação do Servidor</h2>
-        <p style="margin-bottom: 15px; color: #666;">Digite a matrícula para iniciar o registro.</p>
-        <form id="form-busca" onsubmit="buscarMatricula(event)">
+        <form id="form-busca" onsubmit="buscarMatricula(event)" style="margin-top: 15px;">
             <div class="form-group">
-                <label for="busca-matricula">Número da Matrícula / ID Funcional:</label>
-                <input type="text" id="busca-matricula" required placeholder="Ex: 123456-7">
+                <label>Matrícula / ID Funcional:</label>
+                <input type="text" id="busca-matricula" required placeholder="Ex: 123456">
             </div>
             <button type="submit" class="btn">Verificar Matrícula</button>
         </form>
     </div>
 
-    <!-- TELA 2: CADASTRO COMPLETO (PRIMEIRO ACESSO) -->
     <div id="sec-cadastro" class="section">
-        <h2>Primeiro Acesso - Cadastro Completo</h2>
-        <p style="margin-bottom: 15px; color: #e67e22;">Matrícula não localizada. Preencha os dados abaixo para cadastrar.</p>
+        <h2 id="titulo-cadastro">Cadastro Completo</h2>
         
-        <form id="form-cadastro" onsubmit="salvarCadastro(event)">
+        <form id="form-cadastro" onsubmit="salvarCadastro(event)" style="margin-top: 15px;">
             <input type="hidden" id="cad-matricula">
             
-            <div class="form-row">
-                <div class="form-group">
-                    <label>Nome Completo:</label>
-                    <input type="text" id="cad-nome" required>
-                </div>
-                <div class="form-group">
-                    <label>Cargo / Função / Posto:</label>
-                    <input type="text" id="cad-cargo" required placeholder="Ex: Agente / Policial">
-                </div>
-            </div>
-
-            <!-- ARMA PARTICULAR -->
-            <div class="toggle-box">
-                <div class="form-group">
-                    <label>Possui Arma Particular?</label>
-                    <select id="cad-tem-particular" onchange="toggleArmaParticular()">
-                        <option value="Não">Não</option>
-                        <option value="Sim">Sim</option>
-                    </select>
-                </div>
-                <div id="box-particular" style="display: none;">
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>Nº do CRAF (Particular):</label>
-                            <input type="text" id="cad-craf">
-                        </div>
-                        <div class="form-group">
-                            <label>Modelo / Calibre (Particular):</label>
-                            <input type="text" id="cad-particular-desc" placeholder="Ex: Pistola 9mm / Glock">
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label>Anexo do Documento/CRAF Particular (PDF ou Imagem):</label>
-                        <input type="file" id="cad-particular-anexo" accept="image/*,application/pdf">
-                    </div>
-                </div>
-            </div>
-
-            <!-- CAUTELA FIXA INSTITUCIONAL -->
-            <div class="toggle-box">
-                <div class="form-group">
-                    <label>Possui Cautela Fixa de Arma Institucional?</label>
-                    <select id="cad-tem-cautela" onchange="toggleCautela()">
-                        <option value="Não">Não</option>
-                        <option value="Sim">Sim</option>
-                    </select>
-                </div>
-                <div id="box-cautela" style="display: none;">
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>Nº do Termo de Cautela Fixa:</label>
-                            <input type="text" id="cad-num-cautela">
-                        </div>
-                        <div class="form-group">
-                            <label>Modelo / Calibre (Institucional):</label>
-                            <input type="text" id="cad-institucional-desc" placeholder="Ex: Imbel .40">
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label>Anexo do Termo de Cautela / CRAF Institucional (PDF ou Imagem):</label>
-                        <input type="file" id="cad-cautela-anexo" accept="image/*,application/pdf">
-                    </div>
-                </div>
-            </div>
-
-            <button type="submit" id="btn-cadastrar" class="btn btn-success">Salvar Cadastro e Continuar</button>
-        </form>
-    </div>
-
-    <!-- TELA 3: REGISTRO DE ACESSO DIÁRIO -->
-    <div id="sec-acesso" class="section">
-        <div id="servidor-info" class="user-card"></div>
-
-        <h2>Registro de Acesso Diário</h2>
-        <form id="form-acesso" onsubmit="salvarAcessoDiario(event)">
-            <input type="hidden" id="acesso-matricula">
-
-            <div class="form-row">
-                <div class="form-group">
-                    <label>Data:</label>
-                    <input type="date" id="acesso-data" required>
-                </div>
-                <div class="form-group">
-                    <label>Hora Entrada:</label>
-                    <input type="time" id="acesso-hora-in" required>
-                </div>
-                <div class="form-group">
-                    <label>Hora Saída (Estimada/Efetiva):</label>
-                    <input type="time" id="acesso-hora-out">
-                </div>
-            </div>
-
-            <div class="form-row">
-                <div class="form-group">
-                    <label>Arma Utilizada:</label>
-                    <select id="acesso-tipo-arma" required>
-                        <option value="Arma Particular">Arma Particular</option>
-                        <option value="Cautela Fixa (Institucional)">Cautela Fixa (Institucional)</option>
-                        <option value="Cautela Avulsa (Dia)">Cautela Avulsa (Dia)</option>
-                        <option value="Sem Arma / Instrução">Sem Arma / Instrução</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>Nº de Série da Arma:</label>
-                    <input type="text" id="acesso-serie-arma" required>
-                </div>
-                <div class="form-group">
-                    <label>Calibre:</label>
-                    <input type="text" id="acesso-calibre" required placeholder="Ex: 9mm, .40">
-                </div>
-            </div>
-
-            <div class="form-row">
-                <div class="form-group">
-                    <label>Qtd. Munições Efetuadas:</label>
-                    <input type="number" id="acesso-municao" min="0" value="0" required>
-                </div>
-                <div class="form-group">
-                    <label>Supervisor / Instrutor Responsável:</label>
-                    <input type="text" id="acesso-supervisor" required placeholder="Nome do Responsável">
-                </div>
+            <div class="form-group">
+                <label>Nome Completo:</label>
+                <input type="text" id="cad-nome" required>
             </div>
 
             <div class="form-group">
-                <label>Observações / Ocorrências:</label>
-                <textarea id="acesso-obs" rows="3"></textarea>
+                <label>Cargo / Função:</label>
+                <input type="text" id="cad-cargo" required placeholder="Ex: Agente">
             </div>
 
-            <button type="submit" id="btn-registrar-acesso" class="btn btn-success">Registrar Entrada no Estande</button>
+            <div class="form-group">
+                <label>Senha de Acesso:</label>
+                <input type="password" id="cad-senha" required placeholder="Crie uma senha">
+            </div>
+
+            <div class="form-group">
+                <label>Foto do Servidor:</label>
+                <div style="display: flex; gap: 8px; margin-bottom: 10px;">
+                    <button type="button" class="btn btn-info" style="flex:1;" onclick="iniciarWebcamFoto()">📷 Câmera</button>
+                    <input type="file" id="cad-foto" accept="image/*" style="display:none;" onchange="previewFoto(event)">
+                    <button type="button" class="btn btn-secondary" style="flex:1; height:38px; font-size:0.85rem;" onclick="document.getElementById('cad-foto').click()">📂 Galeria</button>
+                </div>
+
+                <div id="webcam-foto-box" class="webcam-box">
+                    <video id="webcam-foto-video" class="webcam-video" autoplay playsinline></video>
+                    <div style="margin-top: 8px; display: flex; flex-direction: column; gap: 8px;">
+                        <div style="display: flex; gap: 8px;">
+                            <button type="button" class="btn btn-success" style="height: 38px; font-size: 0.85rem; flex: 1;" onclick="capturarFotoWebcam()">📸 Tirar Foto</button>
+                            <button type="button" class="btn btn-key" style="height: 38px; font-size: 0.85rem; flex: 1;" onclick="alternarCameraFoto()">🔄 Alternar Câmera</button>
+                        </div>
+                        <button type="button" class="btn btn-danger" style="height: 38px; font-size: 0.85rem;" onclick="pararWebcamFoto()">Fechar Câmera</button>
+                    </div>
+                </div>
+
+                <div style="text-align: center; margin-top: 8px;">
+                    <img id="img-preview" src="" alt="Foto" style="max-width: 100px; max-height: 100px; display: none; border-radius: 50%; border: 2px solid var(--accent-color);">
+                </div>
+            </div>
+
+            <!-- SEÇÃO DINÂMICA DE MÚLTIPLAS ARMAS -->
+            <div style="border-top: 1px solid var(--border-color); padding-top: 15px; margin-top: 15px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                    <label style="margin-bottom: 0;">Armas Cadastradas:</label>
+                    <button type="button" class="btn btn-info" style="width: auto; height: 32px; font-size: 0.8rem; padding: 0 10px;" onclick="adicionarCampoArma()">➕ Adicionar Arma</button>
+                </div>
+
+                <div id="container-armas-lista">
+                    <!-- Os cards das armas serão injetados dinamicamente via JS -->
+                </div>
+            </div>
+
+            <div class="btn-group-row">
+                <button type="button" class="btn btn-secondary" onclick="voltarParaBusca()">← Voltar</button>
+                <button type="submit" id="btn-cadastrar" class="btn btn-success">Salvar Cadastro</button>
+            </div>
         </form>
     </div>
 
-    <!-- TELA 4: RELATÓRIOS E EXCLUSÃO (ÁREA RESTRITA) -->
+    <div id="sec-acesso" class="section">
+        <div id="servidor-info" class="user-card"></div>
+        <h2>Entrada no Estande</h2>
+
+        <form id="form-acesso" onsubmit="salvarAcessoDiario(event)" style="margin-top: 15px;">
+            <input type="hidden" id="acesso-matricula">
+
+            <div class="form-group"><label>Data Entrada:</label><input type="date" id="acesso-data" required></div>
+            <div class="form-group"><label>Hora Entrada:</label><input type="time" id="acesso-hora-in" required></div>
+
+            <div class="form-group">
+                <label>Arma a Utilizar no Treino:</label>
+                <select id="acesso-select-arma" onchange="atualizarCamposArmaSelecionada()" required>
+                    <!-- Opções geradas automaticamente do cadastro do agente -->
+                </select>
+            </div>
+
+            <div class="form-group"><label>Nº Série da Arma:</label><input type="text" id="acesso-serie-arma" required></div>
+            <div class="form-group"><label>Calibre:</label><input type="text" id="acesso-calibre" required placeholder="Ex: 9mm"></div>
+            <div class="form-group"><label>Qtd. Munições Retiradas:</label><input type="number" id="acesso-municao" min="0" value="0" required></div>
+            <div class="form-group"><label>Supervisor Responsável:</label><input type="text" id="acesso-supervisor" required></div>
+            <div class="form-group"><label>Observações:</label><textarea id="acesso-obs" rows="2"></textarea></div>
+
+            <div class="btn-group-row">
+                <button type="button" class="btn btn-secondary" onclick="voltarParaBusca()">← Voltar</button>
+                <button type="submit" id="btn-registrar-acesso" class="btn btn-success">Registrar Entrada</button>
+            </div>
+        </form>
+    </div>
+
+    <div id="sec-saida" class="section">
+        <div id="saida-servidor-info" class="warning-card"></div>
+        <h2>Baixa na Saída</h2>
+
+        <form id="form-saida" onsubmit="salvarSaidaDiaria(event)" style="margin-top: 15px;">
+            <input type="hidden" id="saida-acesso-id">
+            <input type="hidden" id="saida-matricula">
+
+            <div class="form-group"><label>Hora de Saída:</label><input type="time" id="saida-hora-out" required></div>
+            <div class="form-group"><label>Qtd. Munições Deflagradas:</label><input type="number" id="saida-municao" min="0" required></div>
+            <div class="form-group"><label>Ocorrências / Obs:</label><textarea id="saida-obs" rows="3"></textarea></div>
+
+            <div class="btn-group-row">
+                <button type="button" class="btn btn-secondary" onclick="voltarParaBusca()">← Voltar</button>
+                <button type="submit" id="btn-registrar-saida" class="btn btn-warning">Finalizar Saída</button>
+            </div>
+        </form>
+    </div>
+
     <div id="sec-relatorios" class="section">
-        <h2>Área Restrita - Relatórios e Exclusão de Dados</h2>
+        <div class="print-header">
+            <h2>GUARDA CIVIL MUNICIPAL DE MARIANA - MG</h2>
+            <p>ESTANDE INSTITUCIONAL DE TIRO — RELATÓRIO OFICIAL DE ACESSOS</p>
+        </div>
+
+        <h2>Dashboard e Pessoas</h2>
+
+        <div class="dash-grid" style="margin-top: 15px;">
+            <div class="dash-card"><h3>Acessos</h3><div id="dash-total-acessos" class="number">0</div></div>
+            <div class="dash-card"><h3>Ativos</h3><div id="dash-em-andamento" class="number" style="color:#e74c3c;">0</div></div>
+            <div class="dash-card"><h3>Munição</h3><div id="dash-municao-total" class="number" style="color:#27ae60;">0</div></div>
+            <div class="dash-card"><h3>Cadastros</h3><div id="dash-total-pessoas" class="number">0</div></div>
+        </div>
 
         <div class="tabs">
             <div class="tab active" onclick="switchTab('tab-acessos')">Livro de Acessos</div>
             <div class="tab" onclick="switchTab('tab-pessoas')">Pessoas Cadastradas</div>
         </div>
 
-        <!-- ABA 1: ACESSOS -->
         <div id="tab-acessos" class="tab-content">
-            <button class="btn btn-export" onclick="exportarCSV('acessos')">Exportar CSV (Acessos)</button>
-            <div class="clear"></div>
+            <div style="display: flex; gap: 8px; margin-bottom: 10px;">
+                <button class="btn btn-info btn-export" onclick="gerarPDFLivro()">📄 Exportar PDF (Livro)</button>
+                <button class="btn btn-export" onclick="exportarCSV('acessos')">📊 Exportar CSV</button>
+            </div>
             <div style="overflow-x: auto;">
                 <table id="tbl-acessos">
                     <thead>
                         <tr>
                             <th>Data</th>
-                            <th>Entrada/Saída</th>
                             <th>Servidor</th>
-                            <th>Arma/Série</th>
-                            <th>Calibre</th>
-                            <th>Munições</th>
-                            <th>Supervisor</th>
+                            <th>In/Out</th>
+                            <th>Munição</th>
                             <th>Ações</th>
                         </tr>
                     </thead>
@@ -439,21 +642,15 @@
             </div>
         </div>
 
-        <!-- ABA 2: PESSOAS -->
         <div id="tab-pessoas" class="tab-content" style="display:none;">
-            <button class="btn btn-export" onclick="exportarCSV('pessoas')">Exportar CSV (Pessoas)</button>
-            <div class="clear"></div>
+            <button class="btn btn-export" onclick="exportarCSV('pessoas')">📊 Exportar CSV (Pessoas)</button>
             <div style="overflow-x: auto;">
                 <table id="tbl-pessoas">
                     <thead>
                         <tr>
-                            <th>Matrícula</th>
-                            <th>Nome</th>
-                            <th>Cargo</th>
-                            <th>Arma Particular / CRAF</th>
-                            <th>Anexo Particular</th>
-                            <th>Cautela Fixa</th>
-                            <th>Anexo Cautela</th>
+                            <th>Foto</th>
+                            <th>Matrícula / Nome</th>
+                            <th>Cargo / Armas</th>
                             <th>Ações</th>
                         </tr>
                     </thead>
@@ -464,172 +661,616 @@
     </div>
 </div>
 
-<!-- MODAL DE SENHA -->
+<div id="modal-recuperar" class="modal">
+    <div class="modal-content">
+        <h3>Recuperar Senha</h3>
+        <p style="margin: 10px 0; font-size: 0.8rem; color: #a0b2ce;">Requer validação do Supervisor/Admin:</p>
+        <div class="form-group">
+            <label>Sua Matrícula:</label>
+            <input type="text" id="rec-matricula" placeholder="Ex: 16061">
+        </div>
+        <div class="form-group">
+            <label>Chave do Supervisor:</label>
+            <input type="password" id="rec-chave-admin" placeholder="Chave de Autorização">
+        </div>
+        <div class="form-group">
+            <label>Nova Senha:</label>
+            <input type="password" id="rec-nova-senha" placeholder="••••••••">
+        </div>
+        <button class="btn" onclick="processarRecuperacaoSenha()">Redefinir Senha</button>
+        <button class="btn btn-danger" style="margin-top: 8px; width: 100%;" onclick="fecharModal('modal-recuperar')">Cancelar</button>
+    </div>
+</div>
+
 <div id="modal-auth" class="modal">
     <div class="modal-content">
-        <h3 style="margin-bottom: 10px;">Autenticação Requerida</h3>
-        <p style="margin-bottom: 15px; color: #666; font-size: 0.9rem;">Insira a senha de Supervisor/Administrador para acessar relatórios.</p>
-        <div class="form-group">
-            <label>Senha de Acesso:</label>
-            <input type="password" id="input-senha-admin">
-        </div>
+        <h3>Autenticação Admin</h3>
+        <p style="margin: 10px 0; font-size: 0.85rem; color: #a0b2ce;">Insira a senha de Supervisor:</p>
+        <div class="form-group"><input type="password" id="input-senha-admin"></div>
         <button class="btn" onclick="validarSenhaAdmin()">Entrar</button>
-        <button class="btn btn-danger" style="margin-top: 8px; width: 100%;" onclick="fecharModal()">Cancelar</button>
+        <button class="btn btn-danger" style="margin-top: 8px; width: 100%;" onclick="fecharModal('modal-auth')">Cancelar</button>
+    </div>
+</div>
+
+<div id="modal-alert" class="modal">
+    <div class="modal-content">
+        <h3 id="alert-titulo">Aviso</h3>
+        <p id="alert-mensagem" style="margin: 15px 0; font-size: 0.9rem; color: #a0b2ce;"></p>
+        <button type="button" class="btn" onclick="fecharModal('modal-alert')">OK</button>
+    </div>
+</div>
+
+<div id="modal-confirm" class="modal">
+    <div class="modal-content">
+        <h3 id="confirm-titulo">Confirmação</h3>
+        <p id="confirm-mensagem" style="margin: 15px 0; font-size: 0.9rem; color: #a0b2ce;"></p>
+        <div class="btn-group-row">
+            <button type="button" class="btn btn-secondary" onclick="fecharModal('modal-confirm')">Cancelar</button>
+            <button type="button" id="confirm-btn-sim" class="btn btn-danger">Confirmar</button>
+        </div>
     </div>
 </div>
 
 <script>
-    const URL_WEB_APP = "SUA_URL_DO_WEB_APP_AQUI"; // Cole a sua URL do Web App do Google Apps Script aqui
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('sw.js').catch(err => console.log('SW Erro:', err));
+        });
+        navigator.serviceWorker.addEventListener('controllerchange', () => {
+            window.location.reload();
+        });
+    }
 
+    const URL_WEB_APP = "https://script.google.com/macros/s/AKfycbwlvX-WgheEjpUN6Y5v71OD87gNJqT35Bpx7cw22G3-rum0vg64w6FXdcswuIzE09Af/exec";
     const SENHA_ADMIN = "admin123";
     let isAdmin = false;
 
+    let fotoBase64 = "";
+    let mediaStreamFoto = null;
+    let cameraFotoFacingMode = "user";
+
     let dbPessoas = JSON.parse(localStorage.getItem('estande_pessoas')) || {};
     let dbAcessos = JSON.parse(localStorage.getItem('estande_acessos')) || [];
+    let pessoasExcluidas = JSON.parse(localStorage.getItem('estande_pessoas_excluidas')) || [];
 
-    function showSection(sectionId) {
-        document.querySelectorAll('.section').forEach(sec => sec.classList.remove('active'));
-        document.getElementById(sectionId).classList.add('active');
+    let armasTemporarias = [];
 
-        if(sectionId === 'sec-relatorios') {
-            carregarRelatorios();
+    function otimizarFoto(srcBase64, callback, maxDim = 120) {
+        const img = new Image();
+        img.onload = function() {
+            const canvas = document.createElement('canvas');
+            let width = img.width;
+            let height = img.height;
+
+            if (width > height) {
+                if (width > maxDim) { height *= maxDim / width; width = maxDim; }
+            } else {
+                if (height > maxDim) { width *= maxDim / height; height = maxDim; }
+            }
+
+            canvas.width = width; canvas.height = height;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, width, height);
+            callback(canvas.toDataURL('image/jpeg', 0.5));
+        };
+        img.src = srcBase64;
+    }
+
+    function mostrarAlerta(msg, tit = 'Aviso') {
+        document.getElementById('alert-titulo').innerText = tit;
+        document.getElementById('alert-mensagem').innerText = msg;
+        document.getElementById('modal-alert').style.display = 'flex';
+    }
+
+    function mostrarConfirmacao(msg, acao, tit = 'Confirmação') {
+        document.getElementById('confirm-titulo').innerText = tit;
+        document.getElementById('confirm-mensagem').innerText = msg;
+        document.getElementById('confirm-btn-sim').onclick = function() { fecharModal('modal-confirm'); acao(); };
+        document.getElementById('modal-confirm').style.display = 'flex';
+    }
+
+    function fecharModal(id) { document.getElementById(id).style.display = 'none'; }
+
+    window.onload = function() {
+        sincronizarPessoasDaNuvem();
+        const op = localStorage.getItem('estande_operador_ativo');
+        if (op) iniciarSessaoOperador(JSON.parse(op));
+    };
+
+    function iniciarSessaoOperador(operador) {
+        document.getElementById('sec-login').style.display = 'none';
+        document.getElementById('app-container').style.display = 'block';
+        document.getElementById('user-status').innerText = `Operador: ${operador.nome}`;
+        document.getElementById('busca-matricula').value = operador.matricula;
+    }
+
+    async function sincronizarPessoasDaNuvem() {
+        if (URL_WEB_APP && URL_WEB_APP.startsWith("https://script.google.com")) {
+            try {
+                const res = await fetch(URL_WEB_APP);
+                if (res.ok) {
+                    const pessoasNuvem = await res.json();
+                    for (let mat in pessoasNuvem) {
+                        if (pessoasExcluidas.includes(mat)) { delete pessoasNuvem[mat]; continue; }
+                        if (dbPessoas[mat] && dbPessoas[mat].foto && !pessoasNuvem[mat].foto) {
+                            pessoasNuvem[mat].foto = dbPessoas[mat].foto;
+                        }
+                        if (dbPessoas[mat] && dbPessoas[mat].senha) pessoasNuvem[mat].senha = dbPessoas[mat].senha;
+                    }
+                    dbPessoas = { ...dbPessoas, ...pessoasNuvem };
+                    localStorage.setItem('estande_pessoas', JSON.stringify(dbPessoas));
+                }
+            } catch (e) {}
         }
     }
 
-    function solicitarAcessoAdmin() {
-        if (isAdmin) {
-            showSection('sec-relatorios');
-        } else {
-            document.getElementById('input-senha-admin').value = '';
-            document.getElementById('modal-auth').style.display = 'flex';
+    /* --- CÂMERA DA FOTO DO SERVIDOR --- */
+    async function iniciarWebcamFoto() {
+        pararWebcamFoto();
+        try {
+            mediaStreamFoto = await navigator.mediaDevices.getUserMedia({ 
+                video: { facingMode: cameraFotoFacingMode }, 
+                audio: false 
+            });
+            document.getElementById('webcam-foto-video').srcObject = mediaStreamFoto;
+            document.getElementById('webcam-foto-box').style.display = 'block';
+        } catch (err) {
+            mostrarAlerta("Não foi possível acessar a câmera do dispositivo.");
         }
     }
 
-    function fecharModal() {
-        document.getElementById('modal-auth').style.display = 'none';
+    function alternarCameraFoto() {
+        cameraFotoFacingMode = (cameraFotoFacingMode === "user") ? "environment" : "user";
+        iniciarWebcamFoto();
     }
 
-    function validarSenhaAdmin() {
-        const senha = document.getElementById('input-senha-admin').value;
-        if (senha === SENHA_ADMIN) {
-            isAdmin = true;
-            document.getElementById('user-status').innerText = 'Sessão: Administrador';
-            document.getElementById('user-status').className = 'user-badge badge-admin';
-            fecharModal();
-            showSection('sec-relatorios');
-        } else {
-            alert('Senha incorreta!');
+    function capturarFotoWebcam() {
+        const video = document.getElementById('webcam-foto-video');
+        const canvas = document.createElement('canvas');
+        canvas.width = video.videoWidth || 280; canvas.height = video.videoHeight || 210;
+        canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
+        otimizarFoto(canvas.toDataURL('image/jpeg'), function(f) {
+            fotoBase64 = f;
+            document.getElementById('img-preview').src = fotoBase64;
+            document.getElementById('img-preview').style.display = 'inline-block';
+        });
+        pararWebcamFoto();
+    }
+
+    function pararWebcamFoto() {
+        if (mediaStreamFoto) { mediaStreamFoto.getTracks().forEach(t => t.stop()); mediaStreamFoto = null; }
+        document.getElementById('webcam-foto-box').style.display = 'none';
+    }
+
+    function previewFoto(e) {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(evt) {
+                otimizarFoto(evt.target.result, function(f) {
+                    fotoBase64 = f;
+                    document.getElementById('img-preview').src = fotoBase64;
+                    document.getElementById('img-preview').style.display = 'inline-block';
+                });
+            };
+            reader.readAsDataURL(file);
         }
     }
 
-    function toggleArmaParticular() {
-        const val = document.getElementById('cad-tem-particular').value;
-        document.getElementById('box-particular').style.display = (val === 'Sim') ? 'block' : 'none';
+    /* --- MÓDULO DE MÚLTIPLAS ARMAS DINÂMICAS --- */
+    function adicionarCampoArma(dadosArma = null) {
+        const idArma = Date.now() + Math.floor(Math.random() * 1000);
+        const objArma = dadosArma || {
+            id: idArma,
+            tipo: "Particular",
+            modelo: "",
+            serie: "",
+            calibre: "",
+            crafNum: "",
+            crafAnexo: ""
+        };
+
+        if (!dadosArma) armasTemporarias.push(objArma);
+
+        renderizarListaArmas();
     }
 
-    function toggleCautela() {
-        const val = document.getElementById('cad-tem-cautela').value;
-        document.getElementById('box-cautela').style.display = (val === 'Sim') ? 'block' : 'none';
+    function removerArma(idArma) {
+        armasTemporarias = armasTemporarias.filter(a => a.id !== idArma);
+        renderizarListaArmas();
     }
 
-    function buscarMatricula(event) {
-        event.preventDefault();
-        const mat = document.getElementById('busca-matricula').value.trim();
-        if (!mat) return;
+    function renderizarListaArmas() {
+        const container = document.getElementById('container-armas-lista');
+        container.innerHTML = '';
 
-        if (dbPessoas[mat]) {
-            abrirAcessoDiario(mat);
-        } else {
-            document.getElementById('cad-matricula').value = mat;
+        if (armasTemporarias.length === 0) {
+            container.innerHTML = `<p style="font-size:0.8rem; color:#a0b2ce; text-align:center;">Nenhuma arma cadastrada. Clique em "➕ Adicionar Arma".</p>`;
+            return;
+        }
+
+        armasTemporarias.forEach((arma, index) => {
+            const div = document.createElement('div');
+            div.className = 'arma-card-item';
+            div.innerHTML = `
+                <button type="button" class="btn-remove-arma" onclick="removerArma(${arma.id})">✖ Remover</button>
+                <div class="form-group" style="margin-bottom:8px;">
+                    <label style="font-size:0.8rem;">Tipo / Vinculo (Arma #${index + 1}):</label>
+                    <select onchange="atualizarDadosArma(${arma.id}, 'tipo', this.value); alternarCamposArmaItem(${arma.id}, this.value)">
+                        <option value="Particular" ${arma.tipo === 'Particular' ? 'selected' : ''}>Arma Particular</option>
+                        <option value="Cautela Fixa (Institucional)" ${arma.tipo === 'Cautela Fixa (Institucional)' ? 'selected' : ''}>Cautela Fixa (Institucional)</option>
+                        <option value="Cautela Avulsa (Dia)" ${arma.tipo === 'Cautela Avulsa (Dia)' ? 'selected' : ''}>Cautela Avulsa (Dia)</option>
+                    </select>
+                </div>
+                <div class="form-group" style="margin-bottom:8px;">
+                    <label style="font-size:0.8rem;">Modelo / Marca:</label>
+                    <input type="text" value="${arma.modelo || ''}" placeholder="Ex: Glock G25, Imbel .40" onchange="atualizarDadosArma(${arma.id}, 'modelo', this.value)">
+                </div>
+                <div style="display:flex; gap:8px; margin-bottom:8px;">
+                    <div style="flex:1;">
+                        <label style="font-size:0.8rem;">Nº Série:</label>
+                        <input type="text" value="${arma.serie || ''}" placeholder="Série" onchange="atualizarDadosArma(${arma.id}, 'serie', this.value)">
+                    </div>
+                    <div style="flex:1;">
+                        <label style="font-size:0.8rem;">Calibre:</label>
+                        <input type="text" value="${arma.calibre || ''}" placeholder="Calibre" onchange="atualizarDadosArma(${arma.id}, 'calibre', this.value)">
+                    </div>
+                </div>
+                <div id="box-craf-item-${arma.id}" style="display: ${arma.tipo === 'Particular' ? 'block' : 'none'};">
+                    <div class="form-group" style="margin-bottom:8px;">
+                        <label style="font-size:0.8rem;">Nº do CRAF:</label>
+                        <input type="text" value="${arma.crafNum || ''}" placeholder="CRAF" onchange="atualizarDadosArma(${arma.id}, 'crafNum', this.value)">
+                    </div>
+                    <div class="form-group" style="margin-bottom:8px;">
+                        <label style="font-size:0.8rem;">Anexo do CRAF (Foto / PDF):</label>
+                        <input type="file" accept="image/*,.pdf" style="font-size:0.75rem; height: auto;" onchange="uploadCrafItem(${arma.id}, event)">
+                        <span id="status-craf-item-${arma.id}" style="font-size:0.75rem; color:var(--accent-color);">
+                            ${arma.crafAnexo ? '📄 Anexo salvo' : ''}
+                        </span>
+                    </div>
+                </div>
+            `;
+            container.appendChild(div);
+        });
+    }
+
+    function atualizarDadosArma(idArma, campo, valor) {
+        const item = armasTemporarias.find(a => a.id === idArma);
+        if (item) item[campo] = valor;
+    }
+
+    function alternarCamposArmaItem(idArma, tipo) {
+        const box = document.getElementById(`box-craf-item-${idArma}`);
+        if (box) box.style.display = (tipo === 'Particular') ? 'block' : 'none';
+    }
+
+    function uploadCrafItem(idArma, e) {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(evt) {
+                const item = armasTemporarias.find(a => a.id === idArma);
+                if (file.type === "application/pdf") {
+                    if (item) item.crafAnexo = evt.target.result;
+                    document.getElementById(`status-craf-item-${idArma}`).innerText = "📄 PDF Anexado";
+                } else {
+                    otimizarFoto(evt.target.result, function(f) {
+                        if (item) item.crafAnexo = f;
+                        document.getElementById(`status-craf-item-${idArma}`).innerText = "📄 Imagem Anexada";
+                    }, 300);
+                }
+            };
+            reader.readAsDataURL(file);
+        }
+    }
+
+    function abrirAnexoCrafArma(mat, idArma) {
+        const p = dbPessoas[mat];
+        if (p && p.armas) {
+            const a = p.armas.find(item => item.id == idArma);
+            if (a && a.crafAnexo) {
+                if (a.crafAnexo.startsWith("data:application/pdf")) {
+                    const win = window.open();
+                    win.document.write(`<iframe src="${a.crafAnexo}" frameborder="0" style="border:0; width:100%; height:100%;" allowfullscreen></iframe>`);
+                } else {
+                    const win = window.open();
+                    win.document.write(`<img src="${a.crafAnexo}" style="max-width:100%; height:auto;">`);
+                }
+            } else {
+                mostrarAlerta("Nenhum arquivo de CRAF anexado para esta arma.");
+            }
+        }
+    }
+
+    function voltarParaBusca() { pararWebcamFoto(); showSection('sec-busca'); }
+
+    function irParaPrimeiroAcesso() {
+        const mat = prompt("Digite a sua matrícula:");
+        if (mat) {
+            document.getElementById('sec-login').style.display = 'none';
+            document.getElementById('app-container').style.display = 'block';
+            document.getElementById('cad-matricula').value = mat.trim();
             document.getElementById('form-cadastro').reset();
-            toggleArmaParticular();
-            toggleCautela();
+            fotoBase64 = ""; armasTemporarias = [];
+            document.getElementById('img-preview').style.display = 'none';
+            renderizarListaArmas();
             showSection('sec-cadastro');
         }
     }
 
-    async function salvarCadastro(event) {
-        event.preventDefault();
-        const btn = document.getElementById('btn-cadastrar');
-        btn.disabled = true;
-        btn.innerText = "Enviando dados...";
+    function abrirModalRecuperacao() {
+        document.getElementById('rec-matricula').value = '';
+        document.getElementById('rec-chave-admin').value = '';
+        document.getElementById('rec-nova-senha').value = '';
+        document.getElementById('modal-recuperar').style.display = 'flex';
+    }
 
+    async function processarRecuperacaoSenha() {
+        const mat = document.getElementById('rec-matricula').value.trim();
+        const chave = document.getElementById('rec-chave-admin').value;
+        const novaSenha = document.getElementById('rec-nova-senha').value;
+
+        if (!mat || !chave || !novaSenha) {
+            mostrarAlerta('Preencha todos os campos!');
+            return;
+        }
+
+        if (chave !== SENHA_ADMIN) {
+            mostrarAlerta('Chave do Supervisor incorreta!');
+            return;
+        }
+
+        await sincronizarPessoasDaNuvem();
+
+        if (dbPessoas[mat]) {
+            dbPessoas[mat].senha = novaSenha;
+            localStorage.setItem('estande_pessoas', JSON.stringify(dbPessoas));
+
+            if (URL_WEB_APP && URL_WEB_APP.startsWith("https://script.google.com")) {
+                fetch(URL_WEB_APP, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain' }, body: JSON.stringify(dbPessoas[mat]) });
+            }
+
+            fecharModal('modal-recuperar');
+            mostrarAlerta('Senha redefinida com sucesso! Você já pode fazer login.');
+        } else {
+            mostrarAlerta('Matrícula não cadastrada no sistema!');
+        }
+    }
+
+    async function autenticarOperador(e) {
+        e.preventDefault();
+        const btn = document.getElementById('btn-login');
+        btn.disabled = true;
+        btn.innerText = "VERIFICANDO...";
+
+        const mat = document.getElementById('login-usuario').value.trim();
+        const senha = document.getElementById('login-senha').value;
+
+        await sincronizarPessoasDaNuvem();
+
+        btn.disabled = false;
+        btn.innerText = "ENTRAR NO SISTEMA";
+
+        if (dbPessoas[mat]) {
+            if (dbPessoas[mat].senha === senha || !dbPessoas[mat].senha) {
+                localStorage.setItem('estande_operador_ativo', JSON.stringify(dbPessoas[mat]));
+                iniciarSessaoOperador(dbPessoas[mat]);
+                showSection('sec-busca');
+            } else { 
+                mostrarAlerta("Senha incorreta!"); 
+            }
+        } else {
+            mostrarConfirmacao("Matrícula não localizada no banco de dados. Deseja realizar o cadastro agora?", function() {
+                document.getElementById('sec-login').style.display = 'none';
+                document.getElementById('app-container').style.display = 'block';
+                document.getElementById('cad-matricula').value = mat;
+                armasTemporarias = [];
+                renderizarListaArmas();
+                showSection('sec-cadastro');
+            }, 'Cadastro Não Localizado');
+        }
+    }
+
+    function solicitarEncerramentoSessao() {
+        mostrarConfirmacao("Deseja sair do aplicativo?", function() {
+            localStorage.removeItem('estande_operador_ativo');
+            document.getElementById('app-container').style.display = 'none';
+            document.getElementById('sec-login').style.display = 'flex';
+        });
+    }
+
+    function showSection(id) {
+        document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+        if(id === 'sec-relatorios') carregarRelatorios();
+    }
+
+    function solicitarAcessoAdmin() {
+        if (isAdmin) showSection('sec-relatorios');
+        else document.getElementById('modal-auth').style.display = 'flex';
+    }
+
+    function validarSenhaAdmin() {
+        if (document.getElementById('input-senha-admin').value === SENHA_ADMIN) {
+            isAdmin = true; fecharModal('modal-auth'); showSection('sec-relatorios');
+        } else { mostrarAlerta('Senha incorreta!'); }
+    }
+
+    function buscarMatricula(e) {
+        e.preventDefault();
+        const mat = document.getElementById('busca-matricula').value.trim();
+        if (dbPessoas[mat]) {
+            const aberto = dbAcessos.find(a => a.matricula === mat && a.horaOut === 'Em andamento');
+            if (aberto) abrirSaidaDiaria(aberto); else abrirAcessoDiario(mat);
+        } else {
+            document.getElementById('cad-matricula').value = mat;
+            armasTemporarias = [];
+            renderizarListaArmas();
+            showSection('sec-cadastro');
+        }
+    }
+
+    function editarPessoa(matricula) {
+        const p = dbPessoas[matricula];
+        if (!p) return;
+
+        document.getElementById('cad-matricula').value = p.matricula;
+        document.getElementById('cad-nome').value = p.nome;
+        document.getElementById('cad-cargo').value = p.cargo;
+        document.getElementById('cad-senha').value = p.senha || '';
+
+        fotoBase64 = p.foto || "";
+        const img = document.getElementById('img-preview');
+        if (fotoBase64) {
+            img.src = fotoBase64;
+            img.style.display = 'inline-block';
+        } else {
+            img.style.display = 'none';
+        }
+
+        armasTemporarias = p.armas ? JSON.parse(JSON.stringify(p.armas)) : [];
+        renderizarListaArmas();
+
+        document.getElementById('titulo-cadastro').innerText = `Editar - Matrícula ${p.matricula}`;
+        showSection('sec-cadastro');
+    }
+
+    function resetarSenhaPessoa(matricula) {
+        const p = dbPessoas[matricula];
+        if (!p) return;
+
+        const novaSenha = prompt(`Digite a nova senha para ${p.nome} (${matricula}):`);
+        if (novaSenha && novaSenha.trim() !== '') {
+            dbPessoas[matricula].senha = novaSenha.trim();
+            localStorage.setItem('estande_pessoas', JSON.stringify(dbPessoas));
+
+            if (URL_WEB_APP && URL_WEB_APP.startsWith("https://script.google.com")) {
+                fetch(URL_WEB_APP, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain' }, body: JSON.stringify(dbPessoas[matricula]) });
+            }
+
+            mostrarAlerta(`Senha alterada com sucesso!`);
+            carregarRelatorios();
+        }
+    }
+
+    function excluirPessoa(matricula) {
+        mostrarConfirmacao(`Deseja remover o servidor ${matricula}?`, function() {
+            delete dbPessoas[matricula];
+            localStorage.setItem('estande_pessoas', JSON.stringify(dbPessoas));
+
+            if (!pessoasExcluidas.includes(matricula)) {
+                pessoasExcluidas.push(matricula);
+                localStorage.setItem('estande_pessoas_excluidas', JSON.stringify(pessoasExcluidas));
+            }
+
+            carregarRelatorios();
+            mostrarAlerta('Servidor removido!');
+        }, 'Excluir Servidor');
+    }
+
+    function excluirAcesso(id) {
+        mostrarConfirmacao('Deseja excluir este registro?', function() {
+            dbAcessos = dbAcessos.filter(a => a.id !== id);
+            localStorage.setItem('estande_acessos', JSON.stringify(dbAcessos));
+            carregarRelatorios();
+            mostrarAlerta('Registro excluído!');
+        }, 'Excluir Registro');
+    }
+
+    function salvarCadastro(e) {
+        e.preventDefault();
         const mat = document.getElementById('cad-matricula').value;
 
-        const particularAnexoInput = document.getElementById('cad-particular-anexo');
-        const cautelaAnexoInput = document.getElementById('cad-cautela-anexo');
+        pessoasExcluidas = pessoasExcluidas.filter(id => id !== mat);
+        localStorage.setItem('estande_pessoas_excluidas', JSON.stringify(pessoasExcluidas));
 
         const pessoaData = {
-            tipo: 'pessoa',
+            tipo: 'pessoa', 
             matricula: mat,
             nome: document.getElementById('cad-nome').value,
             cargo: document.getElementById('cad-cargo').value,
-            temParticular: document.getElementById('cad-tem-particular').value,
-            craf: document.getElementById('cad-craf').value || 'N/A',
-            particularDesc: document.getElementById('cad-particular-desc').value || 'N/A',
-            particularAnexo: particularAnexoInput.files.length > 0 ? particularAnexoInput.files[0].name : '',
-            temCautela: document.getElementById('cad-tem-cautela').value,
-            numCautela: document.getElementById('cad-num-cautela').value || 'N/A',
-            institucionalDesc: document.getElementById('cad-institucional-desc').value || 'N/A',
-            cautelaAnexo: cautelaAnexoInput.files.length > 0 ? cautelaAnexoInput.files[0].name : ''
+            senha: document.getElementById('cad-senha').value,
+            foto: fotoBase64 || (dbPessoas[mat] ? dbPessoas[mat].foto : ''),
+            armas: armasTemporarias
         };
 
         dbPessoas[mat] = pessoaData;
         localStorage.setItem('estande_pessoas', JSON.stringify(dbPessoas));
 
-        if (URL_WEB_APP && URL_WEB_APP !== "SUA_URL_DO_WEB_APP_AQUI") {
-            try {
-                await fetch(URL_WEB_APP, {
-                    method: 'POST',
-                    mode: 'no-cors',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(pessoaData)
-                });
-            } catch (error) {
-                console.error("Erro ao enviar para a planilha:", error);
-            }
+        const opAtivo = JSON.parse(localStorage.getItem('estande_operador_ativo') || '{}');
+        if (opAtivo.matricula === mat) {
+            localStorage.setItem('estande_operador_ativo', JSON.stringify(pessoaData));
         }
 
-        btn.disabled = false;
-        btn.innerText = "Salvar Cadastro e Continuar";
-        alert('Cadastro realizado com sucesso!');
+        if (URL_WEB_APP && URL_WEB_APP.startsWith("https://script.google.com")) {
+            fetch(URL_WEB_APP, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain' }, body: JSON.stringify(pessoaData) });
+        }
+
+        mostrarAlerta('Cadastro salvo com sucesso!');
         abrirAcessoDiario(mat);
     }
 
     function abrirAcessoDiario(mat) {
         const p = dbPessoas[mat];
         document.getElementById('acesso-matricula').value = mat;
-
-        let infoHTML = `<strong>Servidor:</strong> ${p.nome} (${p.cargo}) | <strong>Matrícula:</strong> ${p.matricula}<br>`;
-        if(p.temParticular === 'Sim') infoHTML += `<small><b>Arma Part.:</b> ${p.particularDesc} (CRAF: ${p.craf})</small><br>`;
-        if(p.temCautela === 'Sim') infoHTML += `<small><b>Cautela Fixa:</b> ${p.institucionalDesc} (Nº: ${p.numCautela})</small>`;
+        const avatar = p.foto ? `<img src="${p.foto}" class="user-avatar">` : `<div class="user-avatar"></div>`;
+        document.getElementById('servidor-info').innerHTML = `${avatar}<div><strong>${p.nome}</strong> (${p.cargo})<br><small>Matrícula: ${p.matricula}</small></div>`;
         
-        document.getElementById('servidor-info').innerHTML = infoHTML;
+        // Popular o Select de Armas com as armas do servidor + opção avulsa/sem arma
+        const selectArma = document.getElementById('acesso-select-arma');
+        selectArma.innerHTML = '';
+
+        if (p.armas && p.armas.length > 0) {
+            p.armas.forEach((a, i) => {
+                selectArma.innerHTML += `<option value="${a.id}">${a.tipo}: ${a.modelo || 'S/ Mod'} (${a.serie || 'S/ Série'})</option>`;
+            });
+        }
+        selectArma.innerHTML += `<option value="AVULSA">Cautela Avulsa / Outra Arma</option>`;
+        selectArma.innerHTML += `<option value="SEM_ARMA">Sem Arma / Instrução Teórica</option>`;
+
+        atualizarCamposArmaSelecionada();
 
         document.getElementById('acesso-data').value = new Date().toISOString().split('T')[0];
-        document.getElementById('acesso-hora-in').value = new Date().toTimeString().split(' ')[0].substring(0, 5);
-
+        document.getElementById('acesso-hora-in').value = new Date().toTimeString().substring(0, 5);
         showSection('sec-acesso');
     }
 
-    async function salvarAcessoDiario(event) {
-        event.preventDefault();
-        const btn = document.getElementById('btn-registrar-acesso');
-        btn.disabled = true;
-        btn.innerText = "Enviando dados...";
-
+    function atualizarCamposArmaSelecionada() {
         const mat = document.getElementById('acesso-matricula').value;
         const p = dbPessoas[mat];
+        const valSel = document.getElementById('acesso-select-arma').value;
+
+        const inputSerie = document.getElementById('acesso-serie-arma');
+        const inputCalibre = document.getElementById('acesso-calibre');
+
+        if (valSel === 'SEM_ARMA') {
+            inputSerie.value = 'N/A';
+            inputCalibre.value = 'N/A';
+        } else if (valSel === 'AVULSA') {
+            inputSerie.value = '';
+            inputCalibre.value = '';
+            inputSerie.focus();
+        } else if (p && p.armas) {
+            const a = p.armas.find(item => item.id == valSel);
+            if (a) {
+                inputSerie.value = a.serie || '';
+                inputCalibre.value = a.calibre || '';
+            }
+        }
+    }
+
+    async function salvarAcessoDiario(e) {
+        e.preventDefault();
+        const mat = document.getElementById('acesso-matricula').value;
+        const p = dbPessoas[mat];
+        const selectArma = document.getElementById('acesso-select-arma');
+        const descArmaSel = selectArma.options[selectArma.selectedIndex].text;
 
         const acessoData = {
-            tipo: 'acesso',
-            id: Date.now(),
-            data: document.getElementById('acesso-data').value,
-            horaIn: document.getElementById('acesso-hora-in').value,
-            horaOut: document.getElementById('acesso-hora-out').value || 'Em andamento',
-            matricula: mat,
-            nome: p.nome,
-            tipoArma: document.getElementById('acesso-tipo-arma').value,
+            tipo: 'acesso', id: Date.now(), data: document.getElementById('acesso-data').value,
+            horaIn: document.getElementById('acesso-hora-in').value, horaOut: 'Em andamento',
+            matricula: mat, nome: p.nome,
+            tipoArma: descArmaSel,
             serieArma: document.getElementById('acesso-serie-arma').value,
             calibre: document.getElementById('acesso-calibre').value,
             municao: document.getElementById('acesso-municao').value,
@@ -640,23 +1281,40 @@
         dbAcessos.unshift(acessoData);
         localStorage.setItem('estande_acessos', JSON.stringify(dbAcessos));
 
-        if (URL_WEB_APP && URL_WEB_APP !== "SUA_URL_DO_WEB_APP_AQUI") {
-            try {
-                await fetch(URL_WEB_APP, {
-                    method: 'POST',
-                    mode: 'no-cors',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(acessoData)
-                });
-            } catch (error) {
-                console.error("Erro ao enviar para a planilha:", error);
+        if (URL_WEB_APP && URL_WEB_APP.startsWith("https://script.google.com")) {
+            fetch(URL_WEB_APP, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain' }, body: JSON.stringify(acessoData) });
+        }
+
+        mostrarAlerta('Entrada registrada com sucesso!');
+        showSection('sec-busca');
+    }
+
+    function abrirSaidaDiaria(acesso) {
+        document.getElementById('saida-acesso-id').value = acesso.id;
+        document.getElementById('saida-matricula').value = acesso.matricula;
+        document.getElementById('saida-servidor-info').innerHTML = `<div>⚠️ <strong>Sessão em aberto!</strong><br>${acesso.nome} (${acesso.data} às ${acesso.horaIn})</div>`;
+        document.getElementById('saida-hora-out').value = new Date().toTimeString().substring(0, 5);
+        document.getElementById('saida-municao').value = acesso.municao;
+        showSection('sec-saida');
+    }
+
+    async function salvarSaidaDiaria(e) {
+        e.preventDefault();
+        const idAcesso = parseInt(document.getElementById('saida-acesso-id').value);
+        const idx = dbAcessos.findIndex(a => a.id === idAcesso);
+
+        if (idx !== -1) {
+            dbAcessos[idx].horaOut = document.getElementById('saida-hora-out').value;
+            dbAcessos[idx].municao = document.getElementById('saida-municao').value;
+            dbAcessos[idx].obs += ` | [Saída]: ${document.getElementById('saida-obs').value || 'OK'}`;
+            localStorage.setItem('estande_acessos', JSON.stringify(dbAcessos));
+
+            if (URL_WEB_APP && URL_WEB_APP.startsWith("https://script.google.com")) {
+                fetch(URL_WEB_APP, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain' }, body: JSON.stringify({ tipo: 'acesso', ...dbAcessos[idx] }) });
             }
         }
 
-        btn.disabled = false;
-        btn.innerText = "Registrar Entrada no Estande";
-        alert('Acesso registrado no sistema e enviado para a planilha!');
-        document.getElementById('form-busca').reset();
+        mostrarAlerta('Saída registrada com sucesso!');
         showSection('sec-busca');
     }
 
@@ -669,19 +1327,33 @@
     }
 
     function carregarRelatorios() {
+        let totalMunicao = 0, emAndamento = 0;
+        dbAcessos.forEach(a => {
+            totalMunicao += parseInt(a.municao || 0);
+            if (a.horaOut === 'Em andamento') emAndamento++;
+        });
+
+        document.getElementById('dash-total-acessos').innerText = dbAcessos.length;
+        document.getElementById('dash-em-andamento').innerText = emAndamento;
+        document.getElementById('dash-municao-total').innerText = totalMunicao;
+        document.getElementById('dash-total-pessoas').innerText = Object.keys(dbPessoas).length;
+
         const tbodyAcessos = document.querySelector('#tbl-acessos tbody');
         tbodyAcessos.innerHTML = '';
         dbAcessos.forEach(a => {
+            const statusSaida = a.horaOut === 'Em andamento' ? '<span style="color: #e74c3c; font-weight: bold;">Ativo</span>' : a.horaOut;
             tbodyAcessos.innerHTML += `
                 <tr>
                     <td>${a.data}</td>
-                    <td>${a.horaIn} - ${a.horaOut}</td>
-                    <td>${a.nome} (${a.matricula})</td>
-                    <td>${a.tipoArma}<br><small>Série: ${a.serieArma}</small></td>
-                    <td>${a.calibre}</td>
-                    <td>${a.municao}</td>
-                    <td>${a.supervisor}</td>
-                    <td><button class="btn-danger" onclick="excluirAcesso(${a.id})">Excluir</button></td>
+                    <td>${a.nome}<br><small>(${a.matricula})</small></td>
+                    <td>In: ${a.horaIn}<br>Out: ${statusSaida}</td>
+                    <td>${a.municao} un</td>
+                    <td>
+                        <div style="display: flex; gap: 4px;">
+                            <button class="btn-info" onclick="gerarPDFComprovante(${a.id})">📄 PDF</button>
+                            <button class="btn-danger" onclick="excluirAcesso(${a.id})">Del</button>
+                        </div>
+                    </td>
                 </tr>
             `;
         });
@@ -689,40 +1361,81 @@
         const tbodyPessoas = document.querySelector('#tbl-pessoas tbody');
         tbodyPessoas.innerHTML = '';
         Object.values(dbPessoas).forEach(p => {
-            const partInfo = p.temParticular === 'Sim' ? `${p.particularDesc} (CRAF: ${p.craf})` : 'Não possui';
-            const partAnexo = p.particularAnexo ? `Anexado (${p.particularAnexo})` : 'Sem anexo';
-            const cautInfo = p.temCautela === 'Sim' ? `${p.institucionalDesc} (Nº Termo: ${p.numCautela})` : 'Não possui';
-            const cautAnexo = p.cautelaAnexo ? `Anexado (${p.cautelaAnexo})` : 'Sem anexo';
-            
+            const imgHTML = p.foto ? `<img src="${p.foto}" class="user-avatar-tb" alt="Foto">` : '-';
+            let htmlArmasLista = '<small>Sem armas</small>';
+            if (p.armas && p.armas.length > 0) {
+                htmlArmasLista = p.armas.map(a => {
+                    const btnPdf = a.crafAnexo ? `<button class="btn-info" style="height:18px; padding:0 3px; font-size:0.65rem;" onclick="abrirAnexoCrafArma('${p.matricula}', '${a.id}')">📎 CRAF</button>` : '';
+                    return `<small>• ${a.tipo}: ${a.modelo || ''} (${a.serie || ''}) ${btnPdf}</small>`;
+                }).join('<br>');
+            }
+
             tbodyPessoas.innerHTML += `
                 <tr>
-                    <td>${p.matricula}</td>
-                    <td>${p.nome}</td>
-                    <td>${p.cargo}</td>
-                    <td>${partInfo}</td>
-                    <td>${partAnexo}</td>
-                    <td>${cautInfo}</td>
-                    <td>${cautAnexo}</td>
-                    <td><button class="btn-danger" onclick="excluirPessoa('${p.matricula}')">Excluir</button></td>
+                    <td style="text-align: center;">${imgHTML}</td>
+                    <td><b>${p.matricula}</b><br>${p.nome}</td>
+                    <td>${p.cargo}<br>${htmlArmasLista}</td>
+                    <td>
+                        <div style="display: flex; gap: 4px;">
+                            <button class="btn-info" onclick="editarPessoa('${p.matricula}')">Edit</button>
+                            <button class="btn-key" onclick="resetarSenhaPessoa('${p.matricula}')">🔑</button>
+                            <button class="btn-danger" onclick="excluirPessoa('${p.matricula}')">Del</button>
+                        </div>
+                    </td>
                 </tr>
             `;
         });
     }
 
-    function excluirAcesso(id) {
-        if (confirm('Tem certeza que deseja excluir este registro local?')) {
-            dbAcessos = dbAcessos.filter(a => a.id !== id);
-            localStorage.setItem('estande_acessos', JSON.stringify(dbAcessos));
-            carregarRelatorios();
-        }
+    function gerarPDFLivro() {
+        window.print();
     }
 
-    function excluirPessoa(matricula) {
-        if (confirm(`Deseja remover o servidor de matrícula ${matricula}?`)) {
-            delete dbPessoas[matricula];
-            localStorage.setItem('estande_pessoas', JSON.stringify(dbPessoas));
-            carregarRelatorios();
-        }
+    function gerarPDFComprovante(idAcesso) {
+        const a = dbAcessos.find(item => item.id === idAcesso);
+        if (!a) return;
+
+        const win = window.open('', '', 'height=700,width=800');
+        win.document.write(`
+            <html>
+            <head>
+                <title>Comprovante de Acesso - GCM Mariana</title>
+                <style>
+                    body { font-family: Arial, sans-serif; padding: 20px; line-height: 1.6; }
+                    .header { text-align: center; border-bottom: 2px solid #000; padding-bottom: 10px; margin-bottom: 20px; }
+                    .title { font-size: 16pt; font-weight: bold; }
+                    .sub { font-size: 10pt; }
+                    .box { border: 1px solid #000; padding: 15px; border-radius: 6px; margin-bottom: 15px; }
+                    .row { display: flex; justify-content: space-between; margin-bottom: 8px; }
+                    .signatures { margin-top: 50px; display: flex; justify-content: space-between; text-align: center; }
+                    .sig-line { width: 45%; border-top: 1px solid #000; padding-top: 5px; font-size: 9pt; }
+                </style>
+            </head>
+            <body>
+                <div class="header">
+                    <div class="title">GUARDA CIVIL MUNICIPAL DE MARIANA - MG</div>
+                    <div class="sub">ESTANDE INSTITUCIONAL DE TIRO — COMPROVANTE DE ACESSO</div>
+                </div>
+                <div class="box">
+                    <div class="row"><strong>Data:</strong> <span>${a.data}</span></div>
+                    <div class="row"><strong>Servidor:</strong> <span>${a.nome} (Matrícula: ${a.matricula})</span></div>
+                    <div class="row"><strong>Horário Entrada:</strong> <span>${a.horaIn}</span></div>
+                    <div class="row"><strong>Horário Saída:</strong> <span>${a.horaOut}</span></div>
+                    <div class="row"><strong>Arma Utilizada:</strong> <span>${a.tipoArma} (Série: ${a.serieArma} / Calibre: ${a.calibre})</span></div>
+                    <div class="row"><strong>Munição Retirada/Deflagrada:</strong> <span>${a.municao} un</span></div>
+                    <div class="row"><strong>Supervisor Responsável:</strong> <span>${a.supervisor}</span></div>
+                    <div class="row"><strong>Observações:</strong> <span>${a.obs}</span></div>
+                </div>
+                <div class="signatures">
+                    <div class="sig-line">Assinatura do Servidor</div>
+                    <div class="sig-line">Assinatura do Supervisor</div>
+                </div>
+            </body>
+            </html>
+        `);
+        win.document.close();
+        win.focus();
+        setTimeout(() => { win.print(); win.close(); }, 500);
     }
 
     function exportarCSV(tipo) {
@@ -734,13 +1447,10 @@
                 csvContent += `"${a.data}";"${a.horaIn}";"${a.horaOut}";"${a.matricula}";"${a.nome}";"${a.tipoArma}";"${a.serieArma}";"${a.calibre}";"${a.municao}";"${a.supervisor}";"${a.obs}"\n`;
             });
         } else {
-            csvContent += "Matricula;Nome;Cargo;Arma Particular;Anexo Particular;Cautela Fixa;Anexo Cautela\n";
+            csvContent += "Matricula;Nome;Cargo;Armas Cadastradas\n";
             Object.values(dbPessoas).forEach(p => {
-                const partInfo = p.temParticular === 'Sim' ? `${p.particularDesc} (CRAF: ${p.craf})` : 'Não possui';
-                const partAnexo = p.particularAnexo ? `Anexado (${p.particularAnexo})` : 'Sem anexo';
-                const cautInfo = p.temCautela === 'Sim' ? `${p.institucionalDesc} (Nº Termo: ${p.numCautela})` : 'Não possui';
-                const cautAnexo = p.cautelaAnexo ? `Anexado (${p.cautelaAnexo})` : 'Sem anexo';
-                csvContent += `"${p.matricula}";"${p.nome}";"${p.cargo}";"${partInfo}";"${partAnexo}";"${cautInfo}";"${cautAnexo}"\n`;
+                let resumoArmas = p.armas ? p.armas.map(a => `${a.tipo}:${a.modelo}(${a.serie})`).join(" | ") : "Nenhuma";
+                csvContent += `"${p.matricula}";"${p.nome}";"${p.cargo}";"${resumoArmas}"\n`;
             });
         }
 
