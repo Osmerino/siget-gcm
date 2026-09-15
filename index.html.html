@@ -1,0 +1,908 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>SIGET Mobile - GCM Mariana</title>
+    <meta name="theme-color" content="#070d19">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <style>
+        :root {
+            --primary-color: #0b1325;
+            --secondary-color: #1b2a47;
+            --accent-color: #d4af37;
+            --warning-color: #e67e22;
+            --danger-color: #c0392b;
+            --info-color: #2980b9;
+            --bg-color: #070d19;
+            --card-bg: rgba(13, 27, 50, 0.95);
+            --text-color: #e0e6ed;
+            --border-color: rgba(212, 175, 55, 0.3);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            min-height: 100vh;
+            padding-bottom: 20px;
+        }
+
+        /* --- TELA DE LOGIN MOBILE --- */
+        #sec-login {
+            display: flex;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(135deg, #070d19 0%, #0d1b32 100%);
+            color: #ffffff;
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .login-box {
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        .login-brand {
+            font-size: 2.8rem;
+            font-weight: 900;
+            letter-spacing: 2px;
+            color: #ffffff;
+        }
+
+        .login-divider {
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, var(--accent-color) 0%, transparent 100%);
+            margin: 10px 0 15px 0;
+        }
+
+        .login-sub {
+            font-size: 0.75rem;
+            letter-spacing: 1px;
+            color: #a0b2ce;
+            text-transform: uppercase;
+        }
+
+        .login-org {
+            font-size: 0.7rem;
+            color: var(--accent-color);
+            letter-spacing: 1px;
+            margin-bottom: 25px;
+        }
+
+        .login-card {
+            background: rgba(13, 27, 50, 0.85);
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            backdrop-filter: blur(10px);
+            text-align: left;
+        }
+
+        .login-card input {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid var(--border-color);
+            color: #fff;
+            margin-bottom: 15px;
+            height: 48px;
+            font-size: 1rem;
+            padding: 0 12px;
+            border-radius: 6px;
+        }
+
+        .btn-tatico {
+            background: var(--accent-color);
+            color: #0b1325;
+            font-weight: bold;
+            letter-spacing: 1px;
+            border: none;
+            height: 50px;
+            border-radius: 8px;
+            cursor: pointer;
+            width: 100%;
+            font-size: 1rem;
+            transition: all 0.2s;
+        }
+
+        /* --- CONTAINER PRINCIPAL MOBILE --- */
+        .container {
+            width: 100%;
+            padding: 15px;
+            display: none;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--accent-color);
+        }
+
+        header h1 {
+            color: var(--accent-color);
+            font-size: 1.4rem;
+            letter-spacing: 1px;
+        }
+
+        header p {
+            color: #a0b2ce;
+            font-size: 0.8rem;
+        }
+
+        nav {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-bottom: 20px;
+            background: rgba(27, 42, 71, 0.9);
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            text-align: center;
+        }
+
+        .nav-links-row {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 5px;
+            font-size: 0.85rem;
+        }
+
+        .nav-link {
+            color: var(--accent-color);
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .user-badge {
+            font-size: 0.8rem;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-weight: bold;
+            display: inline-block;
+        }
+
+        .badge-op { background: #1b2a47; color: var(--accent-color); border: 1px solid var(--border-color); }
+        .badge-admin { background: #155724; color: #d4edda; border: 1px solid #28a745; }
+
+        .section { display: none; }
+        .section.active { display: block; }
+
+        .form-group { margin-bottom: 15px; }
+
+        label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 600;
+            color: var(--accent-color);
+            font-size: 0.9rem;
+        }
+
+        input[type="text"],
+        input[type="password"],
+        input[type="date"],
+        input[type="time"],
+        input[type="number"],
+        input[type="file"],
+        select,
+        textarea {
+            width: 100%;
+            height: 48px;
+            padding: 0 12px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            font-size: 1rem;
+            color: #ffffff;
+        }
+
+        textarea {
+            height: 80px;
+            padding: 10px 12px;
+        }
+
+        select option {
+            background-color: #0b1325;
+            color: #ffffff;
+        }
+
+        .form-row {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .btn-group-row {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .btn {
+            background-color: var(--accent-color);
+            color: #0b1325;
+            height: 50px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            width: 100%;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-secondary { background-color: #4a5568; color: #ffffff; }
+        .btn-success { background-color: #27ae60; color: #fff; }
+        .btn-warning { background-color: var(--warning-color); color: white; }
+        .btn-danger { background-color: var(--danger-color); color: white; height: 38px; font-size: 0.85rem; border-radius: 4px; }
+        .btn-info { background-color: var(--info-color); color: white; height: 38px; font-size: 0.85rem; border-radius: 4px; }
+
+        /* DASHBOARD MOBILE */
+        .dash-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .dash-card {
+            background: rgba(27, 42, 71, 0.7);
+            border: 1px solid var(--border-color);
+            padding: 12px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .dash-card h3 {
+            font-size: 0.7rem;
+            color: #a0b2ce;
+            text-transform: uppercase;
+        }
+
+        .dash-card .number {
+            font-size: 1.5rem;
+            font-weight: 900;
+            color: var(--accent-color);
+        }
+
+        .user-card, .warning-card {
+            background: rgba(27, 42, 71, 0.7);
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            border-left: 4px solid var(--accent-color);
+            border-top: 1px solid var(--border-color);
+            border-right: 1px solid var(--border-color);
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 0.85rem;
+        }
+
+        .user-avatar {
+            width: 55px;
+            height: 55px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--accent-color);
+            background: #1b2a47;
+            flex-shrink: 0;
+        }
+
+        #webcam-box {
+            display: none;
+            text-align: center;
+            margin-top: 10px;
+            background: #000;
+            padding: 10px;
+            border-radius: 8px;
+        }
+
+        #webcam-video {
+            width: 100%;
+            max-width: 280px;
+            border-radius: 6px;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.88);
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+            padding: 20px;
+        }
+
+        .modal-content {
+            background: #0d1b32;
+            color: #fff;
+            padding: 20px;
+            border-radius: 12px;
+            width: 100%;
+            max-width: 360px;
+            border: 1px solid var(--border-color);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.8rem;
+        }
+
+        table th, table td {
+            border: 1px solid var(--border-color);
+            padding: 8px;
+        }
+    </style>
+</head>
+<body>
+
+<div id="sec-login">
+    <div class="login-box">
+        <div class="login-brand">SIGET</div>
+        <div class="login-divider"></div>
+        <div class="login-sub">ESTANDE INSTITUCIONAL DE TIRO</div>
+        <div class="login-org">GCM MARIANA — MG</div>
+
+        <div class="login-card">
+            <form onsubmit="autenticarOperador(event)">
+                <div class="form-group">
+                    <label>MATRÍCULA FUNCIONAL:</label>
+                    <input type="text" id="login-usuario" required placeholder="Digite sua matrícula">
+                </div>
+                <div class="form-group">
+                    <label>SENHA DE ACESSO:</label>
+                    <input type="password" id="login-senha" required placeholder="••••••••">
+                </div>
+                <button type="submit" class="btn-tatico">ENTRAR NO SISTEMA</button>
+            </form>
+            <div style="text-align: center; margin-top: 15px;">
+                <a href="#" style="color: var(--accent-color); font-size: 0.8rem;" onclick="irParaPrimeiroAcesso()">Primeiro acesso? Cadastre-se aqui</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="app-container" class="container">
+    <header>
+        <h1>ESTANDE DE TIRO</h1>
+        <p>GCM Mariana - MG | Versão Mobile</p>
+    </header>
+
+    <nav>
+        <div>
+            <span id="user-status" class="user-badge badge-op">Operador Conectado</span>
+        </div>
+        <div class="nav-links-row">
+            <a class="nav-link" onclick="showSection('sec-busca')">Início</a> | 
+            <a class="nav-link" onclick="solicitarAcessoAdmin()">Relatórios</a> | 
+            <a class="nav-link" style="color: var(--danger-color);" onclick="solicitarEncerramentoSessao()">Sair</a>
+        </div>
+    </nav>
+
+    <div id="sec-busca" class="section active">
+        <h2>Identificação do Servidor</h2>
+        <form id="form-busca" onsubmit="buscarMatricula(event)" style="margin-top: 15px;">
+            <div class="form-group">
+                <label>Matrícula / ID Funcional:</label>
+                <input type="text" id="busca-matricula" required placeholder="Ex: 123456">
+            </div>
+            <button type="submit" class="btn">Verificar Matrícula</button>
+        </form>
+    </div>
+
+    <div id="sec-cadastro" class="section">
+        <h2 id="titulo-cadastro">Cadastro Completo</h2>
+        
+        <form id="form-cadastro" onsubmit="salvarCadastro(event)" style="margin-top: 15px;">
+            <input type="hidden" id="cad-matricula">
+            
+            <div class="form-group">
+                <label>Nome Completo:</label>
+                <input type="text" id="cad-nome" required>
+            </div>
+
+            <div class="form-group">
+                <label>Cargo / Função:</label>
+                <input type="text" id="cad-cargo" required placeholder="Ex: Agente">
+            </div>
+
+            <div class="form-group">
+                <label>Senha de Acesso:</label>
+                <input type="password" id="cad-senha" required placeholder="Crie uma senha">
+            </div>
+
+            <div class="form-group">
+                <label>Foto do Servidor:</label>
+                <div style="display: flex; gap: 8px; margin-bottom: 10px;">
+                    <button type="button" class="btn btn-info" style="flex:1;" onclick="iniciarWebcam()">📷 Câmera</button>
+                    <input type="file" id="cad-foto" accept="image/*" capture="user" onchange="previewFoto(event)" style="display:none;">
+                    <button type="button" class="btn btn-secondary" style="flex:1; height:38px; font-size:0.85rem;" onclick="document.getElementById('cad-foto').click()">📂 Galeria</button>
+                </div>
+
+                <div id="webcam-box">
+                    <video id="webcam-video" autoplay playsinline></video>
+                    <div style="margin-top: 8px; display: flex; gap: 8px;">
+                        <button type="button" class="btn btn-success" style="height: 38px; font-size: 0.85rem;" onclick="capturarFotoWebcam()">📸 Tirar Foto</button>
+                        <button type="button" class="btn btn-danger" style="height: 38px; font-size: 0.85rem;" onclick="pararWebcam()">Fechar</button>
+                    </div>
+                </div>
+
+                <div style="text-align: center; margin-top: 8px;">
+                    <img id="img-preview" src="" alt="Foto" style="max-width: 100px; max-height: 100px; display: none; border-radius: 50%; border: 2px solid var(--accent-color);">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Possui Arma Particular?</label>
+                <select id="cad-tem-particular" onchange="toggleArmaParticular()">
+                    <option value="Não">Não</option>
+                    <option value="Sim">Sim</option>
+                </select>
+            </div>
+            <div id="box-particular" style="display: none;">
+                <div class="form-group"><label>Nº do CRAF:</label><input type="text" id="cad-craf"></div>
+                <div class="form-group"><label>Modelo/Calibre:</label><input type="text" id="cad-particular-desc"></div>
+            </div>
+
+            <div class="form-group">
+                <label>Possui Cautela Fixa?</label>
+                <select id="cad-tem-cautela" onchange="toggleCautela()">
+                    <option value="Não">Não</option>
+                    <option value="Sim">Sim</option>
+                </select>
+            </div>
+            <div id="box-cautela" style="display: none;">
+                <div class="form-group"><label>Nº Termo Cautela:</label><input type="text" id="cad-num-cautela"></div>
+                <div class="form-group"><label>Modelo/Calibre:</label><input type="text" id="cad-institucional-desc"></div>
+            </div>
+
+            <div class="btn-group-row">
+                <button type="button" class="btn btn-secondary" onclick="voltarParaBusca()">← Voltar</button>
+                <button type="submit" id="btn-cadastrar" class="btn btn-success">Salvar Cadastro</button>
+            </div>
+        </form>
+    </div>
+
+    <div id="sec-acesso" class="section">
+        <div id="servidor-info" class="user-card"></div>
+        <h2>Entrada no Estande</h2>
+
+        <form id="form-acesso" onsubmit="salvarAcessoDiario(event)" style="margin-top: 15px;">
+            <input type="hidden" id="acesso-matricula">
+
+            <div class="form-group"><label>Data Entrada:</label><input type="date" id="acesso-data" required></div>
+            <div class="form-group"><label>Hora Entrada:</label><input type="time" id="acesso-hora-in" required></div>
+
+            <div class="form-group">
+                <label>Arma Utilizada:</label>
+                <select id="acesso-tipo-arma" required>
+                    <option value="Arma Particular">Arma Particular</option>
+                    <option value="Cautela Fixa (Institucional)">Cautela Fixa (Institucional)</option>
+                    <option value="Cautela Avulsa (Dia)">Cautela Avulsa (Dia)</option>
+                    <option value="Sem Arma / Instrução">Sem Arma / Instrução</option>
+                </select>
+            </div>
+
+            <div class="form-group"><label>Nº Série da Arma:</label><input type="text" id="acesso-serie-arma" required></div>
+            <div class="form-group"><label>Calibre:</label><input type="text" id="acesso-calibre" required placeholder="Ex: 9mm"></div>
+            <div class="form-group"><label>Qtd. Munições Retiradas:</label><input type="number" id="acesso-municao" min="0" value="0" required></div>
+            <div class="form-group"><label>Supervisor Responsável:</label><input type="text" id="acesso-supervisor" required></div>
+            <div class="form-group"><label>Observações:</label><textarea id="acesso-obs" rows="2"></textarea></div>
+
+            <div class="btn-group-row">
+                <button type="button" class="btn btn-secondary" onclick="voltarParaBusca()">← Voltar</button>
+                <button type="submit" id="btn-registrar-acesso" class="btn btn-success">Registrar Entrada</button>
+            </div>
+        </form>
+    </div>
+
+    <div id="sec-saida" class="section">
+        <div id="saida-servidor-info" class="warning-card"></div>
+        <h2>Baixa na Saída</h2>
+
+        <form id="form-saida" onsubmit="salvarSaidaDiaria(event)" style="margin-top: 15px;">
+            <input type="hidden" id="saida-acesso-id">
+            <input type="hidden" id="saida-matricula">
+
+            <div class="form-group"><label>Hora de Saída:</label><input type="time" id="saida-hora-out" required></div>
+            <div class="form-group"><label>Qtd. Munições Deflagradas:</label><input type="number" id="saida-municao" min="0" required></div>
+            <div class="form-group"><label>Ocorrências / Obs:</label><textarea id="saida-obs" rows="3"></textarea></div>
+
+            <div class="btn-group-row">
+                <button type="button" class="btn btn-secondary" onclick="voltarParaBusca()">← Voltar</button>
+                <button type="submit" id="btn-registrar-saida" class="btn btn-warning">Finalizar Saída</button>
+            </div>
+        </form>
+    </div>
+
+    <div id="sec-relatorios" class="section">
+        <h2>Dashboard Mobile</h2>
+
+        <div class="dash-grid" style="margin-top: 15px;">
+            <div class="dash-card"><h3>Acessos</h3><div id="dash-total-acessos" class="number">0</div></div>
+            <div class="dash-card"><h3>Ativos</h3><div id="dash-em-andamento" class="number" style="color:#e74c3c;">0</div></div>
+            <div class="dash-card"><h3>Munição</h3><div id="dash-municao-total" class="number" style="color:#27ae60;">0</div></div>
+            <div class="dash-card"><h3>Cadastros</h3><div id="dash-total-pessoas" class="number">0</div></div>
+        </div>
+
+        <div style="overflow-x: auto; margin-top: 15px;">
+            <table id="tbl-acessos">
+                <thead>
+                    <tr>
+                        <th>Data</th>
+                        <th>Servidor</th>
+                        <th>In/Out</th>
+                        <th>Munição</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div id="modal-auth" class="modal">
+    <div class="modal-content">
+        <h3>Autenticação Admin</h3>
+        <p style="margin: 10px 0; font-size: 0.85rem; color: #a0b2ce;">Insira a senha de Supervisor:</p>
+        <div class="form-group"><input type="password" id="input-senha-admin"></div>
+        <button class="btn" onclick="validarSenhaAdmin()">Entrar</button>
+        <button class="btn btn-danger" style="margin-top: 8px;" onclick="fecharModal('modal-auth')">Cancelar</button>
+    </div>
+</div>
+
+<div id="modal-alert" class="modal">
+    <div class="modal-content">
+        <h3 id="alert-titulo">Aviso</h3>
+        <p id="alert-mensagem" style="margin: 15px 0; font-size: 0.9rem; color: #a0b2ce;"></p>
+        <button type="button" class="btn" onclick="fecharModal('modal-alert')">OK</button>
+    </div>
+</div>
+
+<div id="modal-confirm" class="modal">
+    <div class="modal-content">
+        <h3 id="confirm-titulo">Confirmação</h3>
+        <p id="confirm-mensagem" style="margin: 15px 0; font-size: 0.9rem; color: #a0b2ce;"></p>
+        <div class="btn-group-row">
+            <button type="button" class="btn btn-secondary" onclick="fecharModal('modal-confirm')">Cancelar</button>
+            <button type="button" id="confirm-btn-sim" class="btn btn-danger">Confirmar</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    const URL_WEB_APP = "https://script.google.com/macros/s/AKfycbwlvX-WgheEjpUN6Y5v71OD87gNJqT35Bpx7cw22G3-rum0vg64w6FXdcswuIzE09Af/exec";
+    const SENHA_ADMIN = "admin123";
+    let isAdmin = false;
+    let fotoBase64 = "";
+    let mediaStream = null;
+
+    let dbPessoas = JSON.parse(localStorage.getItem('estande_pessoas')) || {};
+    let dbAcessos = JSON.parse(localStorage.getItem('estande_acessos')) || [];
+    let pessoasExcluidas = JSON.parse(localStorage.getItem('estande_pessoas_excluidas')) || [];
+
+    function otimizarFoto(srcBase64, callback) {
+        const img = new Image();
+        img.onload = function() {
+            const canvas = document.createElement('canvas');
+            const maxDimension = 160;
+            let width = img.width;
+            let height = img.height;
+
+            if (width > height) {
+                if (width > maxDimension) { height *= maxDimension / width; width = maxDimension; }
+            } else {
+                if (height > maxDimension) { width *= maxDimension / height; height = maxDimension; }
+            }
+
+            canvas.width = width; canvas.height = height;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, width, height);
+            callback(canvas.toDataURL('image/jpeg', 0.65));
+        };
+        img.src = srcBase64;
+    }
+
+    function mostrarAlerta(msg, tit = 'Aviso') {
+        document.getElementById('alert-titulo').innerText = tit;
+        document.getElementById('alert-mensagem').innerText = msg;
+        document.getElementById('modal-alert').style.display = 'flex';
+    }
+
+    function mostrarConfirmacao(msg, acao, tit = 'Confirmação') {
+        document.getElementById('confirm-titulo').innerText = tit;
+        document.getElementById('confirm-mensagem').innerText = msg;
+        document.getElementById('confirm-btn-sim').onclick = function() { fecharModal('modal-confirm'); acao(); };
+        document.getElementById('modal-confirm').style.display = 'flex';
+    }
+
+    function fecharModal(id) { document.getElementById(id).style.display = 'none'; }
+
+    window.onload = function() {
+        sincronizarPessoasDaNuvem();
+        const op = localStorage.getItem('estande_operador_ativo');
+        if (op) iniciarSessaoOperador(JSON.parse(op));
+    };
+
+    function iniciarSessaoOperador(operador) {
+        document.getElementById('sec-login').style.display = 'none';
+        document.getElementById('app-container').style.display = 'block';
+        document.getElementById('user-status').innerText = `Operador: ${operador.nome}`;
+        document.getElementById('busca-matricula').value = operador.matricula;
+    }
+
+    async function sincronizarPessoasDaNuvem() {
+        if (URL_WEB_APP && URL_WEB_APP.startsWith("https://script.google.com")) {
+            try {
+                const res = await fetch(URL_WEB_APP);
+                if (res.ok) {
+                    const pessoasNuvem = await res.json();
+                    for (let mat in pessoasNuvem) {
+                        if (pessoasExcluidas.includes(mat)) { delete pessoasNuvem[mat]; continue; }
+                        if (dbPessoas[mat] && dbPessoas[mat].senha) pessoasNuvem[mat].senha = dbPessoas[mat].senha;
+                    }
+                    dbPessoas = { ...dbPessoas, ...pessoasNuvem };
+                    localStorage.setItem('estande_pessoas', JSON.stringify(dbPessoas));
+                }
+            } catch (e) {}
+        }
+    }
+
+    async function iniciarWebcam() {
+        try {
+            mediaStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" }, audio: false });
+            document.getElementById('webcam-video').srcObject = mediaStream;
+            document.getElementById('webcam-box').style.display = 'block';
+        } catch (err) {
+            mostrarAlerta("Utilize o botão 'Galeria' para escolher uma foto.");
+        }
+    }
+
+    function capturarFotoWebcam() {
+        const video = document.getElementById('webcam-video');
+        const canvas = document.createElement('canvas');
+        canvas.width = video.videoWidth || 280; canvas.height = video.videoHeight || 210;
+        canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
+        otimizarFoto(canvas.toDataURL('image/jpeg'), function(f) {
+            fotoBase64 = f;
+            document.getElementById('img-preview').src = fotoBase64;
+            document.getElementById('img-preview').style.display = 'inline-block';
+        });
+        pararWebcam();
+    }
+
+    function pararWebcam() {
+        if (mediaStream) { mediaStream.getTracks().forEach(t => t.stop()); mediaStream = null; }
+        document.getElementById('webcam-box').style.display = 'none';
+    }
+
+    function voltarParaBusca() { pararWebcam(); showSection('sec-busca'); }
+
+    function irParaPrimeiroAcesso() {
+        const mat = prompt("Digite a sua matrícula:");
+        if (mat) {
+            document.getElementById('sec-login').style.display = 'none';
+            document.getElementById('app-container').style.display = 'block';
+            document.getElementById('cad-matricula').value = mat.trim();
+            document.getElementById('form-cadastro').reset();
+            fotoBase64 = ""; document.getElementById('img-preview').style.display = 'none';
+            showSection('sec-cadastro');
+        }
+    }
+
+    function autenticarOperador(e) {
+        e.preventDefault();
+        const mat = document.getElementById('login-usuario').value.trim();
+        const senha = document.getElementById('login-senha').value;
+
+        if (dbPessoas[mat]) {
+            if (dbPessoas[mat].senha === senha || !dbPessoas[mat].senha) {
+                localStorage.setItem('estande_operador_ativo', JSON.stringify(dbPessoas[mat]));
+                iniciarSessaoOperador(dbPessoas[mat]);
+                showSection('sec-busca');
+            } else { mostrarAlerta("Senha incorreta!"); }
+        } else {
+            mostrarConfirmacao("Matrícula não cadastrada. Deseja cadastrar?", function() {
+                document.getElementById('sec-login').style.display = 'none';
+                document.getElementById('app-container').style.display = 'block';
+                document.getElementById('cad-matricula').value = mat;
+                showSection('sec-cadastro');
+            });
+        }
+    }
+
+    function solicitarEncerramentoSessao() {
+        mostrarConfirmacao("Deseja sair do aplicativo?", function() {
+            localStorage.removeItem('estande_operador_ativo');
+            document.getElementById('app-container').style.display = 'none';
+            document.getElementById('sec-login').style.display = 'flex';
+        });
+    }
+
+    function showSection(id) {
+        document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+        if(id === 'sec-relatorios') carregarRelatorios();
+    }
+
+    function solicitarAcessoAdmin() {
+        if (isAdmin) showSection('sec-relatorios');
+        else document.getElementById('modal-auth').style.display = 'flex';
+    }
+
+    function validarSenhaAdmin() {
+        if (document.getElementById('input-senha-admin').value === SENHA_ADMIN) {
+            isAdmin = true; fecharModal('modal-auth'); showSection('sec-relatorios');
+        } else { mostrarAlerta('Senha incorreta!'); }
+    }
+
+    function toggleArmaParticular() {
+        document.getElementById('box-particular').style.display = (document.getElementById('cad-tem-particular').value === 'Sim') ? 'block' : 'none';
+    }
+
+    function toggleCautela() {
+        document.getElementById('box-cautela').style.display = (document.getElementById('cad-tem-cautela').value === 'Sim') ? 'block' : 'none';
+    }
+
+    function previewFoto(e) {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(evt) {
+                otimizarFoto(evt.target.result, function(f) {
+                    fotoBase64 = f;
+                    document.getElementById('img-preview').src = fotoBase64;
+                    document.getElementById('img-preview').style.display = 'inline-block';
+                });
+            };
+            reader.readAsDataURL(file);
+        }
+    }
+
+    function buscarMatricula(e) {
+        e.preventDefault();
+        const mat = document.getElementById('busca-matricula').value.trim();
+        if (dbPessoas[mat]) {
+            const aberto = dbAcessos.find(a => a.matricula === mat && a.horaOut === 'Em andamento');
+            if (aberto) abrirSaidaDiaria(aberto); else abrirAcessoDiario(mat);
+        } else {
+            document.getElementById('cad-matricula').value = mat;
+            showSection('sec-cadastro');
+        }
+    }
+
+    function salvarCadastro(e) {
+        e.preventDefault();
+        const mat = document.getElementById('cad-matricula').value;
+        const pessoaData = {
+            tipo: 'pessoa', matricula: mat,
+            nome: document.getElementById('cad-nome').value,
+            cargo: document.getElementById('cad-cargo').value,
+            senha: document.getElementById('cad-senha').value,
+            foto: fotoBase64 || '',
+            temParticular: document.getElementById('cad-tem-particular').value,
+            craf: document.getElementById('cad-craf').value || 'N/A',
+            particularDesc: document.getElementById('cad-particular-desc').value || 'N/A',
+            temCautela: document.getElementById('cad-tem-cautela').value,
+            numCautela: document.getElementById('cad-num-cautela').value || 'N/A',
+            institucionalDesc: document.getElementById('cad-institucional-desc').value || 'N/A'
+        };
+
+        dbPessoas[mat] = pessoaData;
+        localStorage.setItem('estande_pessoas', JSON.stringify(dbPessoas));
+
+        if (URL_WEB_APP && URL_WEB_APP.startsWith("https://script.google.com")) {
+            fetch(URL_WEB_APP, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain' }, body: JSON.stringify(pessoaData) });
+        }
+
+        mostrarAlerta('Cadastro salvo com sucesso!');
+        abrirAcessoDiario(mat);
+    }
+
+    function abrirAcessoDiario(mat) {
+        const p = dbPessoas[mat];
+        document.getElementById('acesso-matricula').value = mat;
+        const avatar = p.foto ? `<img src="${p.foto}" class="user-avatar">` : `<div class="user-avatar"></div>`;
+        document.getElementById('servidor-info').innerHTML = `${avatar}<div><strong>${p.nome}</strong> (${p.cargo})<br><small>Matrícula: ${p.matricula}</small></div>`;
+        document.getElementById('acesso-data').value = new Date().toISOString().split('T')[0];
+        document.getElementById('acesso-hora-in').value = new Date().toTimeString().substring(0, 5);
+        showSection('sec-acesso');
+    }
+
+    async function salvarAcessoDiario(e) {
+        e.preventDefault();
+        const mat = document.getElementById('acesso-matricula').value;
+        const p = dbPessoas[mat];
+        const acessoData = {
+            tipo: 'acesso', id: Date.now(), data: document.getElementById('acesso-data').value,
+            horaIn: document.getElementById('acesso-hora-in').value, horaOut: 'Em andamento',
+            matricula: mat, nome: p.nome,
+            tipoArma: document.getElementById('acesso-tipo-arma').value,
+            serieArma: document.getElementById('acesso-serie-arma').value,
+            calibre: document.getElementById('acesso-calibre').value,
+            municao: document.getElementById('acesso-municao').value,
+            supervisor: document.getElementById('acesso-supervisor').value,
+            obs: document.getElementById('acesso-obs').value || '-'
+        };
+
+        dbAcessos.unshift(acessoData);
+        localStorage.setItem('estande_acessos', JSON.stringify(dbAcessos));
+
+        if (URL_WEB_APP && URL_WEB_APP.startsWith("https://script.google.com")) {
+            fetch(URL_WEB_APP, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain' }, body: JSON.stringify(acessoData) });
+        }
+
+        mostrarAlerta('Entrada registrada com sucesso!');
+        showSection('sec-busca');
+    }
+
+    function abrirSaidaDiaria(acesso) {
+        document.getElementById('saida-acesso-id').value = acesso.id;
+        document.getElementById('saida-matricula').value = acesso.matricula;
+        document.getElementById('saida-servidor-info').innerHTML = `<div>⚠️ <strong>Sessão em aberto!</strong><br>${acesso.nome} (${acesso.data} às ${acesso.horaIn})</div>`;
+        document.getElementById('saida-hora-out').value = new Date().toTimeString().substring(0, 5);
+        document.getElementById('saida-municao').value = acesso.municao;
+        showSection('sec-saida');
+    }
+
+    async function salvarSaidaDiaria(e) {
+        e.preventDefault();
+        const idAcesso = parseInt(document.getElementById('saida-acesso-id').value);
+        const idx = dbAcessos.findIndex(a => a.id === idAcesso);
+
+        if (idx !== -1) {
+            dbAcessos[idx].horaOut = document.getElementById('saida-hora-out').value;
+            dbAcessos[idx].municao = document.getElementById('saida-municao').value;
+            dbAcessos[idx].obs += ` | [Saída]: ${document.getElementById('saida-obs').value || 'OK'}`;
+            localStorage.setItem('estande_acessos', JSON.stringify(dbAcessos));
+
+            if (URL_WEB_APP && URL_WEB_APP.startsWith("https://script.google.com")) {
+                fetch(URL_WEB_APP, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain' }, body: JSON.stringify({ tipo: 'acesso', ...dbAcessos[idx] }) });
+            }
+        }
+
+        mostrarAlerta('Saída registrada com sucesso!');
+        showSection('sec-busca');
+    }
+
+    function carregarRelatorios() {
+        let totalMunicao = 0, emAndamento = 0;
+        dbAcessos.forEach(a => {
+            totalMunicao += parseInt(a.municao || 0);
+            if (a.horaOut === 'Em andamento') emAndamento++;
+        });
+
+        document.getElementById('dash-total-acessos').innerText = dbAcessos.length;
+        document.getElementById('dash-em-andamento').innerText = emAndamento;
+        document.getElementById('dash-municao-total').innerText = totalMunicao;
+        document.getElementById('dash-total-pessoas').innerText = Object.keys(dbPessoas).length;
+
+        const tbody = document.querySelector('#tbl-acessos tbody');
+        tbody.innerHTML = '';
+        dbAcessos.forEach(a => {
+            tbody.innerHTML += `<tr><td>${a.data}</td><td>${a.nome}</td><td>${a.horaIn} / ${a.horaOut}</td><td>${a.municao} un</td></tr>`;
+        });
+    }
+</script>
+</body>
+</html>
