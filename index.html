@@ -1,9 +1,20 @@
+<!-- 
+===================================================================
+  SISTEMA SIGET - CONTROLADOR DE ACESSO AO ESTANDE DE TIRO (GCM)
+  -----------------------------------------------------------------
+  HISTÓRICO DE VERSÕES:
+  - v1.3.0 (15/09/2026): Módulo de Múltiplas Armas por Servidor, Anexo de CRAF (Foto/PDF) e Rastro de Versão.
+  - v1.2.0 (10/09/2026): Autenticação de Operadores, Foto de Perfil e Recuperação de Senha.
+  - v1.1.0 (05/09/2026): Integração automática com Google Sheets via Apps Script.
+  - v1.0.0 (01/09/2026): Lançamento da versão inicial.
+===================================================================
+-->
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>SIGET Mobile - GCM Mariana</title>
+    <title>SIGET Mobile - GCM Mariana v1.3.0</title>
     
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#070d19">
@@ -143,6 +154,18 @@
         header p {
             color: #a0b2ce;
             font-size: 0.8rem;
+        }
+
+        /* BADGE DE VERSÃO DO SISTEMA */
+        .version-badge {
+            background: var(--accent-color);
+            color: #0b1325;
+            font-size: 0.7rem;
+            font-weight: bold;
+            padding: 2px 6px;
+            border-radius: 4px;
+            margin-left: 5px;
+            display: inline-block;
         }
 
         nav {
@@ -393,7 +416,6 @@
             color: var(--accent-color);
         }
 
-        /* ESTILO DO CARD DE ARMACÃO DINÂMICA */
         .arma-card-item {
             background: rgba(11, 19, 37, 0.8);
             border: 1px dashed var(--accent-color);
@@ -437,7 +459,7 @@
     <div class="login-box">
         <div class="login-brand">SIGET</div>
         <div class="login-divider"></div>
-        <div class="login-sub">ESTANDE INSTITUCIONAL DE TIRO</div>
+        <div class="login-sub">ESTANDE INSTITUCIONAL DE TIRO <span class="version-badge">v1.3.0</span></div>
         <div class="login-org">GCM MARIANA — MG</div>
 
         <div class="login-card">
@@ -463,7 +485,7 @@
 <div id="app-container" class="container">
     <header>
         <h1>ESTANDE DE TIRO</h1>
-        <p>GCM Mariana - MG | Versão Mobile & PC</p>
+        <p>GCM Mariana - MG | Versão Mobile & PC <span class="version-badge">v1.3.0</span></p>
     </header>
 
     <nav>
@@ -540,9 +562,7 @@
                     <button type="button" class="btn btn-info" style="width: auto; height: 32px; font-size: 0.8rem; padding: 0 10px;" onclick="adicionarCampoArma()">➕ Adicionar Arma</button>
                 </div>
 
-                <div id="container-armas-lista">
-                    <!-- Os cards das armas serão injetados dinamicamente via JS -->
-                </div>
+                <div id="container-armas-lista"></div>
             </div>
 
             <div class="btn-group-row">
@@ -564,9 +584,7 @@
 
             <div class="form-group">
                 <label>Arma a Utilizar no Treino:</label>
-                <select id="acesso-select-arma" onchange="atualizarCamposArmaSelecionada()" required>
-                    <!-- Opções geradas automaticamente do cadastro do agente -->
-                </select>
+                <select id="acesso-select-arma" onchange="atualizarCamposArmaSelecionada()" required></select>
             </div>
 
             <div class="form-group"><label>Nº Série da Arma:</label><input type="text" id="acesso-serie-arma" required></div>
@@ -712,6 +730,10 @@
 </div>
 
 <script>
+    // CONSTANTE GLOBAL DE VERSÃO
+    const APP_VERSION = "1.3.0";
+    console.log(`[SIGET] Inicializando aplicação na versão ${APP_VERSION}`);
+
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
             navigator.serviceWorker.register('sw.js').catch(err => console.log('SW Erro:', err));
@@ -804,7 +826,6 @@
         }
     }
 
-    /* --- CÂMERA DA FOTO DO SERVIDOR --- */
     async function iniciarWebcamFoto() {
         pararWebcamFoto();
         try {
@@ -857,7 +878,6 @@
         }
     }
 
-    /* --- MÓDULO DE MÚLTIPLAS ARMAS DINÂMICAS --- */
     function adicionarCampoArma(dadosArma = null) {
         const idArma = Date.now() + Math.floor(Math.random() * 1000);
         const objArma = dadosArma || {
@@ -895,7 +915,7 @@
             div.innerHTML = `
                 <button type="button" class="btn-remove-arma" onclick="removerArma(${arma.id})">✖ Remover</button>
                 <div class="form-group" style="margin-bottom:8px;">
-                    <label style="font-size:0.8rem;">Tipo / Vinculo (Arma #${index + 1}):</label>
+                    <label style="font-size:0.8rem;">Tipo / Vínculo (Arma #${index + 1}):</label>
                     <select onchange="atualizarDadosArma(${arma.id}, 'tipo', this.value); alternarCamposArmaItem(${arma.id}, this.value)">
                         <option value="Particular" ${arma.tipo === 'Particular' ? 'selected' : ''}>Arma Particular</option>
                         <option value="Cautela Fixa (Institucional)" ${arma.tipo === 'Cautela Fixa (Institucional)' ? 'selected' : ''}>Cautela Fixa (Institucional)</option>
@@ -1216,12 +1236,11 @@
         const avatar = p.foto ? `<img src="${p.foto}" class="user-avatar">` : `<div class="user-avatar"></div>`;
         document.getElementById('servidor-info').innerHTML = `${avatar}<div><strong>${p.nome}</strong> (${p.cargo})<br><small>Matrícula: ${p.matricula}</small></div>`;
         
-        // Popular o Select de Armas com as armas do servidor + opção avulsa/sem arma
         const selectArma = document.getElementById('acesso-select-arma');
         selectArma.innerHTML = '';
 
         if (p.armas && p.armas.length > 0) {
-            p.armas.forEach((a, i) => {
+            p.armas.forEach((a) => {
                 selectArma.innerHTML += `<option value="${a.id}">${a.tipo}: ${a.modelo || 'S/ Mod'} (${a.serie || 'S/ Série'})</option>`;
             });
         }
