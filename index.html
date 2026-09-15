@@ -255,7 +255,7 @@
             width: 100%;
             height: 40px;
             font-size: 0.85rem;
-            margin-bottom: 15px;
+            margin-bottom: 8px;
         }
 
         .tabs {
@@ -391,6 +391,63 @@
             background-color: var(--secondary-color);
             color: var(--accent-color);
         }
+
+        /* ESTILOS DE IMPRESSÃO / GERAR PDF */
+        @media print {
+            body {
+                background-color: #ffffff !important;
+                color: #000000 !important;
+            }
+            #sec-login, nav, header, .tabs, .btn-export, .btn-group-row, #modal-auth, #modal-alert, #modal-confirm, #modal-recuperar, .btn-danger, .btn-info, .btn-key {
+                display: none !important;
+            }
+            .container {
+                display: block !important;
+                padding: 0 !important;
+            }
+            .section {
+                display: none !important;
+            }
+            .section.active {
+                display: block !important;
+            }
+            .print-header {
+                display: block !important;
+                text-align: center;
+                border-bottom: 2px solid #000;
+                padding-bottom: 10px;
+                margin-bottom: 15px;
+            }
+            .print-header h2 {
+                font-size: 16pt;
+                margin-bottom: 4px;
+            }
+            .print-header p {
+                font-size: 10pt;
+            }
+            table {
+                width: 100% !important;
+                border-collapse: collapse !important;
+            }
+            table th, table td {
+                border: 1px solid #000 !important;
+                color: #000 !important;
+                background: none !important;
+                padding: 6px !important;
+                font-size: 9pt !important;
+            }
+        }
+
+        .print-header { display: none; }
+        .ficha-pdf {
+            display: none;
+            background: #fff;
+            color: #000;
+            padding: 20px;
+            border: 2px solid #000;
+            border-radius: 8px;
+            margin-top: 15px;
+        }
     </style>
 </head>
 <body>
@@ -425,7 +482,7 @@
 <div id="app-container" class="container">
     <header>
         <h1>ESTANDE DE TIRO</h1>
-        <p>GCM Mariana - MG | Versão Mobile</p>
+        <p>GCM Mariana - MG | Versão Mobile & PC</p>
     </header>
 
     <nav>
@@ -579,6 +636,11 @@
     </div>
 
     <div id="sec-relatorios" class="section">
+        <div class="print-header">
+            <h2>GUARDA CIVIL MUNICIPAL DE MARIANA - MG</h2>
+            <p>ESTANDE INSTITUCIONAL DE TIRO — RELATÓRIO OFICIAL DE ACESSOS</p>
+        </div>
+
         <h2>Dashboard e Pessoas</h2>
 
         <div class="dash-grid" style="margin-top: 15px;">
@@ -594,7 +656,10 @@
         </div>
 
         <div id="tab-acessos" class="tab-content">
-            <button class="btn btn-export" onclick="exportarCSV('acessos')">Exportar CSV (Acessos)</button>
+            <div style="display: flex; gap: 8px; margin-bottom: 10px;">
+                <button class="btn btn-info btn-export" onclick="gerarPDFLivro()">📄 Exportar PDF (Livro)</button>
+                <button class="btn btn-export" onclick="exportarCSV('acessos')">📊 Exportar CSV</button>
+            </div>
             <div style="overflow-x: auto;">
                 <table id="tbl-acessos">
                     <thead>
@@ -612,7 +677,7 @@
         </div>
 
         <div id="tab-pessoas" class="tab-content" style="display:none;">
-            <button class="btn btn-export" onclick="exportarCSV('pessoas')">Exportar CSV (Pessoas)</button>
+            <button class="btn btn-export" onclick="exportarCSV('pessoas')">📊 Exportar CSV (Pessoas)</button>
             <div style="overflow-x: auto;">
                 <table id="tbl-pessoas">
                     <thead>
@@ -695,7 +760,7 @@
     let isAdmin = false;
     let fotoBase64 = "";
     let mediaStream = null;
-    let cameraFacingMode = "user"; // Padrão Inicial: Frontal ("user" / "environment")
+    let cameraFacingMode = "user";
 
     let dbPessoas = JSON.parse(localStorage.getItem('estande_pessoas')) || {};
     let dbAcessos = JSON.parse(localStorage.getItem('estande_acessos')) || [];
@@ -1164,7 +1229,12 @@
                     <td>${a.nome}<br><small>(${a.matricula})</small></td>
                     <td>In: ${a.horaIn}<br>Out: ${statusSaida}</td>
                     <td>${a.municao} un</td>
-                    <td><button class="btn-danger" onclick="excluirAcesso(${a.id})">Del</button></td>
+                    <td>
+                        <div style="display: flex; gap: 4px;">
+                            <button class="btn-info" onclick="gerarPDFComprovante(${a.id})">📄 PDF</button>
+                            <button class="btn-danger" onclick="excluirAcesso(${a.id})">Del</button>
+                        </div>
+                    </td>
                 </tr>
             `;
         });
@@ -1190,6 +1260,58 @@
         });
     }
 
+    // --- FUNÇÕES DE IMPRESSÃO / GERAÇÃO DE PDF ---
+    function gerarPDFLivro() {
+        window.print();
+    }
+
+    function gerarPDFComprovante(idAcesso) {
+        const a = dbAcessos.find(item => item.id === idAcesso);
+        if (!a) return;
+
+        const win = window.open('', '', 'height=700,width=800');
+        win.document.write(`
+            <html>
+            <head>
+                <title>Comprovante de Acesso - GCM Mariana</title>
+                <style>
+                    body { font-family: Arial, sans-serif; padding: 20px; line-height: 1.6; }
+                    .header { text-align: center; border-bottom: 2px solid #000; padding-bottom: 10px; margin-bottom: 20px; }
+                    .title { font-size: 16pt; font-weight: bold; }
+                    .sub { font-size: 10pt; }
+                    .box { border: 1px solid #000; padding: 15px; border-radius: 6px; margin-bottom: 15px; }
+                    .row { display: flex; justify-content: space-between; margin-bottom: 8px; }
+                    .signatures { margin-top: 50px; display: flex; justify-content: space-between; text-align: center; }
+                    .sig-line { width: 45%; border-top: 1px solid #000; padding-top: 5px; font-size: 9pt; }
+                </style>
+            </head>
+            <body>
+                <div class="header">
+                    <div class="title">GUARDA CIVIL MUNICIPAL DE MARIANA - MG</div>
+                    <div class="sub">ESTANDE INSTITUCIONAL DE TIRO — COMPROVANTE DE ACESSO</div>
+                </div>
+                <div class="box">
+                    <div class="row"><strong>Data:</strong> <span>${a.data}</span></div>
+                    <div class="row"><strong>Servidor:</strong> <span>${a.nome} (Matrícula: ${a.matricula})</span></div>
+                    <div class="row"><strong>Horário Entrada:</strong> <span>${a.horaIn}</span></div>
+                    <div class="row"><strong>Horário Saída:</strong> <span>${a.horaOut}</span></div>
+                    <div class="row"><strong>Arma:</strong> <span>${a.tipoArma} (Série: ${a.serieArma} / Calibre: ${a.calibre})</span></div>
+                    <div class="row"><strong>Munição Retirada/Deflagrada:</strong> <span>${a.municao} un</span></div>
+                    <div class="row"><strong>Supervisor Responsável:</strong> <span>${a.supervisor}</span></div>
+                    <div class="row"><strong>Observações:</strong> <span>${a.obs}</span></div>
+                </div>
+                <div class="signatures">
+                    <div class="sig-line">Assinatura do Servidor</div>
+                    <div class="sig-line">Assinatura do Supervisor</div>
+                </div>
+            </body>
+            </html>
+        `);
+        win.document.close();
+        win.focus();
+        setTimeout(() => { win.print(); win.close(); }, 500);
+    }
+
     function exportarCSV(tipo) {
         let csvContent = "data:text/csv;charset=utf-8,\uFEFF";
 
@@ -1208,7 +1330,7 @@
         const encodedUri = encodeURI(csvContent);
         const link = document.createElement("a");
         link.setAttribute("href", encodedUri);
-        link.setAttribute("download", `relatorio_${tipo}_estande_mobile.csv`);
+        link.setAttribute("download", `relatorio_${tipo}_estande.csv`);
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
