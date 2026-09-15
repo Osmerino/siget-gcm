@@ -414,8 +414,9 @@
                 </div>
                 <button type="submit" id="btn-login" class="btn-tatico">ENTRAR NO SISTEMA</button>
             </form>
-            <div style="text-align: center; margin-top: 15px;">
-                <a href="#" style="color: var(--accent-color); font-size: 0.8rem;" onclick="irParaPrimeiroAcesso()">Primeiro acesso? Cadastre-se aqui</a>
+            <div style="display: flex; justify-content: space-between; margin-top: 15px; font-size: 0.78rem;">
+                <a href="#" style="color: var(--accent-color);" onclick="irParaPrimeiroAcesso()">Primeiro acesso?</a>
+                <a href="#" style="color: #a0b2ce;" onclick="abrirModalRecuperacao()">Esqueceu a senha?</a>
             </div>
         </div>
     </div>
@@ -626,6 +627,28 @@
     </div>
 </div>
 
+<!-- MODAL RECUPERAÇÃO DE SENHA -->
+<div id="modal-recuperar" class="modal">
+    <div class="modal-content">
+        <h3>Recuperar Senha</h3>
+        <p style="margin: 10px 0; font-size: 0.8rem; color: #a0b2ce;">Requer validação do Supervisor/Admin:</p>
+        <div class="form-group">
+            <label>Sua Matrícula:</label>
+            <input type="text" id="rec-matricula" placeholder="Ex: 16061">
+        </div>
+        <div class="form-group">
+            <label>Chave do Supervisor:</label>
+            <input type="password" id="rec-chave-admin" placeholder="Chave de Autorização">
+        </div>
+        <div class="form-group">
+            <label>Nova Senha:</label>
+            <input type="password" id="rec-nova-senha" placeholder="••••••••">
+        </div>
+        <button class="btn" onclick="processarRecuperacaoSenha()">Redefinir Senha</button>
+        <button class="btn btn-danger" style="margin-top: 8px; width: 100%;" onclick="fecharModal('modal-recuperar')">Cancelar</button>
+    </div>
+</div>
+
 <div id="modal-auth" class="modal">
     <div class="modal-content">
         <h3>Autenticação Admin</h3>
@@ -675,12 +698,11 @@
     let dbAcessos = JSON.parse(localStorage.getItem('estande_acessos')) || [];
     let pessoasExcluidas = JSON.parse(localStorage.getItem('estande_pessoas_excluidas')) || [];
 
-    // --- OTIMIZADOR DE FOTO REDUZIDO PARA MOBILE ---
     function otimizarFoto(srcBase64, callback) {
         const img = new Image();
         img.onload = function() {
             const canvas = document.createElement('canvas');
-            const maxDimension = 120; // Reduzido para garantir carregamento leve no celular
+            const maxDimension = 120;
             let width = img.width;
             let height = img.height;
 
@@ -734,8 +756,6 @@
                     const pessoasNuvem = await res.json();
                     for (let mat in pessoasNuvem) {
                         if (pessoasExcluidas.includes(mat)) { delete pessoasNuvem[mat]; continue; }
-                        
-                        // Preserva a foto local se a foto da nuvem vier vazia
                         if (dbPessoas[mat] && dbPessoas[mat].foto && !pessoasNuvem[mat].foto) {
                             pessoasNuvem[mat].foto = dbPessoas[mat].foto;
                         }
@@ -787,6 +807,45 @@
             document.getElementById('form-cadastro').reset();
             fotoBase64 = ""; document.getElementById('img-preview').style.display = 'none';
             showSection('sec-cadastro');
+        }
+    }
+
+    function abrirModalRecuperacao() {
+        document.getElementById('rec-matricula').value = '';
+        document.getElementById('rec-chave-admin').value = '';
+        document.getElementById('rec-nova-senha').value = '';
+        document.getElementById('modal-recuperar').style.display = 'flex';
+    }
+
+    async function processarRecuperacaoSenha() {
+        const mat = document.getElementById('rec-matricula').value.trim();
+        const chave = document.getElementById('rec-chave-admin').value;
+        const novaSenha = document.getElementById('rec-nova-senha').value;
+
+        if (!mat || !chave || !novaSenha) {
+            mostrarAlerta('Preencha todos os campos!');
+            return;
+        }
+
+        if (chave !== SENHA_ADMIN) {
+            mostrarAlerta('Chave do Supervisor incorreta!');
+            return;
+        }
+
+        await sincronizarPessoasDaNuvem();
+
+        if (dbPessoas[mat]) {
+            dbPessoas[mat].senha = novaSenha;
+            localStorage.setItem('estande_pessoas', JSON.stringify(dbPessoas));
+
+            if (URL_WEB_APP && URL_WEB_APP.startsWith("https://script.google.com")) {
+                fetch(URL_WEB_APP, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain' }, body: JSON.stringify(dbPessoas[mat]) });
+            }
+
+            fecharModal('modal-recuperar');
+            mostrarAlerta('Senha redefinida com sucesso! Você já pode fazer login.');
+        } else {
+            mostrarAlerta('Matrícula não cadastrada no sistema!');
         }
     }
 
@@ -926,6 +985,11 @@
         if (novaSenha && novaSenha.trim() !== '') {
             dbPessoas[matricula].senha = novaSenha.trim();
             localStorage.setItem('estande_pessoas', JSON.stringify(dbPessoas));
+
+            if (URL_WEB_APP && URL_WEB_APP.startsWith("https://script.google.com")) {
+                fetch(URL_WEB_APP, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain' }, body: JSON.stringify(dbPessoas[matricula]) });
+            }
+
             mostrarAlerta(`Senha alterada com sucesso!`);
             carregarRelatorios();
         }
@@ -979,7 +1043,6 @@
         dbPessoas[mat] = pessoaData;
         localStorage.setItem('estande_pessoas', JSON.stringify(dbPessoas));
 
-        // Atualiza a sessão ativa se for o próprio operador logado
         const opAtivo = JSON.parse(localStorage.getItem('estande_operador_ativo') || '{}');
         if (opAtivo.matricula === mat) {
             localStorage.setItem('estande_operador_ativo', JSON.stringify(pessoaData));
