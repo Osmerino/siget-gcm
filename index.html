@@ -150,8 +150,19 @@
         .btn-success { background-color: var(--accent-color); }
         .btn-success:hover { background-color: #219150; }
 
-        .btn-danger { background-color: var(--danger-color); color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; }
+        .btn-warning { background-color: #f39c12; color: white; border: none; padding: 5px 8px; border-radius: 4px; cursor: pointer; }
+        .btn-warning:hover { background-color: #d68910; }
+
+        .btn-info { background-color: #2980b9; color: white; border: none; padding: 5px 8px; border-radius: 4px; cursor: pointer; }
+        .btn-info:hover { background-color: #2471a3; }
+
+        .btn-danger { background-color: var(--danger-color); color: white; border: none; padding: 5px 8px; border-radius: 4px; cursor: pointer; }
         .btn-danger:hover { background-color: #a93226; }
+
+        .action-btns {
+            display: flex;
+            gap: 4px;
+        }
 
         .btn-export {
             width: auto;
@@ -470,10 +481,8 @@
                             <th>Matrícula</th>
                             <th>Nome</th>
                             <th>Cargo</th>
-                            <th>Arma Particular / CRAF</th>
-                            <th>Anexo Particular</th>
+                            <th>Arma Particular</th>
                             <th>Cautela Fixa</th>
-                            <th>Anexo Cautela</th>
                             <th>Ações</th>
                         </tr>
                     </thead>
@@ -592,7 +601,6 @@
         btn.innerText = "Enviando dados...";
 
         const mat = document.getElementById('cad-matricula').value;
-
         const particularAnexoInput = document.getElementById('cad-particular-anexo');
         const cautelaAnexoInput = document.getElementById('cad-cautela-anexo');
 
@@ -615,13 +623,12 @@
         dbPessoas[mat] = pessoaData;
         localStorage.setItem('estande_pessoas', JSON.stringify(dbPessoas));
 
-        if (URL_WEB_APP && URL_WEB_APP !== "SUA_URL_DO_WEB_APP_AQUI") {
+        if (URL_WEB_APP) {
             try {
                 await fetch(URL_WEB_APP, {
                     method: 'POST',
                     mode: 'no-cors',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(pessoaData)
+                    body: new URLSearchParams(pessoaData)
                 });
             } catch (error) {
                 console.error("Erro ao enviar para a planilha:", error);
@@ -632,6 +639,40 @@
         btn.innerText = "Salvar Cadastro e Continuar";
         alert('Cadastro realizado com sucesso!');
         abrirAcessoDiario(mat);
+    }
+
+    function editarPessoa(mat) {
+        const p = dbPessoas[mat];
+        if (!p) return;
+
+        document.getElementById('cad-matricula').value = p.matricula;
+        document.getElementById('cad-nome').value = p.nome;
+        document.getElementById('cad-cargo').value = p.cargo;
+        
+        fotoBase64 = p.foto || "";
+        const img = document.getElementById('img-preview');
+        if (fotoBase64) {
+            img.src = fotoBase64;
+            img.style.display = 'block';
+        } else {
+            img.style.display = 'none';
+        }
+
+        document.getElementById('cad-tem-particular').value = p.temParticular || 'Não';
+        toggleArmaParticular();
+        if (p.temParticular === 'Sim') {
+            document.getElementById('cad-craf').value = p.craf !== 'N/A' ? p.craf : '';
+            document.getElementById('cad-particular-desc').value = p.particularDesc !== 'N/A' ? p.particularDesc : '';
+        }
+
+        document.getElementById('cad-tem-cautela').value = p.temCautela || 'Não';
+        toggleCautela();
+        if (p.temCautela === 'Sim') {
+            document.getElementById('cad-num-cautela').value = p.numCautela !== 'N/A' ? p.numCautela : '';
+            document.getElementById('cad-institucional-desc').value = p.institucionalDesc !== 'N/A' ? p.institucionalDesc : '';
+        }
+
+        showSection('sec-cadastro');
     }
 
     function abrirAcessoDiario(mat) {
@@ -679,13 +720,12 @@
         dbAcessos.unshift(acessoData);
         localStorage.setItem('estande_acessos', JSON.stringify(dbAcessos));
 
-        if (URL_WEB_APP && URL_WEB_APP !== "SUA_URL_DO_WEB_APP_AQUI") {
+        if (URL_WEB_APP) {
             try {
                 await fetch(URL_WEB_APP, {
                     method: 'POST',
                     mode: 'no-cors',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(acessoData)
+                    body: new URLSearchParams(acessoData)
                 });
             } catch (error) {
                 console.error("Erro ao enviar para a planilha:", error);
@@ -730,9 +770,7 @@
         Object.values(dbPessoas).forEach(p => {
             const fotoHTML = p.foto ? `<img src="${p.foto}" style="width:40px;height:40px;border-radius:50%;object-fit:cover;">` : 'Sem foto';
             const partInfo = p.temParticular === 'Sim' ? `${p.particularDesc} (CRAF: ${p.craf})` : 'Não possui';
-            const partAnexo = p.particularAnexo ? `Anexado (${p.particularAnexo})` : 'Sem anexo';
-            const cautInfo = p.temCautela === 'Sim' ? `${p.institucionalDesc} (Nº Termo: ${p.numCautela})` : 'Não possui';
-            const cautAnexo = p.cautelaAnexo ? `Anexado (${p.cautelaAnexo})` : 'Sem anexo';
+            const cautInfo = p.temCautela === 'Sim' ? `${p.institucionalDesc} (Nº: ${p.numCautela})` : 'Não possui';
             
             tbodyPessoas.innerHTML += `
                 <tr>
@@ -741,10 +779,14 @@
                     <td>${p.nome}</td>
                     <td>${p.cargo}</td>
                     <td>${partInfo}</td>
-                    <td>${partAnexo}</td>
                     <td>${cautInfo}</td>
-                    <td>${cautAnexo}</td>
-                    <td><button class="btn-danger" onclick="excluirPessoa('${p.matricula}')">Excluir</button></td>
+                    <td>
+                        <div class="action-btns">
+                            <button class="btn-info" title="Lançar Entrada" onclick="abrirAcessoDiario('${p.matricula}')">Entrada</button>
+                            <button class="btn-warning" title="Editar Cadastro" onclick="editarPessoa('${p.matricula}')">Editar</button>
+                            <button class="btn-danger" title="Excluir Registro" onclick="excluirPessoa('${p.matricula}')">Excluir</button>
+                        </div>
+                    </td>
                 </tr>
             `;
         });
