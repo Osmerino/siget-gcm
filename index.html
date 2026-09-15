@@ -5,6 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Controle de Acesso - Estande de Tiro</title>
     <style>
+        :root {
+            --primary-color: #1b2a47;
+            --secondary-color: #2c3e50;
+            --accent-color: #27ae60;
+            --danger-color: #c0392b;
+            --bg-color: #f4f6f9;
+            --card-bg: #ffffff;
+            --text-color: #333333;
+            --border-color: #cccccc;
+        }
+
         * {
             box-sizing: border-box;
             margin: 0;
@@ -13,15 +24,15 @@
         }
 
         body {
-            background-color: #f4f6f9;
-            color: #333333;
+            background-color: var(--bg-color);
+            color: var(--text-color);
             padding: 20px;
         }
 
         .container {
             max-width: 950px;
             margin: 0 auto;
-            background: #ffffff;
+            background: var(--card-bg);
             padding: 30px;
             border-radius: 8px;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
@@ -31,11 +42,11 @@
             text-align: center;
             margin-bottom: 25px;
             padding-bottom: 15px;
-            border-bottom: 3px solid #1b2a47;
+            border-bottom: 2px solid var(--primary-color);
         }
 
         header h1 {
-            color: #1b2a47;
+            color: var(--primary-color);
             font-size: 1.8rem;
             margin-bottom: 5px;
         }
@@ -56,7 +67,7 @@
         }
 
         .nav-link {
-            color: #1b2a47;
+            color: var(--primary-color);
             text-decoration: none;
             font-weight: bold;
             cursor: pointer;
@@ -92,7 +103,7 @@
             display: block;
             margin-bottom: 5px;
             font-weight: 600;
-            color: #2c3e50;
+            color: var(--secondary-color);
         }
 
         input[type="text"],
@@ -105,7 +116,7 @@
         textarea {
             width: 100%;
             padding: 10px;
-            border: 1px solid #cccccc;
+            border: 1px solid var(--border-color);
             border-radius: 4px;
             font-size: 1rem;
         }
@@ -120,8 +131,8 @@
         }
 
         .btn {
-            background-color: #1b2a47;
-            color: #ffffff;
+            background-color: var(--primary-color);
+            color: white;
             padding: 12px 20px;
             border: none;
             border-radius: 4px;
@@ -133,25 +144,14 @@
         }
 
         .btn:hover {
-            background-color: #2c3e50;
+            background-color: var(--secondary-color);
         }
 
-        .btn-success { background-color: #27ae60; color: #ffffff; }
+        .btn-success { background-color: var(--accent-color); }
         .btn-success:hover { background-color: #219150; }
 
-        .btn-warning { background-color: #f39c12; color: #ffffff; border: none; padding: 5px 8px; border-radius: 4px; cursor: pointer; }
-        .btn-warning:hover { background-color: #d68910; }
-
-        .btn-info { background-color: #2980b9; color: #ffffff; border: none; padding: 5px 8px; border-radius: 4px; cursor: pointer; }
-        .btn-info:hover { background-color: #2471a3; }
-
-        .btn-danger { background-color: #c0392b; color: #ffffff; border: none; padding: 5px 8px; border-radius: 4px; cursor: pointer; }
+        .btn-danger { background-color: var(--danger-color); color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; }
         .btn-danger:hover { background-color: #a93226; }
-
-        .action-btns {
-            display: flex;
-            gap: 4px;
-        }
 
         .btn-export {
             width: auto;
@@ -163,7 +163,7 @@
 
         .tabs {
             display: flex;
-            border-bottom: 2px solid #cccccc;
+            border-bottom: 2px solid var(--border-color);
             margin-bottom: 20px;
         }
 
@@ -175,8 +175,8 @@
         }
 
         .tab.active {
-            color: #1b2a47;
-            border-bottom: 3px solid #1b2a47;
+            color: var(--primary-color);
+            border-bottom: 3px solid var(--primary-color);
             background: #eef2f5;
         }
 
@@ -194,8 +194,8 @@
         }
 
         table th {
-            background-color: #1b2a47;
-            color: #ffffff;
+            background-color: var(--primary-color);
+            color: white;
         }
 
         table tr:nth-child(even) { background-color: #f9f9f9; }
@@ -205,18 +205,7 @@
             padding: 15px;
             border-radius: 6px;
             margin-bottom: 20px;
-            border-left: 4px solid #1b2a47;
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .user-avatar {
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 2px solid #1b2a47;
+            border-left: 4px solid var(--primary-color);
         }
 
         .clear { clear: both; }
@@ -238,7 +227,7 @@
         }
 
         .modal-content {
-            background: #ffffff;
+            background: white;
             padding: 25px;
             border-radius: 8px;
             max-width: 400px;
@@ -278,7 +267,7 @@
         </form>
     </div>
 
-    <!-- TELA 2: CADASTRO COMPLETO -->
+    <!-- TELA 2: CADASTRO COMPLETO (PRIMEIRO ACESSO) -->
     <div id="sec-cadastro" class="section">
         <h2>Primeiro Acesso - Cadastro Completo</h2>
         <p style="margin-bottom: 15px; color: #e67e22;">Matrícula não localizada. Preencha os dados abaixo para cadastrar.</p>
@@ -294,14 +283,6 @@
                 <div class="form-group">
                     <label>Cargo / Função / Posto:</label>
                     <input type="text" id="cad-cargo" required placeholder="Ex: Agente / Policial">
-                </div>
-            </div>
-
-            <div class="form-group">
-                <label>Foto do Servidor (Perfil):</label>
-                <input type="file" id="cad-foto" accept="image/*" onchange="previewFoto(event)">
-                <div style="margin-top: 8px;">
-                    <img id="img-preview" src="" alt="Foto" style="max-width: 80px; max-height: 80px; display: none; border-radius: 50%;">
                 </div>
             </div>
 
@@ -426,7 +407,7 @@
         </form>
     </div>
 
-    <!-- TELA 4: RELATÓRIOS E EXCLUSÃO -->
+    <!-- TELA 4: RELATÓRIOS E EXCLUSÃO (ÁREA RESTRITA) -->
     <div id="sec-relatorios" class="section">
         <h2>Área Restrita - Relatórios e Exclusão de Dados</h2>
 
@@ -466,12 +447,13 @@
                 <table id="tbl-pessoas">
                     <thead>
                         <tr>
-                            <th>Foto</th>
                             <th>Matrícula</th>
                             <th>Nome</th>
                             <th>Cargo</th>
-                            <th>Arma Particular</th>
+                            <th>Arma Particular / CRAF</th>
+                            <th>Anexo Particular</th>
                             <th>Cautela Fixa</th>
+                            <th>Anexo Cautela</th>
                             <th>Ações</th>
                         </tr>
                     </thead>
@@ -497,11 +479,10 @@
 </div>
 
 <script>
-    const URL_WEB_APP = "https://script.google.com/macros/s/AKfycbwlvX-WgheEjpUN6Y5v71OD87gNJqT35Bpx7cw22G3-rum0vg64w6FXdcswuIzE09Af/exec";
+    const URL_WEB_APP = "SUA_URL_DO_WEB_APP_AQUI"; // Cole a sua URL do Web App do Google Apps Script aqui
 
     const SENHA_ADMIN = "admin123";
     let isAdmin = false;
-    let fotoBase64 = "";
 
     let dbPessoas = JSON.parse(localStorage.getItem('estande_pessoas')) || {};
     let dbAcessos = JSON.parse(localStorage.getItem('estande_acessos')) || [];
@@ -551,20 +532,6 @@
         document.getElementById('box-cautela').style.display = (val === 'Sim') ? 'block' : 'none';
     }
 
-    function previewFoto(event) {
-        const file = event.target.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                fotoBase64 = e.target.result;
-                const img = document.getElementById('img-preview');
-                img.src = fotoBase64;
-                img.style.display = 'block';
-            };
-            reader.readAsDataURL(file);
-        }
-    }
-
     function buscarMatricula(event) {
         event.preventDefault();
         const mat = document.getElementById('busca-matricula').value.trim();
@@ -575,8 +542,6 @@
         } else {
             document.getElementById('cad-matricula').value = mat;
             document.getElementById('form-cadastro').reset();
-            fotoBase64 = "";
-            document.getElementById('img-preview').style.display = 'none';
             toggleArmaParticular();
             toggleCautela();
             showSection('sec-cadastro');
@@ -590,6 +555,7 @@
         btn.innerText = "Enviando dados...";
 
         const mat = document.getElementById('cad-matricula').value;
+
         const particularAnexoInput = document.getElementById('cad-particular-anexo');
         const cautelaAnexoInput = document.getElementById('cad-cautela-anexo');
 
@@ -598,7 +564,6 @@
             matricula: mat,
             nome: document.getElementById('cad-nome').value,
             cargo: document.getElementById('cad-cargo').value,
-            foto: fotoBase64,
             temParticular: document.getElementById('cad-tem-particular').value,
             craf: document.getElementById('cad-craf').value || 'N/A',
             particularDesc: document.getElementById('cad-particular-desc').value || 'N/A',
@@ -612,12 +577,13 @@
         dbPessoas[mat] = pessoaData;
         localStorage.setItem('estande_pessoas', JSON.stringify(dbPessoas));
 
-        if (URL_WEB_APP) {
+        if (URL_WEB_APP && URL_WEB_APP !== "SUA_URL_DO_WEB_APP_AQUI") {
             try {
                 await fetch(URL_WEB_APP, {
                     method: 'POST',
                     mode: 'no-cors',
-                    body: new URLSearchParams(pessoaData)
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(pessoaData)
                 });
             } catch (error) {
                 console.error("Erro ao enviar para a planilha:", error);
@@ -630,48 +596,13 @@
         abrirAcessoDiario(mat);
     }
 
-    function editarPessoa(mat) {
-        const p = dbPessoas[mat];
-        if (!p) return;
-
-        document.getElementById('cad-matricula').value = p.matricula;
-        document.getElementById('cad-nome').value = p.nome;
-        document.getElementById('cad-cargo').value = p.cargo;
-        
-        fotoBase64 = p.foto || "";
-        const img = document.getElementById('img-preview');
-        if (fotoBase64) {
-            img.src = fotoBase64;
-            img.style.display = 'block';
-        } else {
-            img.style.display = 'none';
-        }
-
-        document.getElementById('cad-tem-particular').value = p.temParticular || 'Não';
-        toggleArmaParticular();
-        if (p.temParticular === 'Sim') {
-            document.getElementById('cad-craf').value = p.craf !== 'N/A' ? p.craf : '';
-            document.getElementById('cad-particular-desc').value = p.particularDesc !== 'N/A' ? p.particularDesc : '';
-        }
-
-        document.getElementById('cad-tem-cautela').value = p.temCautela || 'Não';
-        toggleCautela();
-        if (p.temCautela === 'Sim') {
-            document.getElementById('cad-num-cautela').value = p.numCautela !== 'N/A' ? p.numCautela : '';
-            document.getElementById('cad-institucional-desc').value = p.institucionalDesc !== 'N/A' ? p.institucionalDesc : '';
-        }
-
-        showSection('sec-cadastro');
-    }
-
     function abrirAcessoDiario(mat) {
         const p = dbPessoas[mat];
         document.getElementById('acesso-matricula').value = mat;
 
-        let avatarHTML = p.foto ? `<img src="${p.foto}" class="user-avatar" alt="Foto">` : '';
-        let infoHTML = `${avatarHTML}<div><strong>Servidor:</strong> ${p.nome} (${p.cargo}) | <strong>Matrícula:</strong> ${p.matricula}<br>`;
+        let infoHTML = `<strong>Servidor:</strong> ${p.nome} (${p.cargo}) | <strong>Matrícula:</strong> ${p.matricula}<br>`;
         if(p.temParticular === 'Sim') infoHTML += `<small><b>Arma Part.:</b> ${p.particularDesc} (CRAF: ${p.craf})</small><br>`;
-        if(p.temCautela === 'Sim') infoHTML += `<small><b>Cautela Fixa:</b> ${p.institucionalDesc} (Nº: ${p.numCautela})</small></div>`;
+        if(p.temCautela === 'Sim') infoHTML += `<small><b>Cautela Fixa:</b> ${p.institucionalDesc} (Nº: ${p.numCautela})</small>`;
         
         document.getElementById('servidor-info').innerHTML = infoHTML;
 
@@ -709,12 +640,13 @@
         dbAcessos.unshift(acessoData);
         localStorage.setItem('estande_acessos', JSON.stringify(dbAcessos));
 
-        if (URL_WEB_APP) {
+        if (URL_WEB_APP && URL_WEB_APP !== "SUA_URL_DO_WEB_APP_AQUI") {
             try {
                 await fetch(URL_WEB_APP, {
                     method: 'POST',
                     mode: 'no-cors',
-                    body: new URLSearchParams(acessoData)
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(acessoData)
                 });
             } catch (error) {
                 console.error("Erro ao enviar para a planilha:", error);
@@ -757,25 +689,21 @@
         const tbodyPessoas = document.querySelector('#tbl-pessoas tbody');
         tbodyPessoas.innerHTML = '';
         Object.values(dbPessoas).forEach(p => {
-            const fotoHTML = p.foto ? `<img src="${p.foto}" style="width:40px;height:40px;border-radius:50%;object-fit:cover;">` : 'Sem foto';
             const partInfo = p.temParticular === 'Sim' ? `${p.particularDesc} (CRAF: ${p.craf})` : 'Não possui';
-            const cautInfo = p.temCautela === 'Sim' ? `${p.institucionalDesc} (Nº: ${p.numCautela})` : 'Não possui';
+            const partAnexo = p.particularAnexo ? `Anexado (${p.particularAnexo})` : 'Sem anexo';
+            const cautInfo = p.temCautela === 'Sim' ? `${p.institucionalDesc} (Nº Termo: ${p.numCautela})` : 'Não possui';
+            const cautAnexo = p.cautelaAnexo ? `Anexado (${p.cautelaAnexo})` : 'Sem anexo';
             
             tbodyPessoas.innerHTML += `
                 <tr>
-                    <td>${fotoHTML}</td>
                     <td>${p.matricula}</td>
                     <td>${p.nome}</td>
                     <td>${p.cargo}</td>
                     <td>${partInfo}</td>
+                    <td>${partAnexo}</td>
                     <td>${cautInfo}</td>
-                    <td>
-                        <div class="action-btns">
-                            <button class="btn-info" title="Lançar Entrada" onclick="abrirAcessoDiario('${p.matricula}')">Entrada</button>
-                            <button class="btn-warning" title="Editar Cadastro" onclick="editarPessoa('${p.matricula}')">Editar</button>
-                            <button class="btn-danger" title="Excluir Registro" onclick="excluirPessoa('${p.matricula}')">Excluir</button>
-                        </div>
-                    </td>
+                    <td>${cautAnexo}</td>
+                    <td><button class="btn-danger" onclick="excluirPessoa('${p.matricula}')">Excluir</button></td>
                 </tr>
             `;
         });
@@ -806,14 +734,13 @@
                 csvContent += `"${a.data}";"${a.horaIn}";"${a.horaOut}";"${a.matricula}";"${a.nome}";"${a.tipoArma}";"${a.serieArma}";"${a.calibre}";"${a.municao}";"${a.supervisor}";"${a.obs}"\n`;
             });
         } else {
-            csvContent += "Matricula;Nome;Cargo;Status Foto;Arma Particular;Anexo Particular;Cautela Fixa;Anexo Cautela\n";
+            csvContent += "Matricula;Nome;Cargo;Arma Particular;Anexo Particular;Cautela Fixa;Anexo Cautela\n";
             Object.values(dbPessoas).forEach(p => {
-                const fotoStatus = p.foto ? "Foto Cadastrada" : "Sem foto";
                 const partInfo = p.temParticular === 'Sim' ? `${p.particularDesc} (CRAF: ${p.craf})` : 'Não possui';
                 const partAnexo = p.particularAnexo ? `Anexado (${p.particularAnexo})` : 'Sem anexo';
                 const cautInfo = p.temCautela === 'Sim' ? `${p.institucionalDesc} (Nº Termo: ${p.numCautela})` : 'Não possui';
                 const cautAnexo = p.cautelaAnexo ? `Anexado (${p.cautelaAnexo})` : 'Sem anexo';
-                csvContent += `"${p.matricula}";"${p.nome}";"${p.cargo}";"${fotoStatus}";"${partInfo}";"${partAnexo}";"${cautInfo}";"${cautAnexo}"\n`;
+                csvContent += `"${p.matricula}";"${p.nome}";"${p.cargo}";"${partInfo}";"${partAnexo}";"${cautInfo}";"${cautAnexo}"\n`;
             });
         }
 
