@@ -32,7 +32,6 @@
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
         }
 
-        /* TELA DE LOGIN / BUSCA CENTRALIZADA */
         .login-box {
             max-width: 420px;
             margin: 0 auto;
@@ -171,13 +170,11 @@
             transition: background 0.2s, transform 0.1s;
         }
 
-        .btn:hover {
-            background-color: #e5b349;
-        }
+        .btn:hover { background-color: #e5b349; }
+        .btn:active { transform: scale(0.99); }
 
-        .btn:active {
-            transform: scale(0.99);
-        }
+        .btn-secondary { background-color: #1f324d; color: #ffffff; border: 1px solid #2c476e; }
+        .btn-secondary:hover { background-color: #2a4368; }
 
         .btn-success { background-color: #27ae60; color: #ffffff; }
         .btn-success:hover { background-color: #2ebd6e; }
@@ -197,6 +194,48 @@
             font-size: 0.85rem;
             margin-bottom: 15px;
             float: right;
+        }
+
+        /* MÓDULO DE CÂMERA */
+        .camera-box {
+            background: #0a111f;
+            border: 1px solid #1c2d47;
+            padding: 15px;
+            border-radius: 6px;
+            text-align: center;
+        }
+
+        .camera-preview-container {
+            position: relative;
+            width: 100%;
+            max-width: 320px;
+            height: 240px;
+            margin: 10px auto;
+            background: #000;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 2px solid #d1a13e;
+        }
+
+        .camera-preview-container video, 
+        .camera-preview-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .cam-controls {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 10px;
+            flex-wrap: wrap;
+        }
+
+        .cam-controls .btn {
+            width: auto;
+            padding: 8px 15px;
+            font-size: 0.8rem;
         }
 
         .tabs {
@@ -290,21 +329,6 @@
             border: 1px solid #d1a13e;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.8);
         }
-
-        .sub-link {
-            text-align: center;
-            margin-top: 15px;
-        }
-
-        .sub-link a {
-            color: #d1a13e;
-            font-size: 0.8rem;
-            text-decoration: none;
-        }
-
-        .sub-link a:hover {
-            text-decoration: underline;
-        }
     </style>
 </head>
 <body>
@@ -325,7 +349,7 @@
         </div>
     </nav>
 
-    <!-- TELA 1: BUSCA DE MATRÍCULA (LAYOUT CENTRALIZADO TIPO SIGET) -->
+    <!-- TELA 1: BUSCA DE MATRÍCULA -->
     <div id="sec-busca" class="section active">
         <div class="login-box">
             <form id="form-busca" onsubmit="buscarMatricula(event)">
@@ -338,7 +362,7 @@
         </div>
     </div>
 
-    <!-- TELA 2: CADASTRO COMPLETO (PRIMEIRO ACESSO) -->
+    <!-- TELA 2: CADASTRO COMPLETO (COM CÂMERA INTEGRADA) -->
     <div id="sec-cadastro" class="section">
         <h2 style="color: #ffffff; font-size: 1.3rem; margin-bottom: 5px;">Primeiro Acesso - Cadastro Completo</h2>
         <p style="margin-bottom: 20px; color: #d1a13e; font-size: 0.85rem;">Matrícula não localizada. Preencha os dados abaixo para se cadastrar.</p>
@@ -357,11 +381,26 @@
                 </div>
             </div>
 
+            <!-- MÓDULO DE FOTO DA CÂMERA / ARQUIVO -->
             <div class="form-group">
                 <label>Foto do Servidor (Perfil):</label>
-                <input type="file" id="cad-foto" accept="image/*" onchange="previewFoto(event)">
-                <div style="margin-top: 10px;">
-                    <img id="img-preview" src="" alt="Foto" style="max-width: 90px; max-height: 90px; display: none; border-radius: 50%; border: 2px solid #d1a13e;">
+                <div class="camera-box">
+                    <div class="camera-preview-container">
+                        <video id="webcam-video" autoplay playsinline></video>
+                        <img id="img-preview" src="" alt="Foto Capturada" style="display: none;">
+                    </div>
+                    <canvas id="photo-canvas" style="display:none;"></canvas>
+
+                    <div class="cam-controls">
+                        <button type="button" class="btn btn-secondary" onclick="iniciarCamera()">Ligar Câmera</button>
+                        <button type="button" class="btn btn-secondary" onclick="alternarCamera()">Trocar Câmera (Frontal/Traseira)</button>
+                        <button type="button" class="btn" onclick="capturarFoto()">Tirar Foto</button>
+                    </div>
+
+                    <div style="margin-top: 12px; border-top: 1px solid #1c2d47; padding-top: 10px;">
+                        <span style="font-size: 0.75rem; color: #8899a6;">Ou carregue uma foto do dispositivo:</span>
+                        <input type="file" id="cad-foto-file" accept="image/*" onchange="carregarArquivoFoto(event)" style="margin-top: 5px;">
+                    </div>
                 </div>
             </div>
 
@@ -486,7 +525,7 @@
         </form>
     </div>
 
-    <!-- TELA 4: RELATÓRIOS E EXCLUSÃO (ÁREA RESTRITA) -->
+    <!-- TELA 4: RELATÓRIOS E EXCLUSÃO -->
     <div id="sec-relatorios" class="section">
         <h2 style="color: #ffffff; font-size: 1.3rem; margin-bottom: 15px;">Área Restrita - Relatórios e Exclusão</h2>
 
@@ -563,12 +602,20 @@
     let isAdmin = false;
     let fotoBase64 = "";
 
+    // Variáveis da Câmera
+    let currentStream = null;
+    let facingMode = "user"; // "user" = Frontal, "environment" = Traseira
+
     let dbPessoas = JSON.parse(localStorage.getItem('estande_pessoas')) || {};
     let dbAcessos = JSON.parse(localStorage.getItem('estande_acessos')) || [];
 
     function showSection(sectionId) {
         document.querySelectorAll('.section').forEach(sec => sec.classList.remove('active'));
         document.getElementById(sectionId).classList.add('active');
+
+        if (sectionId !== 'sec-cadastro') {
+            pararCamera();
+        }
 
         if(sectionId === 'sec-relatorios') {
             carregarRelatorios();
@@ -611,15 +658,75 @@
         document.getElementById('box-cautela').style.display = (val === 'Sim') ? 'block' : 'none';
     }
 
-    function previewFoto(event) {
+    /* LÓGICA DE GERENCIAMENTO DE CÂMERA */
+    async function iniciarCamera() {
+        pararCamera();
+        const video = document.getElementById('webcam-video');
+        const imgPreview = document.getElementById('img-preview');
+        imgPreview.style.display = 'none';
+        video.style.display = 'block';
+
+        try {
+            currentStream = await navigator.mediaDevices.getUserMedia({
+                video: { facingMode: facingMode, width: { ideal: 640 }, height: { ideal: 480 } },
+                audio: false
+            });
+            video.srcObject = currentStream;
+        } catch (err) {
+            alert("Não foi possível acessar a câmera. Verifique as permissões no navegador.");
+            console.error(err);
+        }
+    }
+
+    function alternarCamera() {
+        facingMode = (facingMode === "user") ? "environment" : "user";
+        iniciarCamera();
+    }
+
+    function capturarFoto() {
+        const video = document.getElementById('webcam-video');
+        const canvas = document.getElementById('photo-canvas');
+        const imgPreview = document.getElementById('img-preview');
+
+        if (!currentStream || video.style.display === 'none') {
+            alert("Ligue a câmera antes de tirar a foto.");
+            return;
+        }
+
+        canvas.width = video.videoWidth || 320;
+        canvas.height = video.videoHeight || 240;
+
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+        fotoBase64 = canvas.toDataURL('image/jpeg', 0.8);
+
+        imgPreview.src = fotoBase64;
+        imgPreview.style.display = 'block';
+        video.style.display = 'none';
+
+        pararCamera();
+    }
+
+    function pararCamera() {
+        if (currentStream) {
+            currentStream.getTracks().forEach(track => track.stop());
+            currentStream = null;
+        }
+    }
+
+    function carregarArquivoFoto(event) {
+        pararCamera();
         const file = event.target.files[0];
         if (file) {
             const reader = new FileReader();
             reader.onload = function(e) {
                 fotoBase64 = e.target.result;
-                const img = document.getElementById('img-preview');
-                img.src = fotoBase64;
-                img.style.display = 'block';
+                const video = document.getElementById('webcam-video');
+                const imgPreview = document.getElementById('img-preview');
+                video.style.display = 'none';
+                imgPreview.src = fotoBase64;
+                imgPreview.style.display = 'block';
             };
             reader.readAsDataURL(file);
         }
@@ -637,9 +744,11 @@
             document.getElementById('form-cadastro').reset();
             fotoBase64 = "";
             document.getElementById('img-preview').style.display = 'none';
+            document.getElementById('webcam-video').style.display = 'block';
             toggleArmaParticular();
             toggleCautela();
             showSection('sec-cadastro');
+            iniciarCamera();
         }
     }
 
@@ -684,6 +793,7 @@
             }
         }
 
+        pararCamera();
         btn.disabled = false;
         btn.innerText = "Salvar Cadastro e Continuar";
         alert('Cadastro realizado com sucesso!');
@@ -700,11 +810,15 @@
         
         fotoBase64 = p.foto || "";
         const img = document.getElementById('img-preview');
+        const video = document.getElementById('webcam-video');
+
         if (fotoBase64) {
             img.src = fotoBase64;
             img.style.display = 'block';
+            video.style.display = 'none';
         } else {
             img.style.display = 'none';
+            video.style.display = 'block';
         }
 
         document.getElementById('cad-tem-particular').value = p.temParticular || 'Não';
