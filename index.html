@@ -176,6 +176,17 @@
         .btn-secondary { background-color: #1f324d; color: #ffffff; border: 1px solid #2c476e; }
         .btn-secondary:hover { background-color: #2a4368; }
 
+        .btn-add {
+            background-color: #1c355e;
+            color: #d1a13e;
+            border: 1px dashed #d1a13e;
+            padding: 8px 15px;
+            font-size: 0.8rem;
+            margin-top: 5px;
+            width: auto;
+        }
+        .btn-add:hover { background-color: #254478; }
+
         .btn-success { background-color: #27ae60; color: #ffffff; }
         .btn-success:hover { background-color: #2ebd6e; }
 
@@ -196,7 +207,6 @@
             float: right;
         }
 
-        /* MÓDULO DE CÂMERA */
         .camera-box {
             background: #0a111f;
             border: 1px solid #1c2d47;
@@ -236,6 +246,28 @@
             width: auto;
             padding: 8px 15px;
             font-size: 0.8rem;
+        }
+
+        .arma-item {
+            background: #0b1424;
+            padding: 12px;
+            border-radius: 5px;
+            border: 1px solid #1f314d;
+            margin-bottom: 10px;
+            position: relative;
+        }
+
+        .btn-remove-item {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: #c0392b;
+            color: #fff;
+            border: none;
+            border-radius: 3px;
+            padding: 2px 6px;
+            font-size: 0.7rem;
+            cursor: pointer;
         }
 
         .tabs {
@@ -362,7 +394,7 @@
         </div>
     </div>
 
-    <!-- TELA 2: CADASTRO COMPLETO (COM CÂMERA INTEGRADA) -->
+    <!-- TELA 2: CADASTRO COMPLETO (COM SUPORTE A MÚLTIPLAS ARMAS) -->
     <div id="sec-cadastro" class="section">
         <h2 style="color: #ffffff; font-size: 1.3rem; margin-bottom: 5px;">Primeiro Acesso - Cadastro Completo</h2>
         <p style="margin-bottom: 20px; color: #d1a13e; font-size: 0.85rem;">Matrícula não localizada. Preencha os dados abaixo para se cadastrar.</p>
@@ -381,7 +413,7 @@
                 </div>
             </div>
 
-            <!-- MÓDULO DE FOTO DA CÂMERA / ARQUIVO -->
+            <!-- FOTO -->
             <div class="form-group">
                 <label>Foto do Servidor (Perfil):</label>
                 <div class="camera-box">
@@ -393,7 +425,7 @@
 
                     <div class="cam-controls">
                         <button type="button" class="btn btn-secondary" onclick="iniciarCamera()">Ligar Câmera</button>
-                        <button type="button" class="btn btn-secondary" onclick="alternarCamera()">Trocar Câmera (Frontal/Traseira)</button>
+                        <button type="button" class="btn btn-secondary" onclick="alternarCamera()">Trocar Câmera</button>
                         <button type="button" class="btn" onclick="capturarFoto()">Tirar Foto</button>
                     </div>
 
@@ -404,7 +436,7 @@
                 </div>
             </div>
 
-            <!-- ARMA PARTICULAR -->
+            <!-- MÚLTIPLAS ARMAS PARTICULARES -->
             <div class="toggle-box">
                 <div class="form-group">
                     <label>Possui Arma Particular?</label>
@@ -414,24 +446,12 @@
                     </select>
                 </div>
                 <div id="box-particular" style="display: none;">
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>Nº do CRAF (Particular):</label>
-                            <input type="text" id="cad-craf">
-                        </div>
-                        <div class="form-group">
-                            <label>Modelo / Calibre (Particular):</label>
-                            <input type="text" id="cad-particular-desc" placeholder="Ex: Pistola 9mm / Glock">
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label>Anexo do CRAF Particular (PDF ou Imagem):</label>
-                        <input type="file" id="cad-particular-anexo" accept="image/*,application/pdf">
-                    </div>
+                    <div id="lista-armas-particulares"></div>
+                    <button type="button" class="btn btn-add" onclick="adicionarCamposArmaParticular()">+ Adicionar Outra Arma Particular</button>
                 </div>
             </div>
 
-            <!-- CAUTELA FIXA INSTITUCIONAL -->
+            <!-- MÚLTIPLAS CAUTELAS FIXAS -->
             <div class="toggle-box">
                 <div class="form-group">
                     <label>Possui Cautela Fixa de Arma Institucional?</label>
@@ -441,20 +461,8 @@
                     </select>
                 </div>
                 <div id="box-cautela" style="display: none;">
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>Nº do Termo de Cautela Fixa:</label>
-                            <input type="text" id="cad-num-cautela">
-                        </div>
-                        <div class="form-group">
-                            <label>Modelo / Calibre (Institucional):</label>
-                            <input type="text" id="cad-institucional-desc" placeholder="Ex: Imbel .40">
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label>Anexo do Termo de Cautela (PDF ou Imagem):</label>
-                        <input type="file" id="cad-cautela-anexo" accept="image/*,application/pdf">
-                    </div>
+                    <div id="lista-armas-cautela"></div>
+                    <button type="button" class="btn btn-add" onclick="adicionarCamposArmaCautela()">+ Adicionar Outra Cautela Fixa</button>
                 </div>
             </div>
 
@@ -488,11 +496,8 @@
             <div class="form-row">
                 <div class="form-group">
                     <label>Arma Utilizada:</label>
-                    <select id="acesso-tipo-arma" required>
-                        <option value="Arma Particular">Arma Particular</option>
-                        <option value="Cautela Fixa (Institucional)">Cautela Fixa (Institucional)</option>
-                        <option value="Cautela Avulsa (Dia)">Cautela Avulsa (Dia)</option>
-                        <option value="Sem Arma / Instrução">Sem Arma / Instrução</option>
+                    <select id="acesso-tipo-arma" required onchange="preencherArmaSelecionada(this.value)">
+                        <option value="">Selecione...</option>
                     </select>
                 </div>
                 <div class="form-group">
@@ -569,8 +574,8 @@
                             <th>Matrícula</th>
                             <th>Nome</th>
                             <th>Cargo</th>
-                            <th>Arma Particular</th>
-                            <th>Cautela Fixa</th>
+                            <th>Armas Particulares</th>
+                            <th>Cautelas Fixas</th>
                             <th>Ações</th>
                         </tr>
                     </thead>
@@ -602,9 +607,8 @@
     let isAdmin = false;
     let fotoBase64 = "";
 
-    // Variáveis da Câmera
     let currentStream = null;
-    let facingMode = "user"; // "user" = Frontal, "environment" = Traseira
+    let facingMode = "user";
 
     let dbPessoas = JSON.parse(localStorage.getItem('estande_pessoas')) || {};
     let dbAcessos = JSON.parse(localStorage.getItem('estande_acessos')) || [];
@@ -650,15 +654,72 @@
 
     function toggleArmaParticular() {
         const val = document.getElementById('cad-tem-particular').value;
-        document.getElementById('box-particular').style.display = (val === 'Sim') ? 'block' : 'none';
+        const box = document.getElementById('box-particular');
+        box.style.display = (val === 'Sim') ? 'block' : 'none';
+        if (val === 'Sim' && document.getElementById('lista-armas-particulares').children.length === 0) {
+            adicionarCamposArmaParticular();
+        }
     }
 
     function toggleCautela() {
         const val = document.getElementById('cad-tem-cautela').value;
-        document.getElementById('box-cautela').style.display = (val === 'Sim') ? 'block' : 'none';
+        const box = document.getElementById('box-cautela');
+        box.style.display = (val === 'Sim') ? 'block' : 'none';
+        if (val === 'Sim' && document.getElementById('lista-armas-cautela').children.length === 0) {
+            adicionarCamposArmaCautela();
+        }
     }
 
-    /* LÓGICA DE GERENCIAMENTO DE CÂMERA */
+    // ADICIONAR MÚLTIPLAS ARMAS PARTICULARES
+    function adicionarCamposArmaParticular(craf = '', desc = '') {
+        const container = document.getElementById('lista-armas-particulares');
+        const div = document.createElement('div');
+        div.className = 'arma-item';
+        div.innerHTML = `
+            <button type="button" class="btn-remove-item" onclick="this.parentElement.remove()">X Remover</button>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Nº do CRAF (Particular):</label>
+                    <input type="text" class="input-part-craf" value="${craf}" required>
+                </div>
+                <div class="form-group">
+                    <label>Modelo / Calibre (Particular):</label>
+                    <input type="text" class="input-part-desc" value="${desc}" placeholder="Ex: Glock 9mm" required>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Anexo do Documento/CRAF (PDF/Imagem):</label>
+                <input type="file" class="input-part-anexo" accept="image/*,application/pdf">
+            </div>
+        `;
+        container.appendChild(div);
+    }
+
+    // ADICIONAR MÚLTIPLAS CAUTELAS FIXAS
+    function adicionarCamposArmaCautela(numTermo = '', desc = '') {
+        const container = document.getElementById('lista-armas-cautela');
+        const div = document.createElement('div');
+        div.className = 'arma-item';
+        div.innerHTML = `
+            <button type="button" class="btn-remove-item" onclick="this.parentElement.remove()">X Remover</button>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Nº do Termo de Cautela:</label>
+                    <input type="text" class="input-caut-num" value="${numTermo}" required>
+                </div>
+                <div class="form-group">
+                    <label>Modelo / Calibre (Institucional):</label>
+                    <input type="text" class="input-caut-desc" value="${desc}" placeholder="Ex: Imbel .40" required>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Anexo do Termo de Cautela (PDF/Imagem):</label>
+                <input type="file" class="input-caut-anexo" accept="image/*,application/pdf">
+            </div>
+        `;
+        container.appendChild(div);
+    }
+
     async function iniciarCamera() {
         pararCamera();
         const video = document.getElementById('webcam-video');
@@ -673,8 +734,7 @@
             });
             video.srcObject = currentStream;
         } catch (err) {
-            alert("Não foi possível acessar a câmera. Verifique as permissões no navegador.");
-            console.error(err);
+            alert("Não foi possível acessar a câmera.");
         }
     }
 
@@ -742,6 +802,8 @@
         } else {
             document.getElementById('cad-matricula').value = mat;
             document.getElementById('form-cadastro').reset();
+            document.getElementById('lista-armas-particulares').innerHTML = '';
+            document.getElementById('lista-armas-cautela').innerHTML = '';
             fotoBase64 = "";
             document.getElementById('img-preview').style.display = 'none';
             document.getElementById('webcam-video').style.display = 'block';
@@ -759,8 +821,26 @@
         btn.innerText = "Enviando dados...";
 
         const mat = document.getElementById('cad-matricula').value;
-        const particularAnexoInput = document.getElementById('cad-particular-anexo');
-        const cautelaAnexoInput = document.getElementById('cad-cautela-anexo');
+
+        // COLETAR TODAS AS ARMAS PARTICULARES
+        const armasParticulares = [];
+        document.querySelectorAll('#lista-armas-particulares .arma-item').forEach(el => {
+            const craf = el.querySelector('.input-part-craf').value;
+            const desc = el.querySelector('.input-part-desc').value;
+            const fileInput = el.querySelector('.input-part-anexo');
+            const anexoName = fileInput.files.length > 0 ? fileInput.files[0].name : '';
+            if (craf && desc) armasParticulares.push({ craf, desc, anexoName });
+        });
+
+        // COLETAR TODAS AS CAUTELAS FIXAS
+        const armasCautela = [];
+        document.querySelectorAll('#lista-armas-cautela .arma-item').forEach(el => {
+            const numTermo = el.querySelector('.input-caut-num').value;
+            const desc = el.querySelector('.input-caut-desc').value;
+            const fileInput = el.querySelector('.input-caut-anexo');
+            const anexoName = fileInput.files.length > 0 ? fileInput.files[0].name : '';
+            if (numTermo && desc) armasCautela.push({ numTermo, desc, anexoName });
+        });
 
         const pessoaData = {
             tipo: 'pessoa',
@@ -769,13 +849,9 @@
             cargo: document.getElementById('cad-cargo').value,
             foto: fotoBase64,
             temParticular: document.getElementById('cad-tem-particular').value,
-            craf: document.getElementById('cad-craf').value || 'N/A',
-            particularDesc: document.getElementById('cad-particular-desc').value || 'N/A',
-            particularAnexo: particularAnexoInput.files.length > 0 ? particularAnexoInput.files[0].name : '',
+            armasParticulares: JSON.stringify(armasParticulares),
             temCautela: document.getElementById('cad-tem-cautela').value,
-            numCautela: document.getElementById('cad-num-cautela').value || 'N/A',
-            institucionalDesc: document.getElementById('cad-institucional-desc').value || 'N/A',
-            cautelaAnexo: cautelaAnexoInput.files.length > 0 ? cautelaAnexoInput.files[0].name : ''
+            armasCautela: JSON.stringify(armasCautela)
         };
 
         dbPessoas[mat] = pessoaData;
@@ -821,18 +897,20 @@
             video.style.display = 'block';
         }
 
+        document.getElementById('lista-armas-particulares').innerHTML = '';
         document.getElementById('cad-tem-particular').value = p.temParticular || 'Não';
         toggleArmaParticular();
-        if (p.temParticular === 'Sim') {
-            document.getElementById('cad-craf').value = p.craf !== 'N/A' ? p.craf : '';
-            document.getElementById('cad-particular-desc').value = p.particularDesc !== 'N/A' ? p.particularDesc : '';
+        if (p.temParticular === 'Sim' && p.armasParticulares) {
+            const listPart = JSON.parse(p.armasParticulares);
+            listPart.forEach(a => adicionarCamposArmaParticular(a.craf, a.desc));
         }
 
+        document.getElementById('lista-armas-cautela').innerHTML = '';
         document.getElementById('cad-tem-cautela').value = p.temCautela || 'Não';
         toggleCautela();
-        if (p.temCautela === 'Sim') {
-            document.getElementById('cad-num-cautela').value = p.numCautela !== 'N/A' ? p.numCautela : '';
-            document.getElementById('cad-institucional-desc').value = p.institucionalDesc !== 'N/A' ? p.institucionalDesc : '';
+        if (p.temCautela === 'Sim' && p.armasCautela) {
+            const listCaut = JSON.parse(p.armasCautela);
+            listCaut.forEach(a => adicionarCamposArmaCautela(a.numTermo, a.desc));
         }
 
         showSection('sec-cadastro');
@@ -843,16 +921,44 @@
         document.getElementById('acesso-matricula').value = mat;
 
         let avatarHTML = p.foto ? `<img src="${p.foto}" class="user-avatar" alt="Foto">` : '';
-        let infoHTML = `${avatarHTML}<div><strong>Servidor:</strong> ${p.nome} (${p.cargo}) | <strong>Matrícula:</strong> ${p.matricula}<br>`;
-        if(p.temParticular === 'Sim') infoHTML += `<small><b>Arma Part.:</b> ${p.particularDesc} (CRAF: ${p.craf})</small><br>`;
-        if(p.temCautela === 'Sim') infoHTML += `<small><b>Cautela Fixa:</b> ${p.institucionalDesc} (Nº: ${p.numCautela})</small></div>`;
-        
+        let infoHTML = `${avatarHTML}<div><strong>Servidor:</strong> ${p.nome} (${p.cargo}) | <strong>Matrícula:</strong> ${p.matricula}</div>`;
         document.getElementById('servidor-info').innerHTML = infoHTML;
+
+        // POPULAR DROPDOWN DE ARMAS DISPONÍVEIS
+        const selectArma = document.getElementById('acesso-tipo-arma');
+        selectArma.innerHTML = '<option value="">Selecione a arma...</option>';
+
+        if (p.temParticular === 'Sim' && p.armasParticulares) {
+            const part = JSON.parse(p.armasParticulares);
+            part.forEach(a => {
+                selectArma.innerHTML += `<option value="Particular:${a.desc}:${a.craf}">Arma Particular - ${a.desc} (CRAF: ${a.craf})</option>`;
+            });
+        }
+
+        if (p.temCautela === 'Sim' && p.armasCautela) {
+            const caut = JSON.parse(p.armasCautela);
+            caut.forEach(a => {
+                selectArma.innerHTML += `<option value="Cautela:${a.desc}:${a.numTermo}">Cautela Fixa - ${a.desc} (Termo: ${a.numTermo})</option>`;
+            });
+        }
+
+        selectArma.innerHTML += `
+            <option value="Cautela Avulsa (Dia)">Cautela Avulsa (Dia)</option>
+            <option value="Sem Arma / Instrução">Sem Arma / Instrução</option>
+        `;
 
         document.getElementById('acesso-data').value = new Date().toISOString().split('T')[0];
         document.getElementById('acesso-hora-in').value = new Date().toTimeString().split(' ')[0].substring(0, 5);
 
         showSection('sec-acesso');
+    }
+
+    function preencherArmaSelecionada(val) {
+        if (val.includes(':')) {
+            const parts = val.split(':');
+            document.getElementById('acesso-serie-arma').value = parts[2] || '';
+            document.getElementById('acesso-calibre').value = parts[1] || '';
+        }
     }
 
     async function salvarAcessoDiario(event) {
@@ -932,17 +1038,27 @@
         tbodyPessoas.innerHTML = '';
         Object.values(dbPessoas).forEach(p => {
             const fotoHTML = p.foto ? `<img src="${p.foto}" style="width:40px;height:40px;border-radius:50%;object-fit:cover;border:1px solid #d1a13e;">` : 'Sem foto';
-            const partInfo = p.temParticular === 'Sim' ? `${p.particularDesc} (CRAF: ${p.craf})` : 'Não possui';
-            const cautInfo = p.temCautela === 'Sim' ? `${p.institucionalDesc} (Nº: ${p.numCautela})` : 'Não possui';
             
+            let partStr = "Não possui";
+            if (p.temParticular === 'Sim' && p.armasParticulares) {
+                const arr = JSON.parse(p.armasParticulares);
+                partStr = arr.map(a => `${a.desc} (CRAF: ${a.craf})`).join('<br>');
+            }
+
+            let cautStr = "Não possui";
+            if (p.temCautela === 'Sim' && p.armasCautela) {
+                const arr = JSON.parse(p.armasCautela);
+                cautStr = arr.map(a => `${a.desc} (Nº Termo: ${a.numTermo})`).join('<br>');
+            }
+
             tbodyPessoas.innerHTML += `
                 <tr>
                     <td>${fotoHTML}</td>
                     <td>${p.matricula}</td>
                     <td>${p.nome}</td>
                     <td>${p.cargo}</td>
-                    <td>${partInfo}</td>
-                    <td>${cautInfo}</td>
+                    <td>${partStr}</td>
+                    <td>${cautStr}</td>
                     <td>
                         <div class="action-btns">
                             <button class="btn-info" title="Lançar Entrada" onclick="abrirAcessoDiario('${p.matricula}')">Entrada</button>
@@ -980,14 +1096,10 @@
                 csvContent += `"${a.data}";"${a.horaIn}";"${a.horaOut}";"${a.matricula}";"${a.nome}";"${a.tipoArma}";"${a.serieArma}";"${a.calibre}";"${a.municao}";"${a.supervisor}";"${a.obs}"\n`;
             });
         } else {
-            csvContent += "Matricula;Nome;Cargo;Status Foto;Arma Particular;Anexo Particular;Cautela Fixa;Anexo Cautela\n";
+            csvContent += "Matricula;Nome;Cargo;Status Foto;Armas Particulares;Cautelas Fixas\n";
             Object.values(dbPessoas).forEach(p => {
                 const fotoStatus = p.foto ? "Foto Cadastrada" : "Sem foto";
-                const partInfo = p.temParticular === 'Sim' ? `${p.particularDesc} (CRAF: ${p.craf})` : 'Não possui';
-                const partAnexo = p.particularAnexo ? `Anexado (${p.particularAnexo})` : 'Sem anexo';
-                const cautInfo = p.temCautela === 'Sim' ? `${p.institucionalDesc} (Nº Termo: ${p.numCautela})` : 'Não possui';
-                const cautAnexo = p.cautelaAnexo ? `Anexado (${p.cautelaAnexo})` : 'Sem anexo';
-                csvContent += `"${p.matricula}";"${p.nome}";"${p.cargo}";"${fotoStatus}";"${partInfo}";"${partAnexo}";"${cautInfo}";"${cautAnexo}"\n`;
+                csvContent += `"${p.matricula}";"${p.nome}";"${p.cargo}";"${fotoStatus}";"${p.armasParticulares || 'Não possui'}";"${p.armasCautela || 'Não possui'}"\n`;
             });
         }
 
