@@ -206,6 +206,17 @@
             border-radius: 6px;
             margin-bottom: 20px;
             border-left: 4px solid var(--primary-color);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .user-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--primary-color);
         }
 
         .clear { clear: both; }
@@ -283,6 +294,14 @@
                 <div class="form-group">
                     <label>Cargo / Função / Posto:</label>
                     <input type="text" id="cad-cargo" required placeholder="Ex: Agente / Policial">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Foto do Servidor (Perfil):</label>
+                <input type="file" id="cad-foto" accept="image/*" onchange="previewFoto(event)">
+                <div style="margin-top: 8px;">
+                    <img id="img-preview" src="" alt="Foto" style="max-width: 80px; max-height: 80px; display: none; border-radius: 50%;">
                 </div>
             </div>
 
@@ -447,6 +466,7 @@
                 <table id="tbl-pessoas">
                     <thead>
                         <tr>
+                            <th>Foto</th>
                             <th>Matrícula</th>
                             <th>Nome</th>
                             <th>Cargo</th>
@@ -479,10 +499,11 @@
 </div>
 
 <script>
-    const URL_WEB_APP = "SUA_URL_DO_WEB_APP_AQUI"; // Cole a sua URL do Web App do Google Apps Script aqui
+    const URL_WEB_APP = "https://script.google.com/macros/s/AKfycbwlvX-WgheEjpUN6Y5v71OD87gNJqT35Bpx7cw22G3-rum0vg64w6FXdcswuIzE09Af/exec"; // Sua URL do Web App
 
     const SENHA_ADMIN = "admin123";
     let isAdmin = false;
+    let fotoBase64 = "";
 
     let dbPessoas = JSON.parse(localStorage.getItem('estande_pessoas')) || {};
     let dbAcessos = JSON.parse(localStorage.getItem('estande_acessos')) || [];
@@ -532,6 +553,20 @@
         document.getElementById('box-cautela').style.display = (val === 'Sim') ? 'block' : 'none';
     }
 
+    function previewFoto(event) {
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                fotoBase64 = e.target.result;
+                const img = document.getElementById('img-preview');
+                img.src = fotoBase64;
+                img.style.display = 'block';
+            };
+            reader.readAsDataURL(file);
+        }
+    }
+
     function buscarMatricula(event) {
         event.preventDefault();
         const mat = document.getElementById('busca-matricula').value.trim();
@@ -542,6 +577,8 @@
         } else {
             document.getElementById('cad-matricula').value = mat;
             document.getElementById('form-cadastro').reset();
+            fotoBase64 = "";
+            document.getElementById('img-preview').style.display = 'none';
             toggleArmaParticular();
             toggleCautela();
             showSection('sec-cadastro');
@@ -564,6 +601,7 @@
             matricula: mat,
             nome: document.getElementById('cad-nome').value,
             cargo: document.getElementById('cad-cargo').value,
+            foto: fotoBase64,
             temParticular: document.getElementById('cad-tem-particular').value,
             craf: document.getElementById('cad-craf').value || 'N/A',
             particularDesc: document.getElementById('cad-particular-desc').value || 'N/A',
@@ -600,9 +638,10 @@
         const p = dbPessoas[mat];
         document.getElementById('acesso-matricula').value = mat;
 
-        let infoHTML = `<strong>Servidor:</strong> ${p.nome} (${p.cargo}) | <strong>Matrícula:</strong> ${p.matricula}<br>`;
+        let avatarHTML = p.foto ? `<img src="${p.foto}" class="user-avatar" alt="Foto">` : '';
+        let infoHTML = `${avatarHTML}<div><strong>Servidor:</strong> ${p.nome} (${p.cargo}) | <strong>Matrícula:</strong> ${p.matricula}<br>`;
         if(p.temParticular === 'Sim') infoHTML += `<small><b>Arma Part.:</b> ${p.particularDesc} (CRAF: ${p.craf})</small><br>`;
-        if(p.temCautela === 'Sim') infoHTML += `<small><b>Cautela Fixa:</b> ${p.institucionalDesc} (Nº: ${p.numCautela})</small>`;
+        if(p.temCautela === 'Sim') infoHTML += `<small><b>Cautela Fixa:</b> ${p.institucionalDesc} (Nº: ${p.numCautela})</small></div>`;
         
         document.getElementById('servidor-info').innerHTML = infoHTML;
 
@@ -689,6 +728,7 @@
         const tbodyPessoas = document.querySelector('#tbl-pessoas tbody');
         tbodyPessoas.innerHTML = '';
         Object.values(dbPessoas).forEach(p => {
+            const fotoHTML = p.foto ? `<img src="${p.foto}" style="width:40px;height:40px;border-radius:50%;object-fit:cover;">` : 'Sem foto';
             const partInfo = p.temParticular === 'Sim' ? `${p.particularDesc} (CRAF: ${p.craf})` : 'Não possui';
             const partAnexo = p.particularAnexo ? `Anexado (${p.particularAnexo})` : 'Sem anexo';
             const cautInfo = p.temCautela === 'Sim' ? `${p.institucionalDesc} (Nº Termo: ${p.numCautela})` : 'Não possui';
@@ -696,6 +736,7 @@
             
             tbodyPessoas.innerHTML += `
                 <tr>
+                    <td>${fotoHTML}</td>
                     <td>${p.matricula}</td>
                     <td>${p.nome}</td>
                     <td>${p.cargo}</td>
@@ -734,13 +775,14 @@
                 csvContent += `"${a.data}";"${a.horaIn}";"${a.horaOut}";"${a.matricula}";"${a.nome}";"${a.tipoArma}";"${a.serieArma}";"${a.calibre}";"${a.municao}";"${a.supervisor}";"${a.obs}"\n`;
             });
         } else {
-            csvContent += "Matricula;Nome;Cargo;Arma Particular;Anexo Particular;Cautela Fixa;Anexo Cautela\n";
+            csvContent += "Matricula;Nome;Cargo;Status Foto;Arma Particular;Anexo Particular;Cautela Fixa;Anexo Cautela\n";
             Object.values(dbPessoas).forEach(p => {
+                const fotoStatus = p.foto ? "Foto Cadastrada" : "Sem foto";
                 const partInfo = p.temParticular === 'Sim' ? `${p.particularDesc} (CRAF: ${p.craf})` : 'Não possui';
                 const partAnexo = p.particularAnexo ? `Anexado (${p.particularAnexo})` : 'Sem anexo';
                 const cautInfo = p.temCautela === 'Sim' ? `${p.institucionalDesc} (Nº Termo: ${p.numCautela})` : 'Não possui';
                 const cautAnexo = p.cautelaAnexo ? `Anexado (${p.cautelaAnexo})` : 'Sem anexo';
-                csvContent += `"${p.matricula}";"${p.nome}";"${p.cargo}";"${partInfo}";"${partAnexo}";"${cautInfo}";"${cautAnexo}"\n`;
+                csvContent += `"${p.matricula}";"${p.nome}";"${p.cargo}";"${fotoStatus}";"${partInfo}";"${partAnexo}";"${cautInfo}";"${cautAnexo}"\n`;
             });
         }
 
