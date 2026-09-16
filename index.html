@@ -392,27 +392,13 @@
             color: var(--accent-color);
         }
 
-        /* BRASÃO E COMPONENTES OFICIAIS DE IMPRESSÃO / PDF */
-        .print-header {
-            display: none;
-            text-align: center;
-            margin-bottom: 20px;
-            border-bottom: 2px solid #000;
-            padding-bottom: 12px;
-        }
-
-        .brasao-gcm {
-            width: 70px;
-            height: 70px;
-            margin-bottom: 8px;
-        }
-
+        /* ESTILOS DE IMPRESSÃO / GERAR PDF */
         @media print {
             body {
                 background-color: #ffffff !important;
                 color: #000000 !important;
             }
-            #sec-login, nav, header, .tabs, .btn-export, .btn-group-row, #modal-auth, #modal-alert, #modal-confirm, #modal-recuperar, .btn-danger, .btn-info, .btn-key, .dash-grid {
+            #sec-login, nav, header, .tabs, .btn-export, .btn-group-row, #modal-auth, #modal-alert, #modal-confirm, #modal-recuperar, .btn-danger, .btn-info, .btn-key {
                 display: none !important;
             }
             .container {
@@ -427,15 +413,17 @@
             }
             .print-header {
                 display: block !important;
+                text-align: center;
+                border-bottom: 2px solid #000;
+                padding-bottom: 10px;
+                margin-bottom: 15px;
             }
             .print-header h2 {
-                font-size: 14pt;
-                color: #000;
-                margin-bottom: 2px;
+                font-size: 16pt;
+                margin-bottom: 4px;
             }
             .print-header p {
-                font-size: 9pt;
-                color: #333;
+                font-size: 10pt;
             }
             table {
                 width: 100% !important;
@@ -446,9 +434,11 @@
                 color: #000 !important;
                 background: none !important;
                 padding: 6px !important;
-                font-size: 8.5pt !important;
+                font-size: 9pt !important;
             }
         }
+
+        .print-header { display: none; }
     </style>
 </head>
 <body>
@@ -637,19 +627,9 @@
     </div>
 
     <div id="sec-relatorios" class="section">
-        <!-- CABEÇALHO OFICIAL DE IMPRESSÃO COM BRASÃO -->
         <div class="print-header">
-            <svg class="brasao-gcm" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
-                <path d="M256 16 L416 80 V224 C416 336 256 480 256 480 C256 480 96 336 96 224 V80 Z" fill="#0b1325" stroke="#d4af37" stroke-width="16"/>
-                <circle cx="256" cy="220" r="80" fill="none" stroke="#d4af37" stroke-width="12"/>
-                <circle cx="256" cy="220" r="40" fill="none" stroke="#d4af37" stroke-width="8"/>
-                <circle cx="256" cy="220" r="12" fill="#d4af37"/>
-                <line x1="256" y1="120" x2="256" y2="320" stroke="#d4af37" stroke-width="8"/>
-                <line x1="156" y1="220" x2="356" y2="220" stroke="#d4af37" stroke-width="8"/>
-            </svg>
-            <h2>ESTADO DE MINAS GERAIS</h2>
-            <h2>GUARDA CIVIL MUNICIPAL DE MARIANA</h2>
-            <p>SIGET — ESTANDE INSTITUCIONAL DE TIRO | LIVRO DE ACESSOS</p>
+            <h2>GUARDA CIVIL MUNICIPAL DE MARIANA - MG</h2>
+            <p>ESTANDE INSTITUCIONAL DE TIRO — RELATÓRIO OFICIAL DE ACESSOS</p>
         </div>
 
         <h2>Dashboard e Pessoas</h2>
@@ -1276,7 +1256,7 @@
         window.print();
     }
 
-    // GERAÇÃO DE COMPROVANTE INDIVIDUAL EM PDF COM BRASÃO
+    // GERAÇÃO DE COMPROVANTE INDIVIDUAL EM PDF
     function gerarPDFComprovante(idAcesso) {
         const a = dbAcessos.find(item => item.id === idAcesso);
         if (!a) return;
@@ -1287,29 +1267,20 @@
             <head>
                 <title>Comprovante de Acesso - GCM Mariana</title>
                 <style>
-                    body { font-family: Arial, sans-serif; padding: 25px; line-height: 1.6; }
+                    body { font-family: Arial, sans-serif; padding: 20px; line-height: 1.6; }
                     .header { text-align: center; border-bottom: 2px solid #000; padding-bottom: 10px; margin-bottom: 20px; }
-                    .brasao { width: 75px; height: 75px; margin-bottom: 8px; }
-                    .title { font-size: 14pt; font-weight: bold; margin-bottom: 2px; }
-                    .sub { font-size: 10pt; font-weight: bold; color: #333; }
+                    .title { font-size: 16pt; font-weight: bold; }
+                    .sub { font-size: 10pt; }
                     .box { border: 1px solid #000; padding: 15px; border-radius: 6px; margin-bottom: 15px; }
-                    .row { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 10pt; }
-                    .signatures { margin-top: 60px; display: flex; justify-content: space-between; text-align: center; }
+                    .row { display: flex; justify-content: space-between; margin-bottom: 8px; }
+                    .signatures { margin-top: 50px; display: flex; justify-content: space-between; text-align: center; }
                     .sig-line { width: 45%; border-top: 1px solid #000; padding-top: 5px; font-size: 9pt; }
                 </style>
             </head>
             <body>
                 <div class="header">
-                    <svg class="brasao" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M256 16 L416 80 V224 C416 336 256 480 256 480 C256 480 96 336 96 224 V80 Z" fill="#0b1325" stroke="#d4af37" stroke-width="16"/>
-                        <circle cx="256" cy="220" r="80" fill="none" stroke="#d4af37" stroke-width="12"/>
-                        <circle cx="256" cy="220" r="40" fill="none" stroke="#d4af37" stroke-width="8"/>
-                        <circle cx="256" cy="220" r="12" fill="#d4af37"/>
-                        <line x1="256" y1="120" x2="256" y2="320" stroke="#d4af37" stroke-width="8"/>
-                        <line x1="156" y1="220" x2="356" y2="220" stroke="#d4af37" stroke-width="8"/>
-                    </svg>
                     <div class="title">GUARDA CIVIL MUNICIPAL DE MARIANA - MG</div>
-                    <div class="sub">SIGET — COMPROVANTE DE REGISTRO E ACESSO AO ESTANDE</div>
+                    <div class="sub">ESTANDE INSTITUCIONAL DE TIRO — COMPROVANTE DE ACESSO</div>
                 </div>
                 <div class="box">
                     <div class="row"><strong>Data:</strong> <span>${a.data}</span></div>
