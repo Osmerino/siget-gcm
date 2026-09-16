@@ -2,128 +2,196 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SIGET - Estande Institucional de Tiro</title>
-    <!-- Biblioteca jsPDF e AutoTable para geração de PDF -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>SIGET Mobile - GCM Mariana</title>
+    
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#070d19">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="SIGET">
+    <link rel="apple-touch-icon" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512' width='512' height='512'><rect width='512' height='512' rx='100' fill='%23070d19'/><circle cx='256' cy='256' r='180' fill='none' stroke='%23d4af37' stroke-width='16'/><circle cx='256' cy='256' r='120' fill='none' stroke='%23d4af37' stroke-width='12'/><circle cx='256' cy='256' r='60' fill='none' stroke='%23d4af37' stroke-width='8'/><circle cx='256' cy='256' r='20' fill='%23d4af37'/><line x1='256' y1='30' x2='256' y2='482' stroke='%23d4af37' stroke-width='12'/><line x1='30' y1='256' x2='482' y2='256' stroke='%23d4af37' stroke-width='12'/></svg>">
+
     <style>
+        :root {
+            --primary-color: #0b1325;
+            --secondary-color: #1b2a47;
+            --accent-color: #d4af37;
+            --warning-color: #e67e22;
+            --danger-color: #c0392b;
+            --info-color: #2980b9;
+            --bg-color: #070d19;
+            --card-bg: rgba(13, 27, 50, 0.95);
+            --text-color: #e0e6ed;
+            --border-color: rgba(212, 175, 55, 0.3);
+        }
+
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            -webkit-tap-highlight-color: transparent;
         }
 
         body {
-            background-color: #080f1d;
-            color: #ffffff;
+            background-color: var(--bg-color);
+            color: var(--text-color);
             min-height: 100vh;
+            padding-bottom: 20px;
+        }
+
+        #sec-login {
             display: flex;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(135deg, #070d19 0%, #0d1b32 100%);
+            color: #ffffff;
+            z-index: 9999;
             justify-content: center;
             align-items: center;
             padding: 20px;
         }
 
-        .container {
+        .login-box {
             width: 100%;
-            max-width: 900px;
-            background: rgba(13, 22, 38, 0.95);
-            border: 1px solid #1a2942;
-            padding: 35px;
-            border-radius: 10px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+            max-width: 400px;
+            text-align: center;
         }
 
-        .login-box {
-            max-width: 420px;
-            margin: 0 auto;
+        .login-brand {
+            font-size: 2.8rem;
+            font-weight: 900;
+            letter-spacing: 2px;
+            color: #ffffff;
+        }
+
+        .login-divider {
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, var(--accent-color) 0%, transparent 100%);
+            margin: 10px 0 15px 0;
+        }
+
+        .login-sub {
+            font-size: 0.75rem;
+            letter-spacing: 1px;
+            color: #a0b2ce;
+            text-transform: uppercase;
+        }
+
+        .login-org {
+            font-size: 0.7rem;
+            color: var(--accent-color);
+            letter-spacing: 1px;
+            margin-bottom: 25px;
+        }
+
+        .login-card {
+            background: rgba(13, 27, 50, 0.85);
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            backdrop-filter: blur(10px);
+            text-align: left;
+        }
+
+        .login-card input {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid var(--border-color);
+            color: #fff;
+            margin-bottom: 15px;
+            height: 48px;
+            font-size: 1rem;
+            padding: 0 12px;
+            border-radius: 6px;
+        }
+
+        .btn-tatico {
+            background: var(--accent-color);
+            color: #0b1325;
+            font-weight: bold;
+            letter-spacing: 1px;
+            border: none;
+            height: 50px;
+            border-radius: 8px;
+            cursor: pointer;
+            width: 100%;
+            font-size: 1rem;
+            transition: all 0.2s;
+        }
+
+        .container {
+            width: 100%;
+            padding: 15px;
+            display: none;
         }
 
         header {
             text-align: center;
-            margin-bottom: 25px;
-            position: relative;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--accent-color);
         }
 
         header h1 {
-            color: #ffffff;
-            font-size: 2.2rem;
-            font-weight: 800;
-            letter-spacing: 2px;
-            margin-bottom: 8px;
+            color: var(--accent-color);
+            font-size: 1.4rem;
+            letter-spacing: 1px;
         }
 
         header p {
-            color: #d1a13e;
+            color: #a0b2ce;
             font-size: 0.8rem;
-            text-transform: uppercase;
-            letter-spacing: 1.5px;
-            font-weight: 600;
-        }
-
-        header::after {
-            content: '';
-            display: block;
-            width: 80%;
-            height: 1px;
-            background: linear-gradient(90deg, transparent, #d1a13e, transparent);
-            margin: 15px auto 0 auto;
         }
 
         nav {
             display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 25px;
-            background: #111c2e;
-            padding: 10px 15px;
-            border-radius: 6px;
-            border: 1px solid #1c2d47;
+            flex-direction: column;
+            gap: 8px;
+            margin-bottom: 20px;
+            background: rgba(27, 42, 71, 0.9);
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            text-align: center;
+        }
+
+        .nav-links-row {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 5px;
+            font-size: 0.85rem;
         }
 
         .nav-link {
-            color: #d1a13e;
+            color: var(--accent-color);
             text-decoration: none;
             font-weight: bold;
-            font-size: 0.85rem;
-            cursor: pointer;
-        }
-
-        .nav-link:hover {
-            text-decoration: underline;
         }
 
         .user-badge {
             font-size: 0.8rem;
-            padding: 4px 10px;
+            padding: 4px 8px;
             border-radius: 4px;
             font-weight: bold;
+            display: inline-block;
         }
 
-        .badge-op { background: #1a2d4a; color: #7ca1d9; border: 1px solid #2a4570; }
-        .badge-admin { background: #1b382b; color: #5cdb95; border: 1px solid #276648; }
+        .badge-op { background: #1b2a47; color: var(--accent-color); border: 1px solid var(--border-color); }
+        .badge-admin { background: #155724; color: #d4edda; border: 1px solid #28a745; }
 
-        .section {
-            display: none;
-        }
+        .section { display: none; }
+        .section.active { display: block; }
 
-        .section.active {
-            display: block;
-        }
-
-        .form-group {
-            margin-bottom: 18px;
-        }
+        .form-group { margin-bottom: 15px; }
 
         label {
             display: block;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
             font-weight: 600;
-            font-size: 0.82rem;
-            color: #d1a13e;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
+            color: var(--accent-color);
+            font-size: 0.9rem;
         }
 
         input[type="text"],
@@ -135,530 +203,482 @@
         select,
         textarea {
             width: 100%;
-            padding: 12px;
-            background: #101929;
-            border: 1px solid #20324f;
-            border-radius: 5px;
-            font-size: 0.95rem;
+            height: 48px;
+            padding: 0 12px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            font-size: 1rem;
             color: #ffffff;
-            outline: none;
-            transition: border-color 0.2s;
         }
 
-        input:focus, select:focus, textarea:focus {
-            border-color: #d1a13e;
+        textarea {
+            height: 80px;
+            padding: 10px 12px;
         }
 
-        .form-row {
+        select option {
+            background-color: #0b1325;
+            color: #ffffff;
+        }
+
+        .btn-group-row {
             display: flex;
-            gap: 15px;
-        }
-
-        .form-row .form-group {
-            flex: 1;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 15px;
         }
 
         .btn {
-            background-color: #d1a13e;
-            color: #080f1d;
-            padding: 13px 20px;
+            background-color: var(--accent-color);
+            color: #0b1325;
+            height: 50px;
             border: none;
-            border-radius: 5px;
-            font-size: 0.95rem;
+            border-radius: 8px;
+            font-size: 1rem;
             cursor: pointer;
             width: 100%;
             font-weight: bold;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            transition: background 0.2s, transform 0.1s;
-        }
-
-        .btn:hover { background-color: #e5b349; }
-        .btn:active { transform: scale(0.99); }
-
-        .btn-secondary { background-color: #1f324d; color: #ffffff; border: 1px solid #2c476e; }
-        .btn-secondary:hover { background-color: #2a4368; }
-
-        .btn-add {
-            background-color: #1c355e;
-            color: #d1a13e;
-            border: 1px dashed #d1a13e;
-            padding: 8px 15px;
-            font-size: 0.8rem;
-            margin-top: 5px;
-            width: auto;
-        }
-        .btn-add:hover { background-color: #254478; }
-
-        .btn-success { background-color: #27ae60; color: #ffffff; }
-        .btn-success:hover { background-color: #2ebd6e; }
-
-        .btn-warning { background-color: #e67e22; color: #ffffff; border: none; padding: 6px 10px; border-radius: 4px; cursor: pointer; font-size: 0.8rem; }
-        .btn-info { background-color: #2980b9; color: #ffffff; border: none; padding: 6px 10px; border-radius: 4px; cursor: pointer; font-size: 0.8rem; }
-        .btn-danger { background-color: #c0392b; color: #ffffff; border: none; padding: 6px 10px; border-radius: 4px; cursor: pointer; font-size: 0.8rem; }
-
-        .action-btns {
             display: flex;
-            gap: 5px;
+            align-items: center;
+            justify-content: center;
         }
 
-        .export-bar {
-            float: right;
-            margin-bottom: 15px;
-            display: flex;
-            gap: 10px;
-        }
+        .btn-secondary { background-color: #4a5568; color: #ffffff; }
+        .btn-success { background-color: #27ae60; color: #fff; }
+        .btn-warning { background-color: var(--warning-color); color: white; }
+        .btn-danger { background-color: var(--danger-color); color: white; height: 36px; font-size: 0.8rem; border-radius: 4px; padding: 0 8px; }
+        .btn-info { background-color: var(--info-color); color: white; height: 36px; font-size: 0.8rem; border-radius: 4px; padding: 0 8px; }
+        .btn-key { background-color: #8e44ad; color: white; height: 36px; font-size: 0.8rem; border-radius: 4px; padding: 0 8px; }
 
         .btn-export {
-            width: auto;
-            padding: 8px 15px;
+            width: 100%;
+            height: 40px;
             font-size: 0.85rem;
-        }
-
-        .camera-box {
-            background: #0a111f;
-            border: 1px solid #1c2d47;
-            padding: 15px;
-            border-radius: 6px;
-            text-align: center;
-        }
-
-        .camera-preview-container {
-            position: relative;
-            width: 100%;
-            max-width: 320px;
-            height: 240px;
-            margin: 10px auto;
-            background: #000;
-            border-radius: 8px;
-            overflow: hidden;
-            border: 2px solid #d1a13e;
-        }
-
-        .camera-preview-container video, 
-        .camera-preview-container img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .cam-controls {
-            display: flex;
-            gap: 10px;
-            justify-content: center;
-            margin-top: 10px;
-            flex-wrap: wrap;
-        }
-
-        .cam-controls .btn {
-            width: auto;
-            padding: 8px 15px;
-            font-size: 0.8rem;
-        }
-
-        .arma-item {
-            background: #0b1424;
-            padding: 12px;
-            border-radius: 5px;
-            border: 1px solid #1f314d;
-            margin-bottom: 10px;
-            position: relative;
-        }
-
-        .btn-remove-item {
-            position: absolute;
-            top: 5px;
-            right: 5px;
-            background: #c0392b;
-            color: #fff;
-            border: none;
-            border-radius: 3px;
-            padding: 2px 6px;
-            font-size: 0.7rem;
-            cursor: pointer;
+            margin-bottom: 8px;
         }
 
         .tabs {
             display: flex;
-            border-bottom: 1px solid #20324f;
-            margin-bottom: 20px;
+            border-bottom: 2px solid var(--border-color);
+            margin-bottom: 15px;
         }
 
         .tab {
-            padding: 10px 20px;
+            flex: 1;
+            text-align: center;
+            padding: 10px 5px;
             cursor: pointer;
             font-weight: bold;
-            color: #8899a6;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
+            color: #a0b2ce;
         }
 
         .tab.active {
-            color: #d1a13e;
-            border-bottom: 2px solid #d1a13e;
-            background: #111c2e;
+            color: var(--accent-color);
+            border-bottom: 3px solid var(--accent-color);
+            background: rgba(27, 42, 71, 0.5);
         }
 
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 10px;
+        .dash-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .dash-card {
+            background: rgba(27, 42, 71, 0.7);
+            border: 1px solid var(--border-color);
+            padding: 12px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .dash-card h3 {
+            font-size: 0.7rem;
+            color: #a0b2ce;
+            text-transform: uppercase;
+        }
+
+        .dash-card .number {
+            font-size: 1.5rem;
+            font-weight: 900;
+            color: var(--accent-color);
+        }
+
+        .user-card, .warning-card {
+            background: rgba(27, 42, 71, 0.7);
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            border-left: 4px solid var(--accent-color);
+            border-top: 1px solid var(--border-color);
+            border-right: 1px solid var(--border-color);
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            gap: 12px;
             font-size: 0.85rem;
         }
 
-        table th, table td {
-            border: 1px solid #1f314d;
-            padding: 10px;
-            text-align: left;
-        }
-
-        table th {
-            background-color: #111c2e;
-            color: #d1a13e;
-            text-transform: uppercase;
-            font-size: 0.75rem;
-            letter-spacing: 0.5px;
-        }
-
-        table tr:nth-child(even) { background-color: #0b1424; }
-
-        .user-card {
-            background: #111c2e;
-            padding: 15px;
-            border-radius: 6px;
-            margin-bottom: 20px;
-            border-left: 4px solid #d1a13e;
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .warning-card {
-            background: #2a1d0d;
-            padding: 15px;
-            border-radius: 6px;
-            margin-bottom: 20px;
-            border-left: 4px solid #e67e22;
-            color: #f39c12;
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
         .user-avatar {
-            width: 60px;
-            height: 60px;
+            width: 55px;
+            height: 55px;
             border-radius: 50%;
             object-fit: cover;
-            border: 2px solid #d1a13e;
+            border: 2px solid var(--accent-color);
+            background: #1b2a47;
+            flex-shrink: 0;
         }
 
-        .clear { clear: both; }
+        .user-avatar-tb {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
 
-        .toggle-box {
-            background: #101a2b;
-            padding: 15px;
+        #webcam-box {
+            display: none;
+            text-align: center;
+            margin-top: 10px;
+            background: #000;
+            padding: 10px;
+            border-radius: 8px;
+        }
+
+        #webcam-video {
+            width: 100%;
+            max-width: 280px;
             border-radius: 6px;
-            margin-bottom: 15px;
-            border: 1px solid #1c2d47;
         }
 
         .modal {
             display: none;
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.8);
+            background: rgba(0, 0, 0, 0.88);
             justify-content: center;
             align-items: center;
-            z-index: 999;
+            z-index: 10000;
+            padding: 20px;
         }
 
         .modal-content {
-            background: #0d1626;
-            padding: 25px;
-            border-radius: 8px;
-            max-width: 400px;
+            background: #0d1b32;
+            color: #fff;
+            padding: 20px;
+            border-radius: 12px;
             width: 100%;
-            border: 1px solid #d1a13e;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.8);
+            max-width: 360px;
+            border: 1px solid var(--border-color);
         }
 
-        .sub-link {
-            text-align: center;
-            margin-top: 15px;
-        }
-
-        .sub-link a {
-            color: #d1a13e;
+        table {
+            width: 100%;
+            border-collapse: collapse;
             font-size: 0.8rem;
-            text-decoration: none;
-            cursor: pointer;
         }
 
-        .sub-link a:hover {
-            text-decoration: underline;
+        table th, table td {
+            border: 1px solid var(--border-color);
+            padding: 8px;
+            text-align: left;
+        }
+
+        table th {
+            background-color: var(--secondary-color);
+            color: var(--accent-color);
+        }
+
+        /* BRASÃO E COMPONENTES OFICIAIS DE IMPRESSÃO / PDF */
+        .print-header {
+            display: none;
+            text-align: center;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #000;
+            padding-bottom: 12px;
+        }
+
+        .brasao-gcm {
+            width: 70px;
+            height: 70px;
+            margin-bottom: 8px;
+        }
+
+        @media print {
+            body {
+                background-color: #ffffff !important;
+                color: #000000 !important;
+            }
+            #sec-login, nav, header, .tabs, .btn-export, .btn-group-row, #modal-auth, #modal-alert, #modal-confirm, #modal-recuperar, .btn-danger, .btn-info, .btn-key, .dash-grid {
+                display: none !important;
+            }
+            .container {
+                display: block !important;
+                padding: 0 !important;
+            }
+            .section {
+                display: none !important;
+            }
+            .section.active {
+                display: block !important;
+            }
+            .print-header {
+                display: block !important;
+            }
+            .print-header h2 {
+                font-size: 14pt;
+                color: #000;
+                margin-bottom: 2px;
+            }
+            .print-header p {
+                font-size: 9pt;
+                color: #333;
+            }
+            table {
+                width: 100% !important;
+                border-collapse: collapse !important;
+            }
+            table th, table td {
+                border: 1px solid #000 !important;
+                color: #000 !important;
+                background: none !important;
+                padding: 6px !important;
+                font-size: 8.5pt !important;
+            }
         }
     </style>
 </head>
 <body>
 
-<div class="container">
+<div id="sec-login">
+    <div class="login-box">
+        <div class="login-brand">SIGET</div>
+        <div class="login-divider"></div>
+        <div class="login-sub">ESTANDE INSTITUCIONAL DE TIRO</div>
+        <div class="login-org">GCM MARIANA — MG</div>
+
+        <div class="login-card">
+            <form onsubmit="autenticarOperador(event)">
+                <div class="form-group">
+                    <label>MATRÍCULA FUNCIONAL:</label>
+                    <input type="text" id="login-usuario" required placeholder="Digite sua matrícula">
+                </div>
+                <div class="form-group">
+                    <label>SENHA DE ACESSO:</label>
+                    <input type="password" id="login-senha" required placeholder="••••••••">
+                </div>
+                <button type="submit" id="btn-login" class="btn-tatico">ENTRAR NO SISTEMA</button>
+            </form>
+            <div style="display: flex; justify-content: space-between; margin-top: 15px; font-size: 0.78rem;">
+                <a href="#" style="color: var(--accent-color);" onclick="irParaPrimeiroAcesso()">Primeiro acesso?</a>
+                <a href="#" style="color: #a0b2ce;" onclick="abrirModalRecuperacao()">Esqueceu a senha?</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="app-container" class="container">
     <header>
-        <h1>SIGET</h1>
-        <p>Estande Institucional de Tiro<br>GCM Mariana — MG</p>
+        <h1>ESTANDE DE TIRO</h1>
+        <p>GCM Mariana - MG | Versão Mobile & PC</p>
     </header>
 
     <nav>
         <div>
-            <span id="user-status" class="user-badge badge-op">Sessão: Operador</span>
+            <span id="user-status" class="user-badge badge-op">Operador Conectado</span>
         </div>
-        <div>
-            <a class="nav-link" onclick="showSection('sec-busca')">Início / Busca</a> | 
-            <a class="nav-link" onclick="solicitarAcessoAdmin()">Ver Relatórios (Área Restrita)</a>
+        <div class="nav-links-row">
+            <a class="nav-link" onclick="showSection('sec-busca')">Início</a> | 
+            <a class="nav-link" onclick="solicitarAcessoAdmin()">Relatórios</a> | 
+            <a class="nav-link" style="color: var(--danger-color);" onclick="solicitarEncerramentoSessao()">Sair</a>
         </div>
     </nav>
 
-    <!-- TELA 1: LOGIN POR MATRÍCULA E SENHA INDIVIDUAL -->
     <div id="sec-busca" class="section active">
-        <div class="login-box">
-            <form id="form-busca" onsubmit="autenticarEBuscar(event)">
-                <div class="form-group">
-                    <label for="busca-matricula">Matrícula Funcional:</label>
-                    <input type="text" id="busca-matricula" required placeholder="Digite sua matrícula">
-                </div>
-
-                <div class="form-group" id="group-senha">
-                    <label for="busca-senha">Senha de Acesso:</label>
-                    <input type="password" id="busca-senha" placeholder="Digite sua senha">
-                </div>
-
-                <button type="submit" class="btn">Entrar no Sistema</button>
-
-                <div class="sub-link">
-                    <a onclick="abrirRecuperacaoSenha()">Esqueceu a senha? Clique aqui para redefinir</a>
-                </div>
-            </form>
-        </div>
+        <h2>Identificação do Servidor</h2>
+        <form id="form-busca" onsubmit="buscarMatricula(event)" style="margin-top: 15px;">
+            <div class="form-group">
+                <label>Matrícula / ID Funcional:</label>
+                <input type="text" id="busca-matricula" required placeholder="Ex: 123456">
+            </div>
+            <button type="submit" class="btn">Verificar Matrícula</button>
+        </form>
     </div>
 
-    <!-- TELA 2: CADASTRO COMPLETO -->
     <div id="sec-cadastro" class="section">
-        <h2 style="color: #ffffff; font-size: 1.3rem; margin-bottom: 5px;">Primeiro Acesso - Cadastro Completo</h2>
-        <p style="margin-bottom: 20px; color: #d1a13e; font-size: 0.85rem;">Matrícula não localizada. Preencha os dados e crie sua senha de acesso abaixo.</p>
+        <h2 id="titulo-cadastro">Cadastro Completo</h2>
         
-        <form id="form-cadastro" onsubmit="salvarCadastro(event)">
+        <form id="form-cadastro" onsubmit="salvarCadastro(event)" style="margin-top: 15px;">
             <input type="hidden" id="cad-matricula">
             
-            <div class="form-row">
-                <div class="form-group">
-                    <label>Nome Completo:</label>
-                    <input type="text" id="cad-nome" required>
-                </div>
-                <div class="form-group">
-                    <label>Cargo / Função / Posto:</label>
-                    <input type="text" id="cad-cargo" required placeholder="Ex: Agente / Guarda Municipal">
-                </div>
-            </div>
-
-            <!-- CRIAÇÃO DE SENHA E SEGURANÇA -->
-            <div class="toggle-box">
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Criar Senha de Acesso:</label>
-                        <input type="password" id="cad-senha" required placeholder="Sua senha">
-                    </div>
-                    <div class="form-group">
-                        <label>Confirmar Senha:</label>
-                        <input type="password" id="cad-senha-conf" required placeholder="Repita a senha">
-                    </div>
-                </div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Pergunta de Segurança (para recuperar senha):</label>
-                        <select id="cad-pergunta" required>
-                            <option value="">Selecione uma pergunta...</option>
-                            <option value="Qual o nome da sua mãe?">Qual o nome da sua mãe?</option>
-                            <option value="Qual o nome da sua primeira escola?">Qual o nome da sua primeira escola?</option>
-                            <option value="Qual a cidade de nascimento do seu pai?">Qual a cidade de nascimento do seu pai?</option>
-                            <option value="Qual o modelo do seu primeiro carro?">Qual o modelo do seu primeiro carro?</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>Resposta Secreta:</label>
-                        <input type="text" id="cad-resposta" required placeholder="Sua resposta secreta">
-                    </div>
-                </div>
-            </div>
-
-            <!-- FOTO DA CÂMERA / ARQUIVO -->
             <div class="form-group">
-                <label>Foto do Servidor (Perfil):</label>
-                <div class="camera-box">
-                    <div class="camera-preview-container">
-                        <video id="webcam-video" autoplay playsinline></video>
-                        <img id="img-preview" src="" alt="Foto Capturada" style="display: none;">
-                    </div>
-                    <canvas id="photo-canvas" style="display:none;"></canvas>
+                <label>Nome Completo:</label>
+                <input type="text" id="cad-nome" required>
+            </div>
 
-                    <div class="cam-controls">
-                        <button type="button" class="btn btn-secondary" onclick="iniciarCamera()">Ligar Câmera</button>
-                        <button type="button" class="btn btn-secondary" onclick="alternarCamera()">Trocar Câmera</button>
-                        <button type="button" class="btn" onclick="capturarFoto()">Tirar Foto</button>
-                    </div>
+            <div class="form-group">
+                <label>Cargo / Função:</label>
+                <input type="text" id="cad-cargo" required placeholder="Ex: Agente">
+            </div>
 
-                    <div style="margin-top: 12px; border-top: 1px solid #1c2d47; padding-top: 10px;">
-                        <span style="font-size: 0.75rem; color: #8899a6;">Ou carregue uma foto do dispositivo:</span>
-                        <input type="file" id="cad-foto-file" accept="image/*" onchange="carregarArquivoFoto(event)" style="margin-top: 5px;">
+            <div class="form-group">
+                <label>Senha de Acesso:</label>
+                <input type="password" id="cad-senha" required placeholder="Crie uma senha">
+            </div>
+
+            <div class="form-group">
+                <label>Foto do Servidor:</label>
+                <div style="display: flex; gap: 8px; margin-bottom: 10px;">
+                    <button type="button" class="btn btn-info" style="flex:1;" onclick="iniciarWebcam()">📷 Câmera</button>
+                    <input type="file" id="cad-foto" accept="image/*" style="display:none;" onchange="previewFoto(event)">
+                    <button type="button" class="btn btn-secondary" style="flex:1; height:38px; font-size:0.85rem;" onclick="document.getElementById('cad-foto').click()">📂 Galeria</button>
+                </div>
+
+                <div id="webcam-box">
+                    <video id="webcam-video" autoplay playsinline></video>
+                    <div style="margin-top: 8px; display: flex; flex-direction: column; gap: 8px;">
+                        <div style="display: flex; gap: 8px;">
+                            <button type="button" class="btn btn-success" style="height: 38px; font-size: 0.85rem; flex: 1;" onclick="capturarFotoWebcam()">📸 Tirar Foto</button>
+                            <button type="button" class="btn btn-key" style="height: 38px; font-size: 0.85rem; flex: 1;" onclick="alternarCamera()">🔄 Alternar Câmera</button>
+                        </div>
+                        <button type="button" class="btn btn-danger" style="height: 38px; font-size: 0.85rem;" onclick="pararWebcam()">Fechar Câmera</button>
                     </div>
+                </div>
+
+                <div style="text-align: center; margin-top: 8px;">
+                    <img id="img-preview" src="" alt="Foto" style="max-width: 100px; max-height: 100px; display: none; border-radius: 50%; border: 2px solid var(--accent-color);">
                 </div>
             </div>
 
-            <!-- MÚLTIPLAS ARMAS PARTICULARES -->
-            <div class="toggle-box">
-                <div class="form-group">
-                    <label>Possui Arma Particular?</label>
-                    <select id="cad-tem-particular" onchange="toggleArmaParticular()">
-                        <option value="Não">Não</option>
-                        <option value="Sim">Sim</option>
-                    </select>
-                </div>
-                <div id="box-particular" style="display: none;">
-                    <div id="lista-armas-particulares"></div>
-                    <button type="button" class="btn btn-add" onclick="adicionarCamposArmaParticular()">+ Adicionar Outra Arma Particular</button>
-                </div>
+            <div class="form-group">
+                <label>Possui Arma Particular?</label>
+                <select id="cad-tem-particular" onchange="toggleArmaParticular()">
+                    <option value="Não">Não</option>
+                    <option value="Sim">Sim</option>
+                </select>
+            </div>
+            <div id="box-particular" style="display: none;">
+                <div class="form-group"><label>Nº do CRAF:</label><input type="text" id="cad-craf"></div>
+                <div class="form-group"><label>Modelo/Calibre:</label><input type="text" id="cad-particular-desc"></div>
             </div>
 
-            <!-- MÚLTIPLAS CAUTELAS FIXAS -->
-            <div class="toggle-box">
-                <div class="form-group">
-                    <label>Possui Cautela Fixa de Arma Institucional?</label>
-                    <select id="cad-tem-cautela" onchange="toggleCautela()">
-                        <option value="Não">Não</option>
-                        <option value="Sim">Sim</option>
-                    </select>
-                </div>
-                <div id="box-cautela" style="display: none;">
-                    <div id="lista-armas-cautela"></div>
-                    <button type="button" class="btn btn-add" onclick="adicionarCamposArmaCautela()">+ Adicionar Outra Cautela Fixa</button>
-                </div>
+            <div class="form-group">
+                <label>Possui Cautela Fixa?</label>
+                <select id="cad-tem-cautela" onchange="toggleCautela()">
+                    <option value="Não">Não</option>
+                    <option value="Sim">Sim</option>
+                </select>
+            </div>
+            <div id="box-cautela" style="display: none;">
+                <div class="form-group"><label>Nº Termo Cautela:</label><input type="text" id="cad-num-cautela"></div>
+                <div class="form-group"><label>Modelo/Calibre:</label><input type="text" id="cad-institucional-desc"></div>
             </div>
 
-            <button type="submit" id="btn-cadastrar" class="btn btn-success">Salvar Cadastro e Continuar</button>
+            <div class="btn-group-row">
+                <button type="button" class="btn btn-secondary" onclick="voltarParaBusca()">← Voltar</button>
+                <button type="submit" id="btn-cadastrar" class="btn btn-success">Salvar Cadastro</button>
+            </div>
         </form>
     </div>
 
-    <!-- TELA 3: REGISTRO DE ENTRADA DIÁRIA -->
     <div id="sec-acesso" class="section">
         <div id="servidor-info" class="user-card"></div>
+        <h2>Entrada no Estande</h2>
 
-        <h2 style="color: #ffffff; font-size: 1.3rem; margin-bottom: 15px;">Registro de Entrada no Estande</h2>
-        <form id="form-acesso" onsubmit="salvarAcessoDiario(event)">
+        <form id="form-acesso" onsubmit="salvarAcessoDiario(event)" style="margin-top: 15px;">
             <input type="hidden" id="acesso-matricula">
 
-            <div class="form-row">
-                <div class="form-group">
-                    <label>Data Entrada:</label>
-                    <input type="date" id="acesso-data" required>
-                </div>
-                <div class="form-group">
-                    <label>Hora Entrada:</label>
-                    <input type="time" id="acesso-hora-in" required>
-                </div>
-            </div>
-
-            <div class="form-row">
-                <div class="form-group">
-                    <label>Arma Utilizada:</label>
-                    <select id="acesso-tipo-arma" required onchange="preencherArmaSelecionada(this.value)">
-                        <option value="">Selecione a arma...</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>Nº de Série da Arma:</label>
-                    <input type="text" id="acesso-serie-arma" required>
-                </div>
-                <div class="form-group">
-                    <label>Calibre:</label>
-                    <input type="text" id="acesso-calibre" required placeholder="Ex: 9mm, .40">
-                </div>
-            </div>
-
-            <div class="form-row">
-                <div class="form-group">
-                    <label>Qtd. Munições Previstas/Retiradas:</label>
-                    <input type="number" id="acesso-municao" min="0" value="0" required>
-                </div>
-                <div class="form-group">
-                    <label>Supervisor / Instrutor Responsável:</label>
-                    <input type="text" id="acesso-supervisor" required placeholder="Nome do Responsável">
-                </div>
-            </div>
+            <div class="form-group"><label>Data Entrada:</label><input type="date" id="acesso-data" required></div>
+            <div class="form-group"><label>Hora Entrada:</label><input type="time" id="acesso-hora-in" required></div>
 
             <div class="form-group">
-                <label>Observações de Entrada:</label>
-                <textarea id="acesso-obs" rows="2" placeholder="Ex: Treino individual, instrução prática, etc."></textarea>
+                <label>Arma Utilizada:</label>
+                <select id="acesso-tipo-arma" required>
+                    <option value="Arma Particular">Arma Particular</option>
+                    <option value="Cautela Fixa (Institucional)">Cautela Fixa (Institucional)</option>
+                    <option value="Cautela Avulsa (Dia)">Cautela Avulsa (Dia)</option>
+                    <option value="Sem Arma / Instrução">Sem Arma / Instrução</option>
+                </select>
             </div>
 
-            <button type="submit" id="btn-registrar-acesso" class="btn btn-success">Registrar Entrada no Estande</button>
+            <div class="form-group"><label>Nº Série da Arma:</label><input type="text" id="acesso-serie-arma" required></div>
+            <div class="form-group"><label>Calibre:</label><input type="text" id="acesso-calibre" required placeholder="Ex: 9mm"></div>
+            <div class="form-group"><label>Qtd. Munições Retiradas:</label><input type="number" id="acesso-municao" min="0" value="0" required></div>
+            <div class="form-group"><label>Supervisor Responsável:</label><input type="text" id="acesso-supervisor" required></div>
+            <div class="form-group"><label>Observações:</label><textarea id="acesso-obs" rows="2"></textarea></div>
+
+            <div class="btn-group-row">
+                <button type="button" class="btn btn-secondary" onclick="voltarParaBusca()">← Voltar</button>
+                <button type="submit" id="btn-registrar-acesso" class="btn btn-success">Registrar Entrada</button>
+            </div>
         </form>
     </div>
 
-    <!-- TELA 3.B: REGISTRO DE SAÍDA (SESSÃO EM ABERTO) -->
     <div id="sec-saida" class="section">
         <div id="saida-servidor-info" class="warning-card"></div>
+        <h2>Baixa na Saída</h2>
 
-        <h2 style="color: #ffffff; font-size: 1.3rem; margin-bottom: 15px;">Dar Baixa na Saída do Estande</h2>
-        <form id="form-saida" onsubmit="salvarSaidaDiaria(event)">
+        <form id="form-saida" onsubmit="salvarSaidaDiaria(event)" style="margin-top: 15px;">
             <input type="hidden" id="saida-acesso-id">
             <input type="hidden" id="saida-matricula">
 
-            <div class="form-row">
-                <div class="form-group">
-                    <label>Hora de Saída Efetiva:</label>
-                    <input type="time" id="saida-hora-out" required>
-                </div>
-                <div class="form-group">
-                    <label>Qtd. Munições Deflagradas/Utilizadas:</label>
-                    <input type="number" id="saida-municao" min="0" required>
-                </div>
-            </div>
+            <div class="form-group"><label>Hora de Saída:</label><input type="time" id="saida-hora-out" required></div>
+            <div class="form-group"><label>Qtd. Munições Deflagradas:</label><input type="number" id="saida-municao" min="0" required></div>
+            <div class="form-group"><label>Ocorrências / Obs:</label><textarea id="saida-obs" rows="3"></textarea></div>
 
-            <div class="form-group">
-                <label>Ocorrências / Observações do Término:</label>
-                <textarea id="saida-obs" rows="3" placeholder="Registre acidentes, nega de munições, pane no armamento ou observações gerais do treino."></textarea>
+            <div class="btn-group-row">
+                <button type="button" class="btn btn-secondary" onclick="voltarParaBusca()">← Voltar</button>
+                <button type="submit" id="btn-registrar-saida" class="btn btn-warning">Finalizar Saída</button>
             </div>
-
-            <button type="submit" id="btn-registrar-saida" class="btn btn-warning">Finalizar Sessão e Registrar Saída</button>
         </form>
     </div>
 
-    <!-- TELA 4: RELATÓRIOS E EXCLUSÃO (ÁREA RESTRITA) -->
     <div id="sec-relatorios" class="section">
-        <h2 style="color: #ffffff; font-size: 1.3rem; margin-bottom: 15px;">Área Restrita - Relatórios e Gestão</h2>
+        <!-- CABEÇALHO OFICIAL DE IMPRESSÃO COM BRASÃO -->
+        <div class="print-header">
+            <svg class="brasao-gcm" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+                <path d="M256 16 L416 80 V224 C416 336 256 480 256 480 C256 480 96 336 96 224 V80 Z" fill="#0b1325" stroke="#d4af37" stroke-width="16"/>
+                <circle cx="256" cy="220" r="80" fill="none" stroke="#d4af37" stroke-width="12"/>
+                <circle cx="256" cy="220" r="40" fill="none" stroke="#d4af37" stroke-width="8"/>
+                <circle cx="256" cy="220" r="12" fill="#d4af37"/>
+                <line x1="256" y1="120" x2="256" y2="320" stroke="#d4af37" stroke-width="8"/>
+                <line x1="156" y1="220" x2="356" y2="220" stroke="#d4af37" stroke-width="8"/>
+            </svg>
+            <h2>ESTADO DE MINAS GERAIS</h2>
+            <h2>GUARDA CIVIL MUNICIPAL DE MARIANA</h2>
+            <p>SIGET — ESTANDE INSTITUCIONAL DE TIRO | LIVRO DE ACESSOS</p>
+        </div>
+
+        <h2>Dashboard e Pessoas</h2>
+
+        <div class="dash-grid" style="margin-top: 15px;">
+            <div class="dash-card"><h3>Acessos</h3><div id="dash-total-acessos" class="number">0</div></div>
+            <div class="dash-card"><h3>Ativos</h3><div id="dash-em-andamento" class="number" style="color:#e74c3c;">0</div></div>
+            <div class="dash-card"><h3>Munição</h3><div id="dash-municao-total" class="number" style="color:#27ae60;">0</div></div>
+            <div class="dash-card"><h3>Cadastros</h3><div id="dash-total-pessoas" class="number">0</div></div>
+        </div>
 
         <div class="tabs">
             <div class="tab active" onclick="switchTab('tab-acessos')">Livro de Acessos</div>
             <div class="tab" onclick="switchTab('tab-pessoas')">Pessoas Cadastradas</div>
         </div>
 
-        <!-- ABA 1: ACESSOS -->
         <div id="tab-acessos" class="tab-content">
-            <div class="export-bar">
-                <button class="btn btn-secondary btn-export" onclick="exportarPDF('acessos')">Exportar PDF</button>
-                <button class="btn btn-secondary btn-export" onclick="exportarCSV('acessos')">Exportar CSV</button>
+            <div style="display: flex; gap: 8px; margin-bottom: 10px;">
+                <button class="btn btn-info btn-export" onclick="gerarPDFLivro()">📄 Exportar PDF (Livro)</button>
+                <button class="btn btn-export" onclick="exportarCSV('acessos')">📊 Exportar CSV</button>
             </div>
-            <div class="clear"></div>
             <div style="overflow-x: auto;">
                 <table id="tbl-acessos">
                     <thead>
                         <tr>
                             <th>Data</th>
-                            <th>Entrada/Saída</th>
                             <th>Servidor</th>
-                            <th>Arma/Série</th>
-                            <th>Calibre</th>
-                            <th>Munições</th>
-                            <th>Supervisor</th>
-                            <th>Obs / Ocorrências</th>
+                            <th>In/Out</th>
+                            <th>Munição</th>
                             <th>Ações</th>
                         </tr>
                     </thead>
@@ -667,23 +687,15 @@
             </div>
         </div>
 
-        <!-- ABA 2: PESSOAS -->
         <div id="tab-pessoas" class="tab-content" style="display:none;">
-            <div class="export-bar">
-                <button class="btn btn-secondary btn-export" onclick="exportarPDF('pessoas')">Exportar PDF</button>
-                <button class="btn btn-secondary btn-export" onclick="exportarCSV('pessoas')">Exportar CSV</button>
-            </div>
-            <div class="clear"></div>
+            <button class="btn btn-export" onclick="exportarCSV('pessoas')">📊 Exportar CSV (Pessoas)</button>
             <div style="overflow-x: auto;">
                 <table id="tbl-pessoas">
                     <thead>
                         <tr>
                             <th>Foto</th>
-                            <th>Matrícula</th>
-                            <th>Nome</th>
+                            <th>Matrícula / Nome</th>
                             <th>Cargo</th>
-                            <th>Armas Particulares</th>
-                            <th>Cautelas Fixas</th>
                             <th>Ações</th>
                         </tr>
                     </thead>
@@ -694,506 +706,462 @@
     </div>
 </div>
 
-<!-- MODAL DE SENHA DE ADMIN -->
+<div id="modal-recuperar" class="modal">
+    <div class="modal-content">
+        <h3>Recuperar Senha</h3>
+        <p style="margin: 10px 0; font-size: 0.8rem; color: #a0b2ce;">Requer validação do Supervisor/Admin:</p>
+        <div class="form-group">
+            <label>Sua Matrícula:</label>
+            <input type="text" id="rec-matricula" placeholder="Ex: 16061">
+        </div>
+        <div class="form-group">
+            <label>Chave do Supervisor:</label>
+            <input type="password" id="rec-chave-admin" placeholder="Chave de Autorização">
+        </div>
+        <div class="form-group">
+            <label>Nova Senha:</label>
+            <input type="password" id="rec-nova-senha" placeholder="••••••••">
+        </div>
+        <button class="btn" onclick="processarRecuperacaoSenha()">Redefinir Senha</button>
+        <button class="btn btn-danger" style="margin-top: 8px; width: 100%;" onclick="fecharModal('modal-recuperar')">Cancelar</button>
+    </div>
+</div>
+
 <div id="modal-auth" class="modal">
     <div class="modal-content">
-        <h3 style="margin-bottom: 10px; color: #d1a13e;">Autenticação Requerida</h3>
-        <p style="margin-bottom: 15px; color: #8899a6; font-size: 0.85rem;">Insira a senha de Supervisor/Administrador para acessar relatórios.</p>
-        <div class="form-group">
-            <label>Senha de Acesso:</label>
-            <input type="password" id="input-senha-admin">
-        </div>
+        <h3>Autenticação Admin</h3>
+        <p style="margin: 10px 0; font-size: 0.85rem; color: #a0b2ce;">Insira a senha de Supervisor:</p>
+        <div class="form-group"><input type="password" id="input-senha-admin"></div>
         <button class="btn" onclick="validarSenhaAdmin()">Entrar</button>
         <button class="btn btn-danger" style="margin-top: 8px; width: 100%;" onclick="fecharModal('modal-auth')">Cancelar</button>
     </div>
 </div>
 
-<!-- MODAL DE RECUPERAÇÃO DE SENHA DO USUÁRIO -->
-<div id="modal-recuperar" class="modal">
+<div id="modal-alert" class="modal">
     <div class="modal-content">
-        <h3 style="margin-bottom: 10px; color: #d1a13e;">Recuperar Senha</h3>
-        
-        <div id="rec-passo-1">
-            <p style="margin-bottom: 15px; color: #8899a6; font-size: 0.85rem;">Digite sua matrícula funcional para buscar sua pergunta de segurança.</p>
-            <div class="form-group">
-                <label>Matrícula Funcional:</label>
-                <input type="text" id="rec-matricula">
-            </div>
-            <button class="btn" onclick="buscarPerguntaSeguranca()">Buscar</button>
-        </div>
+        <h3 id="alert-titulo">Aviso</h3>
+        <p id="alert-mensagem" style="margin: 15px 0; font-size: 0.9rem; color: #a0b2ce;"></p>
+        <button type="button" class="btn" onclick="fecharModal('modal-alert')">OK</button>
+    </div>
+</div>
 
-        <div id="rec-passo-2" style="display:none;">
-            <p id="rec-exibir-pergunta" style="margin-bottom: 15px; color: #d1a13e; font-weight: bold; font-size: 0.9rem;"></p>
-            <div class="form-group">
-                <label>Resposta Secreta:</label>
-                <input type="text" id="rec-resposta" placeholder="Digite sua resposta">
-            </div>
-            <div class="form-group">
-                <label>Nova Senha:</label>
-                <input type="password" id="rec-nova-senha" placeholder="Digite a nova senha">
-            </div>
-            <button class="btn btn-success" onclick="redefinirSenhaComPergunta()">Redefinir Senha</button>
+<div id="modal-confirm" class="modal">
+    <div class="modal-content">
+        <h3 id="confirm-titulo">Confirmação</h3>
+        <p id="confirm-mensagem" style="margin: 15px 0; font-size: 0.9rem; color: #a0b2ce;"></p>
+        <div class="btn-group-row">
+            <button type="button" class="btn btn-secondary" onclick="fecharModal('modal-confirm')">Cancelar</button>
+            <button type="button" id="confirm-btn-sim" class="btn btn-danger">Confirmar</button>
         </div>
-
-        <button class="btn btn-danger" style="margin-top: 8px; width: 100%;" onclick="fecharModal('modal-recuperar')">Cancelar</button>
     </div>
 </div>
 
 <script>
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('sw.js').catch(err => console.log('SW Erro:', err));
+        });
+        navigator.serviceWorker.addEventListener('controllerchange', () => {
+            window.location.reload();
+        });
+    }
+
     const URL_WEB_APP = "https://script.google.com/macros/s/AKfycbwlvX-WgheEjpUN6Y5v71OD87gNJqT35Bpx7cw22G3-rum0vg64w6FXdcswuIzE09Af/exec";
-
-    // BASE64 DO BRASÃO DA GCM MARIANA — MG
-    const BRASAO_BASE64 = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAPoAAADHCAYAAAAwCE5OAAA1bElEQVR42u29Z5Al13Xn+cvnva1X9cq79h4ACZAQAZISKQ2NSNkxq9HMbIRWMxOKCSmkndkvG7H4sB8mRruhGcWEVrPclWKloUSJlEQQEEQQICxh2nd1V1VXdXnvXj1v0+6HU1XdjW5YNoHuxv1FVNR7LzNv3nvO+Z97093Ufvf3/oPj9/twu90oFIr7h0ajgdvtxu124/mpRz/FI488TCgUVpZRKO4TbNtiZnaOv3/mGRr1BprjOI4yi0Jxf3L27Fm+9VffxqVMoVDcvwwPD+P3+5XQFYr7GU3TcByU0BWK+x9HCV2huL8lLiihKxQfA7EroSsUHwPeVei2bTM7N8fa+jp34kpcoVCg1Wq97XLDMMjn8++prFqthm3bP1Z9SqUyU1PTFItFFQ2Kj6fQG40Gf/x/f4MXX3qZ7z31NEvLywDoun6TWJvNJgDVam0vGdi2TaPR2FunWq0CcPrsOba2crRa+k3Lm80mtuOQzxd4/Y03AWi1WjiOQ7PZvG25f/7Nv6BYLFGv1zFMc6+ser0OwBtvnubSpZG9pGBZlgxlHIdarSaJp1jg1ddeY31jcy/RNHbaY9s2tVpdRYninsfzTgvfPH2W9kw7v/SLX+fa1DS2bbO0tMzf/8P3cRyHzz7+GZ57/gXi8ThdnZ3MzM6SiMc5cGA/L778Coau84tf/xqz83NcuTLG/v37CIVCtPQWTz71FCurq3zxZ36GV179EZqm8S9//ddwuV2gafzFt/6KrVyOer1BKBQklUxx6OB+Xnr5VRwcfuanPw/A2to6p8+epdFo8HM/+wWeevoZLMviyJHDjI6NYVk2kUiEF19+Bcsy+cWvf53vPfU0hWKRz372cba2tqhUqly+coV4PMZTT/89pmnx2E89yhunzwDwlS9/ie6uThUtivuzR9d1nUgkgm4YjI2P8yd/+mc8+9zzlEolAK6MjtFqtfin//hXeP6FF4hGI6ysrTExOcm+4SG+8uUv8eprrzMzM8f/8u9/jy/89OdZWlpmc2MTy7JwbIfzFy5QqVT4F7/+a4RCIWq1OktLS6ytr/Orv/xLaMA/+ZVfplarMjs3z4MPnOLf/Ob/xKuvvrbXIwcDATa3thgbu4rb7eZ//Je/zvLyMkcOHeJzjz+GbuiEQkFW19Z59rnnSKfT/If/+XdJJRJMTU3z2//ut6hWq/z3b/4ludw2Ho+bqZkZgsEgPq8Xe2ckoFDcczgOhmG8c4/+yMOf5Bv/75/Q0ls0Gg0efPAUndksb7x5mkQizr6hIba2cvj9fvYND+M4DsODAwRDITxuN16vl3g8jmVZ/O13nyQQCOD1elnf2GRjY5NgMIjjOEQiEQJ+PyAX+DXNRSAQIBAIEAqF8Pv9eL1ePG4PZ8+dZ2Njk67uLsqlMtempnG5NLxeLw4O0WgEn8+Hx+MhFo9xeXSUcCgkWc2l0dXVxdjYON976u9JJOJ4vR6+++RTVKs1PvHQg1wauUw0GmVocJC5uXmuTU8zcvkyvb09KmgU9yCaaOrd7nWv1etcvnyFSDjM8ePHABi/ehVdNzh08CClUomOjnaazSaXRi7T1dVFMpnAtmx8Pi+6buB2uxi5fIXh4SG8Hi+hUJDZuXk0TaOjox3TNGnPZNA0jZauUyqVcByHdCrF9vY26XSaQqHIG6dPUyqWOHLkMCdPHCdfKBAOhbg2NUU0GqWtrQ3DMEglk+TzBRKJONMzs3R1ZpmZnSUej9PX18f42Dh/890n+fe/+zs4DlwevcLBAwfItLUxee0atWqN48ePsbS0TL5Q4MTxY/h8PhUzinuOfL7Af/xPv39vPdQyPTNDwB+gp6f7xyqnWq1y/uJFPvPoo+rxXMXHQuiee6nS+4aH70g5kUiEzz72mIoCxccGdcOMQqGErlAolNAVCsVdjaZpAHhauq6soVDcT+LeuaQGoOuGCN3tUmedFYr7ic3NDTY2NnG73ZimiaZpeDweJXSF4n7CMAxarSZerxfbttE0TR2jKxT343H5jX+gTsYpFB8LlNAVCiV0hUJxXwrddpx3nGzBth1WVtfe947mFxaZmZ37QDPCVKpVNjY3KbzDLDDFYpHqzmQSCoXiZm65173VanH2/AWGBvupVKp4vV4CgQBut5t8vkBnZ5bJa1P4fT7yhQIdHe0sL68SiYSZm5unr68Xt9uNS9PIZNqYmp6lu7uT7e1tWi2dnp5upqZm6OrMkkolKZcrrKyukcmkOX3mHA+cPEE8HqfeqOM4DqVSGcdxyBcKZDs6yOcLNBoNerq7WVtfZ6C/j+18gQsXL3H40CFs26ItnSadTinvKhRvJ3QNcGyb8fEJorEYzWYTl8tFuVxmcGCASyOXCfj9rK2vMz0zy+zc/N73XZZXVllbWycei9LX10e1UsUwTTY2N3n99TfJtGe4cGmEn/7c42xubXFtaort/DYBv5/5hUU6O7MsLC6SiMeZnZ0nmUri9XjY2Ngkm+1geXmFUDDI9OwcC4tLBINBkskklUqZQrHE1PQMX/3yP1LeVSje6Rjdsm2CwSDZjnY62jNEoxEcx8GyLNxuN5Zlsb5zQV5v6XR2ZgkGA/j9forF0t4MNLbj4Dg2jWaT7e08tm1j2w6WaeFyudA0jfX1DTRNw7Yd3G43msvFysoajUaTza0cbo9b5o7DwbZtxsYn2Ld/H+ubm2hoGLqBS9OwLItcLo+u65imSaFQ2JsjTqFQPfpb8Pl8PHDqBBoagYAfy7KxHZuNdRH2I598iJauY5kWhWKReCxGKByivX1n4oiWTqYtjWlZtGfaePa5H/LYTz3KiePHMAyDzmyW5ZUVBgdOoWkax48dZWNzk8zOpBFer5etXI79+4fRNI1yuUwiHsftcWPbNvl8AZemcejgAba386RTKUzTpFQu09HezlYuRzAYwPoxZ4dVKO4n3vPEE1tbOTKZtve9g1xum1QqiculTvArFB8Gi4uLrK2t7d0Z952//e57n3jig4gcoK0trSyvUNyNx+gKhUIJXaFQKKErFAoldIVCoYSuUCiU0BUKhRK6QqFQQlcolNAVCoUSukKhuH+Erus6zWYTkJcRvh21Wo3RsXHWNzZuWVYulykUiu+5ErquYxjG3udWq7W3rFqrsbm59YEbuLi4dMtkF/V6nVwuB0ChUNibaGN9YwPTNHd+L960nW3be3bJbW+zvr4ByGMCW7kcjUYDgGaz+YEm11AofpK4n3jiiSdu/GF9fYNnn3uOZDLBD194iUQ8TrFYotlqsbKyQqvZYn1jHcdxePP0WbIdHZimyezcLO2ZDNVqle9+7ykuXLxEb28PkUiEufl56rU69Uad6ZlZSuUyxWKRVCpFqVTmj/74vxGPx+noaOcP/+sfgabR19tLLpfjH77/A0rlMh6Pm2qtRiwWo9VqMTF5Db/fR7FYYnNzi6npWc5duMChgwd2hOkwOjbO03//DAcP7Gd2bo5kMolt23z3ye9xceQy9Xqd115/g6npabbzBc6cOcfq2hrr6xu8cfo0J44f23sY5/kfvsCLL73CwYMH+MP/+kfYlkV3dzczs3O88OJLjI1PEAqF+H/+5E85duwooWBQRZfiI6FUKlGtVnG73TiOw/jViVsfaunszGLoBq+/8SaJZIK/+vZ3cLk0XC43Rw4fYmZ2lkgkyuFDBymXy7zx5pvYto3H46FarfHwJz/BL/3C1/m7J79HIBBgZWWVb/31twn4A/j8PqKRCLVaDdt2aPtnaWLxOCeOH8OyLC6NjFCv17FtG8dx+N7Tz+Dz+VhaWmZ0bBzbsvitf/uvmbh2jed/+CKffOhBLo2MYNkOben0Te8wvzRyidGxcfx+P3/zd98lXyiyvLzCz37xC3z9a1/j+8/+gEKxyPFjx1hYWGT/8DBtqRSLif/2f174=";
-
     const SENHA_ADMIN = "admin123";
     let isAdmin = false;
     let fotoBase64 = "";
-
-    let currentStream = null;
-    let facingMode = "user";
+    let mediaStream = null;
+    let cameraFacingMode = "user";
 
     let dbPessoas = JSON.parse(localStorage.getItem('estande_pessoas')) || {};
     let dbAcessos = JSON.parse(localStorage.getItem('estande_acessos')) || [];
+    let pessoasExcluidas = JSON.parse(localStorage.getItem('estande_pessoas_excluidas')) || [];
 
-    function showSection(sectionId) {
-        document.querySelectorAll('.section').forEach(sec => sec.classList.remove('active'));
-        document.getElementById(sectionId).classList.add('active');
+    function otimizarFoto(srcBase64, callback) {
+        const img = new Image();
+        img.onload = function() {
+            const canvas = document.createElement('canvas');
+            const maxDimension = 120;
+            let width = img.width;
+            let height = img.height;
 
-        if (sectionId !== 'sec-cadastro') {
-            pararCamera();
-        }
-
-        if(sectionId === 'sec-relatorios') {
-            carregarRelatorios();
-        }
-    }
-
-    function solicitarAcessoAdmin() {
-        if (isAdmin) {
-            showSection('sec-relatorios');
-        } else {
-            document.getElementById('input-senha-admin').value = '';
-            document.getElementById('modal-auth').style.display = 'flex';
-        }
-    }
-
-    function fecharModal(modalId) {
-        document.getElementById(modalId).style.display = 'none';
-    }
-
-    function validarSenhaAdmin() {
-        const senha = document.getElementById('input-senha-admin').value;
-        if (senha === SENHA_ADMIN) {
-            isAdmin = true;
-            document.getElementById('user-status').innerText = 'Sessão: Administrador';
-            document.getElementById('user-status').className = 'user-badge badge-admin';
-            fecharModal('modal-auth');
-            showSection('sec-relatorios');
-        } else {
-            alert('Senha incorreta!');
-        }
-    }
-
-    function autenticarEBuscar(event) {
-        event.preventDefault();
-        const mat = document.getElementById('busca-matricula').value.trim();
-        const senhaInput = document.getElementById('busca-senha').value;
-
-        if (!mat) return;
-
-        if (dbPessoas[mat]) {
-            if (dbPessoas[mat].senha && dbPessoas[mat].senha !== senhaInput) {
-                alert("Senha incorreta para a matrícula informada!");
-                return;
-            }
-
-            const acessoEmAberto = dbAcessos.find(a => a.matricula === mat && a.horaOut === 'Em andamento');
-
-            if (acessoEmAberto) {
-                abrirSaidaDiaria(acessoEmAberto);
+            if (width > height) {
+                if (width > maxDimension) { height *= maxDimension / width; width = maxDimension; }
             } else {
-                abrirAcessoDiario(mat);
+                if (height > maxDimension) { width *= maxDimension / height; height = maxDimension; }
             }
-        } else {
-            document.getElementById('cad-matricula').value = mat;
-            document.getElementById('form-cadastro').reset();
-            document.getElementById('lista-armas-particulares').innerHTML = '';
-            document.getElementById('lista-armas-cautela').innerHTML = '';
-            fotoBase64 = "";
-            document.getElementById('img-preview').style.display = 'none';
-            document.getElementById('webcam-video').style.display = 'block';
-            toggleArmaParticular();
-            toggleCautela();
-            showSection('sec-cadastro');
-            iniciarCamera();
+
+            canvas.width = width; canvas.height = height;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, width, height);
+            callback(canvas.toDataURL('image/jpeg', 0.5));
+        };
+        img.src = srcBase64;
+    }
+
+    function mostrarAlerta(msg, tit = 'Aviso') {
+        document.getElementById('alert-titulo').innerText = tit;
+        document.getElementById('alert-mensagem').innerText = msg;
+        document.getElementById('modal-alert').style.display = 'flex';
+    }
+
+    function mostrarConfirmacao(msg, acao, tit = 'Confirmação') {
+        document.getElementById('confirm-titulo').innerText = tit;
+        document.getElementById('confirm-mensagem').innerText = msg;
+        document.getElementById('confirm-btn-sim').onclick = function() { fecharModal('modal-confirm'); acao(); };
+        document.getElementById('modal-confirm').style.display = 'flex';
+    }
+
+    function fecharModal(id) { document.getElementById(id).style.display = 'none'; }
+
+    window.onload = function() {
+        sincronizarPessoasDaNuvem();
+        const op = localStorage.getItem('estande_operador_ativo');
+        if (op) iniciarSessaoOperador(JSON.parse(op));
+    };
+
+    function iniciarSessaoOperador(operador) {
+        document.getElementById('sec-login').style.display = 'none';
+        document.getElementById('app-container').style.display = 'block';
+        document.getElementById('user-status').innerText = `Operador: ${operador.nome}`;
+        document.getElementById('busca-matricula').value = operador.matricula;
+    }
+
+    async function sincronizarPessoasDaNuvem() {
+        if (URL_WEB_APP && URL_WEB_APP.startsWith("https://script.google.com")) {
+            try {
+                const res = await fetch(URL_WEB_APP);
+                if (res.ok) {
+                    const pessoasNuvem = await res.json();
+                    for (let mat in pessoasNuvem) {
+                        if (pessoasExcluidas.includes(mat)) { delete pessoasNuvem[mat]; continue; }
+                        if (dbPessoas[mat] && dbPessoas[mat].foto && !pessoasNuvem[mat].foto) {
+                            pessoasNuvem[mat].foto = dbPessoas[mat].foto;
+                        }
+                        if (dbPessoas[mat] && dbPessoas[mat].senha) pessoasNuvem[mat].senha = dbPessoas[mat].senha;
+                    }
+                    dbPessoas = { ...dbPessoas, ...pessoasNuvem };
+                    localStorage.setItem('estande_pessoas', JSON.stringify(dbPessoas));
+                }
+            } catch (e) {}
         }
     }
 
-    function abrirRecuperacaoSenha() {
-        document.getElementById('rec-matricula').value = '';
-        document.getElementById('rec-resposta').value = '';
-        document.getElementById('rec-nova-senha').value = '';
-        document.getElementById('rec-passo-1').style.display = 'block';
-        document.getElementById('rec-passo-2').style.display = 'none';
-        document.getElementById('modal-recuperar').style.display = 'flex';
-    }
-
-    function buscarPerguntaSeguranca() {
-        const mat = document.getElementById('rec-matricula').value.trim();
-        if (!mat || !dbPessoas[mat]) {
-            alert("Matrícula não cadastrada no sistema!");
-            return;
-        }
-
-        const p = dbPessoas[mat];
-        if (!p.pergunta) {
-            alert("Este usuário não possui pergunta de segurança cadastrada. Solicite apoio ao Administrador.");
-            return;
-        }
-
-        document.getElementById('rec-exibir-pergunta').innerText = p.pergunta;
-        document.getElementById('rec-passo-1').style.display = 'none';
-        document.getElementById('rec-passo-2').style.display = 'block';
-    }
-
-    function redefinirSenhaComPergunta() {
-        const mat = document.getElementById('rec-matricula').value.trim();
-        const respInput = document.getElementById('rec-resposta').value.trim();
-        const novaSenha = document.getElementById('rec-nova-senha').value;
-
-        if (!novaSenha) {
-            alert("Digite a nova senha!");
-            return;
-        }
-
-        const p = dbPessoas[mat];
-        if (p.resposta && p.resposta.toLowerCase() === respInput.toLowerCase()) {
-            dbPessoas[mat].senha = novaSenha;
-            localStorage.setItem('estande_pessoas', JSON.stringify(dbPessoas));
-            alert("Senha redefinida com sucesso! Faça login utilizando a nova senha.");
-            fecharModal('modal-recuperar');
-            document.getElementById('busca-senha').value = '';
-        } else {
-            alert("Resposta secreta incorreta!");
-        }
-    }
-
-    function toggleArmaParticular() {
-        const val = document.getElementById('cad-tem-particular').value;
-        const box = document.getElementById('box-particular');
-        box.style.display = (val === 'Sim') ? 'block' : 'none';
-        if (val === 'Sim' && document.getElementById('lista-armas-particulares').children.length === 0) {
-            adicionarCamposArmaParticular();
-        }
-    }
-
-    function toggleCautela() {
-        const val = document.getElementById('cad-tem-cautela').value;
-        const box = document.getElementById('box-cautela');
-        box.style.display = (val === 'Sim') ? 'block' : 'none';
-        if (val === 'Sim' && document.getElementById('lista-armas-cautela').children.length === 0) {
-            adicionarCamposArmaCautela();
-        }
-    }
-
-    function adicionarCamposArmaParticular(craf = '', desc = '') {
-        const container = document.getElementById('lista-armas-particulares');
-        const div = document.createElement('div');
-        div.className = 'arma-item';
-        div.innerHTML = `
-            <button type="button" class="btn-remove-item" onclick="this.parentElement.remove()">X Remover</button>
-            <div class="form-row">
-                <div class="form-group">
-                    <label>Nº do CRAF (Particular):</label>
-                    <input type="text" class="input-part-craf" value="${craf}" required>
-                </div>
-                <div class="form-group">
-                    <label>Modelo / Calibre (Particular):</label>
-                    <input type="text" class="input-part-desc" value="${desc}" placeholder="Ex: Glock 9mm" required>
-                </div>
-            </div>
-            <div class="form-group">
-                <label>Anexo do Documento/CRAF (PDF/Imagem):</label>
-                <input type="file" class="input-part-anexo" accept="image/*,application/pdf">
-            </div>
-        `;
-        container.appendChild(div);
-    }
-
-    function adicionarCamposArmaCautela(numTermo = '', desc = '') {
-        const container = document.getElementById('lista-armas-cautela');
-        const div = document.createElement('div');
-        div.className = 'arma-item';
-        div.innerHTML = `
-            <button type="button" class="btn-remove-item" onclick="this.parentElement.remove()">X Remover</button>
-            <div class="form-row">
-                <div class="form-group">
-                    <label>Nº do Termo de Cautela:</label>
-                    <input type="text" class="input-caut-num" value="${numTermo}" required>
-                </div>
-                <div class="form-group">
-                    <label>Modelo / Calibre (Institucional):</label>
-                    <input type="text" class="input-caut-desc" value="${desc}" placeholder="Ex: Imbel .40" required>
-                </div>
-            </div>
-            <div class="form-group">
-                <label>Anexo do Termo de Cautela (PDF/Imagem):</label>
-                <input type="file" class="input-caut-anexo" accept="image/*,application/pdf">
-            </div>
-        `;
-        container.appendChild(div);
-    }
-
-    async function iniciarCamera() {
-        pararCamera();
-        const video = document.getElementById('webcam-video');
-        const imgPreview = document.getElementById('img-preview');
-        imgPreview.style.display = 'none';
-        video.style.display = 'block';
-
+    async function iniciarWebcam() {
+        pararWebcam();
         try {
-            currentStream = await navigator.mediaDevices.getUserMedia({
-                video: { facingMode: facingMode, width: { ideal: 640 }, height: { ideal: 480 } },
-                audio: false
+            mediaStream = await navigator.mediaDevices.getUserMedia({ 
+                video: { facingMode: cameraFacingMode }, 
+                audio: false 
             });
-            video.srcObject = currentStream;
+            document.getElementById('webcam-video').srcObject = mediaStream;
+            document.getElementById('webcam-box').style.display = 'block';
         } catch (err) {
-            alert("Não foi possível acessar a câmera.");
+            mostrarAlerta("Não foi possível acessar a câmera do dispositivo. Utilize a opção 'Galeria'.");
         }
     }
 
     function alternarCamera() {
-        facingMode = (facingMode === "user") ? "environment" : "user";
-        iniciarCamera();
+        cameraFacingMode = (cameraFacingMode === "user") ? "environment" : "user";
+        iniciarWebcam();
     }
 
-    function capturarFoto() {
+    function capturarFotoWebcam() {
         const video = document.getElementById('webcam-video');
-        const canvas = document.getElementById('photo-canvas');
-        const imgPreview = document.getElementById('img-preview');
+        const canvas = document.createElement('canvas');
+        canvas.width = video.videoWidth || 280; canvas.height = video.videoHeight || 210;
+        canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
+        otimizarFoto(canvas.toDataURL('image/jpeg'), function(f) {
+            fotoBase64 = f;
+            document.getElementById('img-preview').src = fotoBase64;
+            document.getElementById('img-preview').style.display = 'inline-block';
+        });
+        pararWebcam();
+    }
 
-        if (!currentStream || video.style.display === 'none') {
-            alert("Ligue a câmera antes de tirar a foto.");
+    function pararWebcam() {
+        if (mediaStream) { mediaStream.getTracks().forEach(t => t.stop()); mediaStream = null; }
+        document.getElementById('webcam-box').style.display = 'none';
+    }
+
+    function voltarParaBusca() { pararWebcam(); showSection('sec-busca'); }
+
+    function irParaPrimeiroAcesso() {
+        const mat = prompt("Digite a sua matrícula:");
+        if (mat) {
+            document.getElementById('sec-login').style.display = 'none';
+            document.getElementById('app-container').style.display = 'block';
+            document.getElementById('cad-matricula').value = mat.trim();
+            document.getElementById('form-cadastro').reset();
+            fotoBase64 = ""; document.getElementById('img-preview').style.display = 'none';
+            showSection('sec-cadastro');
+        }
+    }
+
+    function abrirModalRecuperacao() {
+        document.getElementById('rec-matricula').value = '';
+        document.getElementById('rec-chave-admin').value = '';
+        document.getElementById('rec-nova-senha').value = '';
+        document.getElementById('modal-recuperar').style.display = 'flex';
+    }
+
+    async function processarRecuperacaoSenha() {
+        const mat = document.getElementById('rec-matricula').value.trim();
+        const chave = document.getElementById('rec-chave-admin').value;
+        const novaSenha = document.getElementById('rec-nova-senha').value;
+
+        if (!mat || !chave || !novaSenha) {
+            mostrarAlerta('Preencha todos os campos!');
             return;
         }
 
-        canvas.width = video.videoWidth || 320;
-        canvas.height = video.videoHeight || 240;
+        if (chave !== SENHA_ADMIN) {
+            mostrarAlerta('Chave do Supervisor incorreta!');
+            return;
+        }
 
-        const ctx = canvas.getContext('2d');
-        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+        await sincronizarPessoasDaNuvem();
 
-        fotoBase64 = canvas.toDataURL('image/jpeg', 0.8);
+        if (dbPessoas[mat]) {
+            dbPessoas[mat].senha = novaSenha;
+            localStorage.setItem('estande_pessoas', JSON.stringify(dbPessoas));
 
-        imgPreview.src = fotoBase64;
-        imgPreview.style.display = 'block';
-        video.style.display = 'none';
+            if (URL_WEB_APP && URL_WEB_APP.startsWith("https://script.google.com")) {
+                fetch(URL_WEB_APP, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain' }, body: JSON.stringify(dbPessoas[mat]) });
+            }
 
-        pararCamera();
-    }
-
-    function pararCamera() {
-        if (currentStream) {
-            currentStream.getTracks().forEach(track => track.stop());
-            currentStream = null;
+            fecharModal('modal-recuperar');
+            mostrarAlerta('Senha redefinida com sucesso! Você já pode fazer login.');
+        } else {
+            mostrarAlerta('Matrícula não cadastrada no sistema!');
         }
     }
 
-    function carregarArquivoFoto(event) {
-        pararCamera();
-        const file = event.target.files[0];
+    async function autenticarOperador(e) {
+        e.preventDefault();
+        const btn = document.getElementById('btn-login');
+        btn.disabled = true;
+        btn.innerText = "VERIFICANDO...";
+
+        const mat = document.getElementById('login-usuario').value.trim();
+        const senha = document.getElementById('login-senha').value;
+
+        await sincronizarPessoasDaNuvem();
+
+        btn.disabled = false;
+        btn.innerText = "ENTRAR NO SISTEMA";
+
+        if (dbPessoas[mat]) {
+            if (dbPessoas[mat].senha === senha || !dbPessoas[mat].senha) {
+                localStorage.setItem('estande_operador_ativo', JSON.stringify(dbPessoas[mat]));
+                iniciarSessaoOperador(dbPessoas[mat]);
+                showSection('sec-busca');
+            } else { 
+                mostrarAlerta("Senha incorreta!"); 
+            }
+        } else {
+            mostrarConfirmacao("Matrícula não localizada no banco de dados. Deseja realizar o cadastro agora?", function() {
+                document.getElementById('sec-login').style.display = 'none';
+                document.getElementById('app-container').style.display = 'block';
+                document.getElementById('cad-matricula').value = mat;
+                showSection('sec-cadastro');
+            }, 'Cadastro Não Localizado');
+        }
+    }
+
+    function solicitarEncerramentoSessao() {
+        mostrarConfirmacao("Deseja sair do aplicativo?", function() {
+            localStorage.removeItem('estande_operador_ativo');
+            document.getElementById('app-container').style.display = 'none';
+            document.getElementById('sec-login').style.display = 'flex';
+        });
+    }
+
+    function showSection(id) {
+        document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+        if(id === 'sec-relatorios') carregarRelatorios();
+    }
+
+    function solicitarAcessoAdmin() {
+        if (isAdmin) showSection('sec-relatorios');
+        else document.getElementById('modal-auth').style.display = 'flex';
+    }
+
+    function validarSenhaAdmin() {
+        if (document.getElementById('input-senha-admin').value === SENHA_ADMIN) {
+            isAdmin = true; fecharModal('modal-auth'); showSection('sec-relatorios');
+        } else { mostrarAlerta('Senha incorreta!'); }
+    }
+
+    function toggleArmaParticular() {
+        document.getElementById('box-particular').style.display = (document.getElementById('cad-tem-particular').value === 'Sim') ? 'block' : 'none';
+    }
+
+    function toggleCautela() {
+        document.getElementById('box-cautela').style.display = (document.getElementById('cad-tem-cautela').value === 'Sim') ? 'block' : 'none';
+    }
+
+    function previewFoto(e) {
+        const file = e.target.files[0];
         if (file) {
             const reader = new FileReader();
-            reader.onload = function(e) {
-                fotoBase64 = e.target.result;
-                const video = document.getElementById('webcam-video');
-                const imgPreview = document.getElementById('img-preview');
-                video.style.display = 'none';
-                imgPreview.src = fotoBase64;
-                imgPreview.style.display = 'block';
+            reader.onload = function(evt) {
+                otimizarFoto(evt.target.result, function(f) {
+                    fotoBase64 = f;
+                    document.getElementById('img-preview').src = fotoBase64;
+                    document.getElementById('img-preview').style.display = 'inline-block';
+                });
             };
             reader.readAsDataURL(file);
         }
     }
 
-    async function salvarCadastro(event) {
-        event.preventDefault();
-
-        const senha = document.getElementById('cad-senha').value;
-        const senhaConf = document.getElementById('cad-senha-conf').value;
-
-        if (senha !== senhaConf) {
-            alert("As senhas digitadas não coincidem!");
-            return;
+    function buscarMatricula(e) {
+        e.preventDefault();
+        const mat = document.getElementById('busca-matricula').value.trim();
+        if (dbPessoas[mat]) {
+            const aberto = dbAcessos.find(a => a.matricula === mat && a.horaOut === 'Em andamento');
+            if (aberto) abrirSaidaDiaria(aberto); else abrirAcessoDiario(mat);
+        } else {
+            document.getElementById('cad-matricula').value = mat;
+            showSection('sec-cadastro');
         }
-
-        const btn = document.getElementById('btn-cadastrar');
-        btn.disabled = true;
-        btn.innerText = "Enviando dados...";
-
-        const mat = document.getElementById('cad-matricula').value;
-
-        const armasParticulares = [];
-        document.querySelectorAll('#lista-armas-particulares .arma-item').forEach(el => {
-            const craf = el.querySelector('.input-part-craf').value;
-            const desc = el.querySelector('.input-part-desc').value;
-            const fileInput = el.querySelector('.input-part-anexo');
-            const anexoName = fileInput.files.length > 0 ? fileInput.files[0].name : '';
-            if (craf && desc) armasParticulares.push({ craf, desc, anexoName });
-        });
-
-        const armasCautela = [];
-        document.querySelectorAll('#lista-armas-cautela .arma-item').forEach(el => {
-            const numTermo = el.querySelector('.input-caut-num').value;
-            const desc = el.querySelector('.input-caut-desc').value;
-            const fileInput = el.querySelector('.input-caut-anexo');
-            const anexoName = fileInput.files.length > 0 ? fileInput.files[0].name : '';
-            if (numTermo && desc) armasCautela.push({ numTermo, desc, anexoName });
-        });
-
-        const pessoaData = {
-            tipo: 'pessoa',
-            matricula: mat,
-            nome: document.getElementById('cad-nome').value,
-            cargo: document.getElementById('cad-cargo').value,
-            senha: senha,
-            pergunta: document.getElementById('cad-pergunta').value,
-            resposta: document.getElementById('cad-resposta').value,
-            foto: fotoBase64,
-            temParticular: document.getElementById('cad-tem-particular').value,
-            armasParticulares: JSON.stringify(armasParticulares),
-            temCautela: document.getElementById('cad-tem-cautela').value,
-            armasCautela: JSON.stringify(armasCautela)
-        };
-
-        dbPessoas[mat] = pessoaData;
-        localStorage.setItem('estande_pessoas', JSON.stringify(dbPessoas));
-
-        if (URL_WEB_APP && URL_WEB_APP.startsWith("https://script.google.com")) {
-            try {
-                await fetch(URL_WEB_APP, {
-                    method: 'POST',
-                    mode: 'no-cors',
-                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                    body: JSON.stringify(pessoaData)
-                });
-            } catch (error) {
-                console.error("Erro ao enviar para a planilha:", error);
-            }
-        }
-
-        pararCamera();
-        btn.disabled = false;
-        btn.innerText = "Salvar Cadastro e Continuar";
-        alert('Cadastro realizado com sucesso!');
-        abrirAcessoDiario(mat);
     }
 
-    function editarPessoa(mat) {
-        const p = dbPessoas[mat];
+    function editarPessoa(matricula) {
+        const p = dbPessoas[matricula];
         if (!p) return;
 
         document.getElementById('cad-matricula').value = p.matricula;
         document.getElementById('cad-nome').value = p.nome;
         document.getElementById('cad-cargo').value = p.cargo;
         document.getElementById('cad-senha').value = p.senha || '';
-        document.getElementById('cad-senha-conf').value = p.senha || '';
-        document.getElementById('cad-pergunta').value = p.pergunta || '';
-        document.getElementById('cad-resposta').value = p.resposta || '';
 
         fotoBase64 = p.foto || "";
         const img = document.getElementById('img-preview');
-        const video = document.getElementById('webcam-video');
-
         if (fotoBase64) {
             img.src = fotoBase64;
-            img.style.display = 'block';
-            video.style.display = 'none';
+            img.style.display = 'inline-block';
         } else {
             img.style.display = 'none';
-            video.style.display = 'block';
         }
 
-        document.getElementById('lista-armas-particulares').innerHTML = '';
         document.getElementById('cad-tem-particular').value = p.temParticular || 'Não';
         toggleArmaParticular();
-        if (p.temParticular === 'Sim' && p.armasParticulares) {
-            const listPart = JSON.parse(p.armasParticulares);
-            listPart.forEach(a => adicionarCamposArmaParticular(a.craf, a.desc));
+        if (p.temParticular === 'Sim') {
+            document.getElementById('cad-craf').value = p.craf || '';
+            document.getElementById('cad-particular-desc').value = p.particularDesc || '';
         }
 
-        document.getElementById('lista-armas-cautela').innerHTML = '';
         document.getElementById('cad-tem-cautela').value = p.temCautela || 'Não';
         toggleCautela();
-        if (p.temCautela === 'Sim' && p.armasCautela) {
-            const listCaut = JSON.parse(p.armasCautela);
-            listCaut.forEach(a => adicionarCamposArmaCautela(a.numTermo, a.desc));
+        if (p.temCautela === 'Sim') {
+            document.getElementById('cad-num-cautela').value = p.numCautela || '';
+            document.getElementById('cad-institucional-desc').value = p.institucionalDesc || '';
         }
 
+        document.getElementById('titulo-cadastro').innerText = `Editar - Matrícula ${p.matricula}`;
         showSection('sec-cadastro');
+    }
+
+    function resetarSenhaPessoa(matricula) {
+        const p = dbPessoas[matricula];
+        if (!p) return;
+
+        const novaSenha = prompt(`Digite a nova senha para ${p.nome} (${matricula}):`);
+        if (novaSenha && novaSenha.trim() !== '') {
+            dbPessoas[matricula].senha = novaSenha.trim();
+            localStorage.setItem('estande_pessoas', JSON.stringify(dbPessoas));
+
+            if (URL_WEB_APP && URL_WEB_APP.startsWith("https://script.google.com")) {
+                fetch(URL_WEB_APP, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain' }, body: JSON.stringify(dbPessoas[matricula]) });
+            }
+
+            mostrarAlerta(`Senha alterada com sucesso!`);
+            carregarRelatorios();
+        }
+    }
+
+    function excluirPessoa(matricula) {
+        mostrarConfirmacao(`Deseja remover o servidor ${matricula}?`, function() {
+            delete dbPessoas[matricula];
+            localStorage.setItem('estande_pessoas', JSON.stringify(dbPessoas));
+
+            if (!pessoasExcluidas.includes(matricula)) {
+                pessoasExcluidas.push(matricula);
+                localStorage.setItem('estande_pessoas_excluidas', JSON.stringify(pessoasExcluidas));
+            }
+
+            carregarRelatorios();
+            mostrarAlerta('Servidor removido!');
+        }, 'Excluir Servidor');
+    }
+
+    function excluirAcesso(id) {
+        mostrarConfirmacao('Deseja excluir este registro?', function() {
+            dbAcessos = dbAcessos.filter(a => a.id !== id);
+            localStorage.setItem('estande_acessos', JSON.stringify(dbAcessos));
+            carregarRelatorios();
+            mostrarAlerta('Registro excluído!');
+        }, 'Excluir Registro');
+    }
+
+    function salvarCadastro(e) {
+        e.preventDefault();
+        const mat = document.getElementById('cad-matricula').value;
+
+        pessoasExcluidas = pessoasExcluidas.filter(id => id !== mat);
+        localStorage.setItem('estande_pessoas_excluidas', JSON.stringify(pessoasExcluidas));
+
+        const pessoaData = {
+            tipo: 'pessoa', matricula: mat,
+            nome: document.getElementById('cad-nome').value,
+            cargo: document.getElementById('cad-cargo').value,
+            senha: document.getElementById('cad-senha').value,
+            foto: fotoBase64 || (dbPessoas[mat] ? dbPessoas[mat].foto : ''),
+            temParticular: document.getElementById('cad-tem-particular').value,
+            craf: document.getElementById('cad-craf').value || 'N/A',
+            particularDesc: document.getElementById('cad-particular-desc').value || 'N/A',
+            temCautela: document.getElementById('cad-tem-cautela').value,
+            numCautela: document.getElementById('cad-num-cautela').value || 'N/A',
+            institucionalDesc: document.getElementById('cad-institucional-desc').value || 'N/A'
+        };
+
+        dbPessoas[mat] = pessoaData;
+        localStorage.setItem('estande_pessoas', JSON.stringify(dbPessoas));
+
+        const opAtivo = JSON.parse(localStorage.getItem('estande_operador_ativo') || '{}');
+        if (opAtivo.matricula === mat) {
+            localStorage.setItem('estande_operador_ativo', JSON.stringify(pessoaData));
+        }
+
+        if (URL_WEB_APP && URL_WEB_APP.startsWith("https://script.google.com")) {
+            fetch(URL_WEB_APP, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain' }, body: JSON.stringify(pessoaData) });
+        }
+
+        mostrarAlerta('Cadastro salvo com sucesso!');
+        abrirAcessoDiario(mat);
     }
 
     function abrirAcessoDiario(mat) {
         const p = dbPessoas[mat];
         document.getElementById('acesso-matricula').value = mat;
-
-        let avatarHTML = p.foto ? `<img src="${p.foto}" class="user-avatar" alt="Foto">` : '';
-        let infoHTML = `${avatarHTML}<div><strong>Servidor:</strong> ${p.nome} (${p.cargo}) | <strong>Matrícula:</strong> ${p.matricula}</div>`;
-        document.getElementById('servidor-info').innerHTML = infoHTML;
-
-        const selectArma = document.getElementById('acesso-tipo-arma');
-        selectArma.innerHTML = '<option value="">Selecione a arma...</option>';
-
-        if (p.temParticular === 'Sim' && p.armasParticulares) {
-            const part = JSON.parse(p.armasParticulares);
-            part.forEach(a => {
-                selectArma.innerHTML += `<option value="Particular:${a.desc}:${a.craf}">Arma Particular - ${a.desc} (CRAF: ${a.craf})</option>`;
-            });
-        }
-
-        if (p.temCautela === 'Sim' && p.armasCautela) {
-            const caut = JSON.parse(p.armasCautela);
-            caut.forEach(a => {
-                selectArma.innerHTML += `<option value="Cautela:${a.desc}:${a.numTermo}">Cautela Fixa - ${a.desc} (Termo: ${a.numTermo})</option>`;
-            });
-        }
-
-        selectArma.innerHTML += `
-            <option value="Cautela Avulsa (Dia)">Cautela Avulsa (Dia)</option>
-            <option value="Sem Arma / Instrução">Sem Arma / Instrução</option>
-        `;
-
+        const avatar = p.foto ? `<img src="${p.foto}" class="user-avatar">` : `<div class="user-avatar"></div>`;
+        document.getElementById('servidor-info').innerHTML = `${avatar}<div><strong>${p.nome}</strong> (${p.cargo})<br><small>Matrícula: ${p.matricula}</small></div>`;
         document.getElementById('acesso-data').value = new Date().toISOString().split('T')[0];
-        document.getElementById('acesso-hora-in').value = new Date().toTimeString().split(' ')[0].substring(0, 5);
-
+        document.getElementById('acesso-hora-in').value = new Date().toTimeString().substring(0, 5);
         showSection('sec-acesso');
     }
 
-    function preencherArmaSelecionada(val) {
-        if (val.includes(':')) {
-            const parts = val.split(':');
-            document.getElementById('acesso-serie-arma').value = parts[2] || '';
-            document.getElementById('acesso-calibre').value = parts[1] || '';
-        }
-    }
-
-    async function salvarAcessoDiario(event) {
-        event.preventDefault();
-        const btn = document.getElementById('btn-registrar-acesso');
-        btn.disabled = true;
-        btn.innerText = "Enviando dados...";
-
+    async function salvarAcessoDiario(e) {
+        e.preventDefault();
         const mat = document.getElementById('acesso-matricula').value;
         const p = dbPessoas[mat];
-
         const acessoData = {
-            tipo: 'acesso',
-            id: Date.now(),
-            data: document.getElementById('acesso-data').value,
-            horaIn: document.getElementById('acesso-hora-in').value,
-            horaOut: 'Em andamento',
-            matricula: mat,
-            nome: p.nome,
+            tipo: 'acesso', id: Date.now(), data: document.getElementById('acesso-data').value,
+            horaIn: document.getElementById('acesso-hora-in').value, horaOut: 'Em andamento',
+            matricula: mat, nome: p.nome,
             tipoArma: document.getElementById('acesso-tipo-arma').value,
             serieArma: document.getElementById('acesso-serie-arma').value,
             calibre: document.getElementById('acesso-calibre').value,
@@ -1206,85 +1174,39 @@
         localStorage.setItem('estande_acessos', JSON.stringify(dbAcessos));
 
         if (URL_WEB_APP && URL_WEB_APP.startsWith("https://script.google.com")) {
-            try {
-                await fetch(URL_WEB_APP, {
-                    method: 'POST',
-                    mode: 'no-cors',
-                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                    body: JSON.stringify(acessoData)
-                });
-            } catch (error) {
-                console.error("Erro ao enviar para a planilha:", error);
-            }
+            fetch(URL_WEB_APP, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain' }, body: JSON.stringify(acessoData) });
         }
 
-        btn.disabled = false;
-        btn.innerText = "Registrar Entrada no Estande";
-        alert('Entrada registrada no sistema! Lembre-se de dar baixa na saída ao término.');
-        document.getElementById('form-busca').reset();
+        mostrarAlerta('Entrada registrada com sucesso!');
         showSection('sec-busca');
     }
 
     function abrirSaidaDiaria(acesso) {
         document.getElementById('saida-acesso-id').value = acesso.id;
         document.getElementById('saida-matricula').value = acesso.matricula;
-
-        const p = dbPessoas[acesso.matricula] || {};
-        const avatarHTML = p.foto ? `<img src="${p.foto}" class="user-avatar" alt="Foto">` : '';
-
-        document.getElementById('saida-servidor-info').innerHTML = `
-            ${avatarHTML}
-            <div>
-                ⚠️ <strong>SESSÃO EM ABERTO DETECTADA</strong><br>
-                <strong>Servidor:</strong> ${acesso.nome} | <strong>Matrícula:</strong> ${acesso.matricula}<br>
-                <small><b>Entrada:</b> ${acesso.data} às ${acesso.horaIn} | <b>Arma:</b> ${acesso.tipoArma} (${acesso.serieArma})</small>
-            </div>
-        `;
-
-        document.getElementById('saida-hora-out').value = new Date().toTimeString().split(' ')[0].substring(0, 5);
+        document.getElementById('saida-servidor-info').innerHTML = `<div>⚠️ <strong>Sessão em aberto!</strong><br>${acesso.nome} (${acesso.data} às ${acesso.horaIn})</div>`;
+        document.getElementById('saida-hora-out').value = new Date().toTimeString().substring(0, 5);
         document.getElementById('saida-municao').value = acesso.municao;
-        document.getElementById('saida-obs').value = '';
-
         showSection('sec-saida');
     }
 
-    async function salvarSaidaDiaria(event) {
-        event.preventDefault();
-        const btn = document.getElementById('btn-registrar-saida');
-        btn.disabled = true;
-        btn.innerText = "Registrando saída...";
-
+    async function salvarSaidaDiaria(e) {
+        e.preventDefault();
         const idAcesso = parseInt(document.getElementById('saida-acesso-id').value);
-        const horaSaida = document.getElementById('saida-hora-out').value;
-        const municaoEfetiva = document.getElementById('saida-municao').value;
-        const ocorrencias = document.getElementById('saida-obs').value || 'Sem ocorrências';
+        const idx = dbAcessos.findIndex(a => a.id === idAcesso);
 
-        const index = dbAcessos.findIndex(a => a.id === idAcesso);
-        if (index !== -1) {
-            dbAcessos[index].horaOut = horaSaida;
-            dbAcessos[index].municao = municaoEfetiva;
-            dbAcessos[index].obs += ` | [Saída às ${horaSaida}]: ${ocorrencias}`;
-
+        if (idx !== -1) {
+            dbAcessos[idx].horaOut = document.getElementById('saida-hora-out').value;
+            dbAcessos[idx].municao = document.getElementById('saida-municao').value;
+            dbAcessos[idx].obs += ` | [Saída]: ${document.getElementById('saida-obs').value || 'OK'}`;
             localStorage.setItem('estande_acessos', JSON.stringify(dbAcessos));
 
             if (URL_WEB_APP && URL_WEB_APP.startsWith("https://script.google.com")) {
-                try {
-                    await fetch(URL_WEB_APP, {
-                        method: 'POST',
-                        mode: 'no-cors',
-                        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                        body: JSON.stringify(dbAcessos[index])
-                    });
-                } catch (error) {
-                    console.error("Erro ao atualizar saída na planilha:", error);
-                }
+                fetch(URL_WEB_APP, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain' }, body: JSON.stringify({ tipo: 'acesso', ...dbAcessos[idx] }) });
             }
         }
 
-        btn.disabled = false;
-        btn.innerText = "Finalizar Sessão e Registrar Saída";
-        alert('Saída registrada com sucesso e sessão encerrada!');
-        document.getElementById('form-busca').reset();
+        mostrarAlerta('Saída registrada com sucesso!');
         showSection('sec-busca');
     }
 
@@ -1297,21 +1219,33 @@
     }
 
     function carregarRelatorios() {
+        let totalMunicao = 0, emAndamento = 0;
+        dbAcessos.forEach(a => {
+            totalMunicao += parseInt(a.municao || 0);
+            if (a.horaOut === 'Em andamento') emAndamento++;
+        });
+
+        document.getElementById('dash-total-acessos').innerText = dbAcessos.length;
+        document.getElementById('dash-em-andamento').innerText = emAndamento;
+        document.getElementById('dash-municao-total').innerText = totalMunicao;
+        document.getElementById('dash-total-pessoas').innerText = Object.keys(dbPessoas).length;
+
         const tbodyAcessos = document.querySelector('#tbl-acessos tbody');
         tbodyAcessos.innerHTML = '';
         dbAcessos.forEach(a => {
-            const statusSaida = a.horaOut === 'Em andamento' ? '<span style="color: #e67e22; font-weight: bold;">Em andamento</span>' : a.horaOut;
+            const statusSaida = a.horaOut === 'Em andamento' ? '<span style="color: #e74c3c; font-weight: bold;">Ativo</span>' : a.horaOut;
             tbodyAcessos.innerHTML += `
                 <tr>
                     <td>${a.data}</td>
-                    <td><b>In:</b> ${a.horaIn}<br><b>Out:</b> ${statusSaida}</td>
-                    <td>${a.nome} (${a.matricula})</td>
-                    <td>${a.tipoArma}<br><small>Série: ${a.serieArma}</small></td>
-                    <td>${a.calibre}</td>
-                    <td>${a.municao}</td>
-                    <td>${a.supervisor}</td>
-                    <td>${a.obs}</td>
-                    <td><button class="btn-danger" onclick="excluirAcesso(${a.id})">Excluir</button></td>
+                    <td>${a.nome}<br><small>(${a.matricula})</small></td>
+                    <td>In: ${a.horaIn}<br>Out: ${statusSaida}</td>
+                    <td>${a.municao} un</td>
+                    <td>
+                        <div style="display: flex; gap: 4px;">
+                            <button class="btn-info" onclick="gerarPDFComprovante(${a.id})">📄 PDF</button>
+                            <button class="btn-danger" onclick="excluirAcesso(${a.id})">Del</button>
+                        </div>
+                    </td>
                 </tr>
             `;
         });
@@ -1319,33 +1253,17 @@
         const tbodyPessoas = document.querySelector('#tbl-pessoas tbody');
         tbodyPessoas.innerHTML = '';
         Object.values(dbPessoas).forEach(p => {
-            const fotoHTML = p.foto ? `<img src="${p.foto}" style="width:40px;height:40px;border-radius:50%;object-fit:cover;border:1px solid #d1a13e;">` : 'Sem foto';
-            
-            let partStr = "Não possui";
-            if (p.temParticular === 'Sim' && p.armasParticulares) {
-                const arr = JSON.parse(p.armasParticulares);
-                partStr = arr.map(a => `${a.desc} (CRAF: ${a.craf})`).join('<br>');
-            }
-
-            let cautStr = "Não possui";
-            if (p.temCautela === 'Sim' && p.armasCautela) {
-                const arr = JSON.parse(p.armasCautela);
-                cautStr = arr.map(a => `${a.desc} (Nº Termo: ${a.numTermo})`).join('<br>');
-            }
-
+            const imgHTML = p.foto ? `<img src="${p.foto}" class="user-avatar-tb" alt="Foto">` : '-';
             tbodyPessoas.innerHTML += `
                 <tr>
-                    <td>${fotoHTML}</td>
-                    <td>${p.matricula}</td>
-                    <td>${p.nome}</td>
+                    <td style="text-align: center;">${imgHTML}</td>
+                    <td><b>${p.matricula}</b><br>${p.nome}</td>
                     <td>${p.cargo}</td>
-                    <td>${partStr}</td>
-                    <td>${cautStr}</td>
                     <td>
-                        <div class="action-btns">
-                            <button class="btn-info" title="Lançar Entrada" onclick="abrirAcessoDiario('${p.matricula}')">Entrada</button>
-                            <button class="btn-warning" title="Editar Cadastro" onclick="editarPessoa('${p.matricula}')">Editar</button>
-                            <button class="btn-danger" title="Excluir Registro" onclick="excluirPessoa('${p.matricula}')">Excluir</button>
+                        <div style="display: flex; gap: 4px;">
+                            <button class="btn-info" onclick="editarPessoa('${p.matricula}')">Edit</button>
+                            <button class="btn-key" onclick="resetarSenhaPessoa('${p.matricula}')">🔑</button>
+                            <button class="btn-danger" onclick="excluirPessoa('${p.matricula}')">Del</button>
                         </div>
                     </td>
                 </tr>
@@ -1353,100 +1271,66 @@
         });
     }
 
-    function excluirAcesso(id) {
-        if (confirm('Tem certeza que deseja excluir este registro local?')) {
-            dbAcessos = dbAcessos.filter(a => a.id !== id);
-            localStorage.setItem('estande_acessos', JSON.stringify(dbAcessos));
-            carregarRelatorios();
-        }
+    // GERAÇÃO DO LIVRO EM PDF
+    function gerarPDFLivro() {
+        window.print();
     }
 
-    function excluirPessoa(matricula) {
-        if (confirm(`Deseja remover o servidor de matrícula ${matricula}?`)) {
-            delete dbPessoas[matricula];
-            localStorage.setItem('estande_pessoas', JSON.stringify(dbPessoas));
-            carregarRelatorios();
-        }
-    }
+    // GERAÇÃO DE COMPROVANTE INDIVIDUAL EM PDF COM BRASÃO
+    function gerarPDFComprovante(idAcesso) {
+        const a = dbAcessos.find(item => item.id === idAcesso);
+        if (!a) return;
 
-    // GERAÇÃO DE PDF COM O BRASÃO OFICIAL
-    function exportarPDF(tipo) {
-        const { jsPDF } = window.jspdf;
-        const doc = new jsPDF();
-
-        // 1. Inserir o Brasão da GCM no topo
-        if (BRASAO_BASE64 && BRASAO_BASE64.length > 50) {
-            try {
-                doc.addImage(BRASAO_BASE64, 'PNG', 14, 10, 22, 22);
-            } catch (e) {
-                console.error("Erro ao renderizar brasão no PDF:", e);
-            }
-        }
-
-        const startX = 40;
-
-        // 2. Cabeçalho Oficial
-        doc.setFontSize(15);
-        doc.setFont('helvetica', 'bold');
-        doc.text("SIGET - Estande Institucional de Tiro", startX, 16);
-        
-        doc.setFontSize(10);
-        doc.setFont('helvetica', 'normal');
-        doc.text("Guarda Civil Municipal de Mariana — MG", startX, 22);
-        doc.text(`Relatório Oficial: ${tipo === 'acessos' ? 'Livro de Acessos e Treinamentos' : 'Servidores Cadastrados'}`, startX, 28);
-
-        // Linha divisória oficial
-        doc.setLineWidth(0.5);
-        doc.line(14, 35, 196, 35);
-
-        // 3. Montagem da Tabela
-        if (tipo === 'acessos') {
-            const headers = [["Data", "Entrada/Saída", "Matrícula", "Nome", "Arma/Calibre", "Mun.", "Supervisor"]];
-            const data = dbAcessos.map(a => [
-                a.data, 
-                `${a.horaIn} / ${a.horaOut}`, 
-                a.matricula, 
-                a.nome, 
-                `${a.tipoArma} (${a.calibre})`, 
-                a.municao, 
-                a.supervisor
-            ]);
-
-            doc.autoTable({
-                head: headers,
-                body: data,
-                startY: 40,
-                theme: 'grid',
-                headStyles: { fillColor: [17, 28, 46], textColor: [209, 161, 62], fontStyle: 'bold' },
-                styles: { fontSize: 8, cellPadding: 3 }
-            });
-        } else {
-            const headers = [["Matrícula", "Nome Completo", "Cargo", "Armas Particulares", "Cautelas Fixas"]];
-            const data = Object.values(dbPessoas).map(p => {
-                let partStr = "Não";
-                if (p.temParticular === 'Sim' && p.armasParticulares) {
-                    partStr = JSON.parse(p.armasParticulares).map(a => `${a.desc}`).join(', ');
-                }
-
-                let cautStr = "Não";
-                if (p.temCautela === 'Sim' && p.armasCautela) {
-                    cautStr = JSON.parse(p.armasCautela).map(a => `${a.desc}`).join(', ');
-                }
-
-                return [p.matricula, p.nome, p.cargo, partStr, cautStr];
-            });
-
-            doc.autoTable({
-                head: headers,
-                body: data,
-                startY: 40,
-                theme: 'grid',
-                headStyles: { fillColor: [17, 28, 46], textColor: [209, 161, 62], fontStyle: 'bold' },
-                styles: { fontSize: 8, cellPadding: 3 }
-            });
-        }
-
-        doc.save(`relatorio_${tipo}_siget.pdf`);
+        const win = window.open('', '', 'height=700,width=800');
+        win.document.write(`
+            <html>
+            <head>
+                <title>Comprovante de Acesso - GCM Mariana</title>
+                <style>
+                    body { font-family: Arial, sans-serif; padding: 25px; line-height: 1.6; }
+                    .header { text-align: center; border-bottom: 2px solid #000; padding-bottom: 10px; margin-bottom: 20px; }
+                    .brasao { width: 75px; height: 75px; margin-bottom: 8px; }
+                    .title { font-size: 14pt; font-weight: bold; margin-bottom: 2px; }
+                    .sub { font-size: 10pt; font-weight: bold; color: #333; }
+                    .box { border: 1px solid #000; padding: 15px; border-radius: 6px; margin-bottom: 15px; }
+                    .row { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 10pt; }
+                    .signatures { margin-top: 60px; display: flex; justify-content: space-between; text-align: center; }
+                    .sig-line { width: 45%; border-top: 1px solid #000; padding-top: 5px; font-size: 9pt; }
+                </style>
+            </head>
+            <body>
+                <div class="header">
+                    <svg class="brasao" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M256 16 L416 80 V224 C416 336 256 480 256 480 C256 480 96 336 96 224 V80 Z" fill="#0b1325" stroke="#d4af37" stroke-width="16"/>
+                        <circle cx="256" cy="220" r="80" fill="none" stroke="#d4af37" stroke-width="12"/>
+                        <circle cx="256" cy="220" r="40" fill="none" stroke="#d4af37" stroke-width="8"/>
+                        <circle cx="256" cy="220" r="12" fill="#d4af37"/>
+                        <line x1="256" y1="120" x2="256" y2="320" stroke="#d4af37" stroke-width="8"/>
+                        <line x1="156" y1="220" x2="356" y2="220" stroke="#d4af37" stroke-width="8"/>
+                    </svg>
+                    <div class="title">GUARDA CIVIL MUNICIPAL DE MARIANA - MG</div>
+                    <div class="sub">SIGET — COMPROVANTE DE REGISTRO E ACESSO AO ESTANDE</div>
+                </div>
+                <div class="box">
+                    <div class="row"><strong>Data:</strong> <span>${a.data}</span></div>
+                    <div class="row"><strong>Servidor:</strong> <span>${a.nome} (Matrícula: ${a.matricula})</span></div>
+                    <div class="row"><strong>Horário Entrada:</strong> <span>${a.horaIn}</span></div>
+                    <div class="row"><strong>Horário Saída:</strong> <span>${a.horaOut}</span></div>
+                    <div class="row"><strong>Arma:</strong> <span>${a.tipoArma} (Série: ${a.serieArma} / Calibre: ${a.calibre})</span></div>
+                    <div class="row"><strong>Munição Retirada/Deflagrada:</strong> <span>${a.municao} un</span></div>
+                    <div class="row"><strong>Supervisor Responsável:</strong> <span>${a.supervisor}</span></div>
+                    <div class="row"><strong>Observações:</strong> <span>${a.obs}</span></div>
+                </div>
+                <div class="signatures">
+                    <div class="sig-line">Assinatura do Servidor</div>
+                    <div class="sig-line">Assinatura do Supervisor</div>
+                </div>
+            </body>
+            </html>
+        `);
+        win.document.close();
+        win.focus();
+        setTimeout(() => { win.print(); win.close(); }, 500);
     }
 
     function exportarCSV(tipo) {
@@ -1458,17 +1342,16 @@
                 csvContent += `"${a.data}";"${a.horaIn}";"${a.horaOut}";"${a.matricula}";"${a.nome}";"${a.tipoArma}";"${a.serieArma}";"${a.calibre}";"${a.municao}";"${a.supervisor}";"${a.obs}"\n`;
             });
         } else {
-            csvContent += "Matricula;Nome;Cargo;Status Foto;Armas Particulares;Cautelas Fixas\n";
+            csvContent += "Matricula;Nome;Cargo;Tem Arma Particular;CRAF;Desc Particular;Tem Cautela Fixa;Num Cautela;Desc Institucional\n";
             Object.values(dbPessoas).forEach(p => {
-                const fotoStatus = p.foto ? "Foto Cadastrada" : "Sem foto";
-                csvContent += `"${p.matricula}";"${p.nome}";"${p.cargo}";"${fotoStatus}";"${p.armasParticulares || 'Não possui'}";"${p.armasCautela || 'Não possui'}"\n`;
+                csvContent += `"${p.matricula}";"${p.nome}";"${p.cargo}";"${p.temParticular}";"${p.craf}";"${p.particularDesc}";"${p.temCautela}";"${p.numCautela}";"${p.institucionalDesc}"\n`;
             });
         }
 
         const encodedUri = encodeURI(csvContent);
         const link = document.createElement("a");
         link.setAttribute("href", encodedUri);
-        link.setAttribute("download", `relatorio_${tipo}_siget.csv`);
+        link.setAttribute("download", `relatorio_${tipo}_estande.csv`);
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
