@@ -339,6 +339,14 @@
             object-fit: cover;
         }
 
+        .arma-card-item {
+            background: rgba(11, 19, 37, 0.8);
+            border: 1px dashed var(--accent-color);
+            padding: 10px;
+            border-radius: 6px;
+            margin-bottom: 10px;
+        }
+
         #webcam-box {
             display: none;
             text-align: center;
@@ -392,62 +400,20 @@
             color: var(--accent-color);
         }
 
-        /* ESTILOS DE IMPRESSÃO / GERAR PDF */
         @media print {
-            body {
-                background-color: #ffffff !important;
-                color: #000000 !important;
-            }
-            #sec-login, nav, header, .tabs, .btn-export, .btn-group-row, #modal-auth, #modal-alert, #modal-confirm, #modal-recuperar, .btn-danger, .btn-info, .btn-key {
-                display: none !important;
-            }
-            .container {
-                display: block !important;
-                padding: 0 !important;
-            }
-            .section {
-                display: none !important;
-            }
-            .section.active {
-                display: block !important;
-            }
-            .print-header {
-                display: block !important;
-                text-align: center;
-                border-bottom: 2px solid #000;
-                padding-bottom: 10px;
-                margin-bottom: 15px;
-            }
-            .print-header h2 {
-                font-size: 16pt;
-                margin-bottom: 4px;
-            }
-            .print-header p {
-                font-size: 10pt;
-            }
-            table {
-                width: 100% !important;
-                border-collapse: collapse !important;
-            }
-            table th, table td {
-                border: 1px solid #000 !important;
-                color: #000 !important;
-                background: none !important;
-                padding: 6px !important;
-                font-size: 9pt !important;
-            }
+            body { background-color: #ffffff !important; color: #000000 !important; }
+            #sec-login, nav, header, .tabs, .btn-export, .btn-group-row, #modal-auth, #modal-alert, #modal-confirm, #modal-recuperar, .btn-danger, .btn-info, .btn-key { display: none !important; }
+            .container { display: block !important; padding: 0 !important; }
+            .section { display: none !important; }
+            .section.active { display: block !important; }
+            .print-header { display: block !important; text-align: center; border-bottom: 2px solid #000; padding-bottom: 10px; margin-bottom: 15px; }
+            .print-header h2 { font-size: 16pt; margin-bottom: 4px; }
+            .print-header p { font-size: 10pt; }
+            table { width: 100% !important; border-collapse: collapse !important; }
+            table th, table td { border: 1px solid #000 !important; color: #000 !important; background: none !important; padding: 6px !important; font-size: 9pt !important; }
         }
 
         .print-header { display: none; }
-        .ficha-pdf {
-            display: none;
-            background: #fff;
-            color: #000;
-            padding: 20px;
-            border: 2px solid #000;
-            border-radius: 8px;
-            margin-top: 15px;
-        }
     </style>
 </head>
 <body>
@@ -531,8 +497,8 @@
             <div class="form-group">
                 <label>Foto do Servidor:</label>
                 <div style="display: flex; gap: 8px; margin-bottom: 10px;">
-                    <button type="button" class="btn btn-info" style="flex:1;" onclick="iniciarWebcam()">📷 Câmera</button>
-                    <input type="file" id="cad-foto" accept="image/*" style="display:none;" onchange="previewFoto(event)">
+                    <button type="button" class="btn btn-info" style="flex:1;" onclick="iniciarWebcam('servidor')">📷 Câmera</button>
+                    <input type="file" id="cad-foto" accept="image/*" style="display:none;" onchange="previewFoto(event, 'servidor')">
                     <button type="button" class="btn btn-secondary" style="flex:1; height:38px; font-size:0.85rem;" onclick="document.getElementById('cad-foto').click()">📂 Galeria</button>
                 </div>
 
@@ -552,6 +518,7 @@
                 </div>
             </div>
 
+            <!-- ARMAS PARTICULARES MÚLTIPLAS COM FOTO DO CRAF -->
             <div class="form-group">
                 <label>Possui Arma Particular?</label>
                 <select id="cad-tem-particular" onchange="toggleArmaParticular()">
@@ -560,10 +527,11 @@
                 </select>
             </div>
             <div id="box-particular" style="display: none;">
-                <div class="form-group"><label>Nº do CRAF:</label><input type="text" id="cad-craf"></div>
-                <div class="form-group"><label>Modelo/Calibre:</label><input type="text" id="cad-particular-desc"></div>
+                <div id="lista-armas-particulares"></div>
+                <button type="button" class="btn btn-info" style="height:38px; font-size:0.85rem; margin-bottom:15px;" onclick="adicionarCampoArmaParticular()">+ Adicionar Outra Arma Particular</button>
             </div>
 
+            <!-- CAUTELAS FIXAS MÚLTIPLAS -->
             <div class="form-group">
                 <label>Possui Cautela Fixa?</label>
                 <select id="cad-tem-cautela" onchange="toggleCautela()">
@@ -572,8 +540,8 @@
                 </select>
             </div>
             <div id="box-cautela" style="display: none;">
-                <div class="form-group"><label>Nº Termo Cautela:</label><input type="text" id="cad-num-cautela"></div>
-                <div class="form-group"><label>Modelo/Calibre:</label><input type="text" id="cad-institucional-desc"></div>
+                <div id="lista-armas-cautela"></div>
+                <button type="button" class="btn btn-info" style="height:38px; font-size:0.85rem; margin-bottom:15px;" onclick="adicionarCampoCautela()">+ Adicionar Outra Cautela Fixa</button>
             </div>
 
             <div class="btn-group-row">
@@ -595,7 +563,7 @@
 
             <div class="form-group">
                 <label>Arma Utilizada:</label>
-                <select id="acesso-tipo-arma" required>
+                <select id="acesso-tipo-arma" required onchange="carregarDadosArmaSelecionada()">
                     <option value="Arma Particular">Arma Particular</option>
                     <option value="Cautela Fixa (Institucional)">Cautela Fixa (Institucional)</option>
                     <option value="Cautela Avulsa (Dia)">Cautela Avulsa (Dia)</option>
@@ -759,8 +727,11 @@
     const SENHA_ADMIN = "admin123";
     let isAdmin = false;
     let fotoBase64 = "";
+    let fotoCrafTemp = "";
+    let crafAlvoIndex = null;
     let mediaStream = null;
     let cameraFacingMode = "user";
+    let cameraAlvo = "servidor";
 
     let dbPessoas = JSON.parse(localStorage.getItem('estande_pessoas')) || {};
     let dbAcessos = JSON.parse(localStorage.getItem('estande_acessos')) || [];
@@ -770,7 +741,7 @@
         const img = new Image();
         img.onload = function() {
             const canvas = document.createElement('canvas');
-            const maxDimension = 120;
+            const maxDimension = 300;
             let width = img.width;
             let height = img.height;
 
@@ -783,7 +754,7 @@
             canvas.width = width; canvas.height = height;
             const ctx = canvas.getContext('2d');
             ctx.drawImage(img, 0, 0, width, height);
-            callback(canvas.toDataURL('image/jpeg', 0.5));
+            callback(canvas.toDataURL('image/jpeg', 0.6));
         };
         img.src = srcBase64;
     }
@@ -836,8 +807,10 @@
         }
     }
 
-    async function iniciarWebcam() {
+    async function iniciarWebcam(alvo = "servidor", index = null) {
         pararWebcam();
+        cameraAlvo = alvo;
+        crafAlvoIndex = index;
         try {
             mediaStream = await navigator.mediaDevices.getUserMedia({ 
                 video: { facingMode: cameraFacingMode }, 
@@ -852,7 +825,7 @@
 
     function alternarCamera() {
         cameraFacingMode = (cameraFacingMode === "user") ? "environment" : "user";
-        iniciarWebcam();
+        iniciarWebcam(cameraAlvo, crafAlvoIndex);
     }
 
     function capturarFotoWebcam() {
@@ -861,9 +834,18 @@
         canvas.width = video.videoWidth || 280; canvas.height = video.videoHeight || 210;
         canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
         otimizarFoto(canvas.toDataURL('image/jpeg'), function(f) {
-            fotoBase64 = f;
-            document.getElementById('img-preview').src = fotoBase64;
-            document.getElementById('img-preview').style.display = 'inline-block';
+            if (cameraAlvo === "servidor") {
+                fotoBase64 = f;
+                document.getElementById('img-preview').src = fotoBase64;
+                document.getElementById('img-preview').style.display = 'inline-block';
+            } else if (cameraAlvo === "craf" && crafAlvoIndex !== null) {
+                const imgCraf = document.getElementById(`img-craf-preview-${crafAlvoIndex}`);
+                if (imgCraf) {
+                    imgCraf.src = f;
+                    imgCraf.style.display = 'inline-block';
+                    imgCraf.dataset.base64 = f;
+                }
+            }
         });
         pararWebcam();
     }
@@ -899,55 +881,38 @@
         const chave = document.getElementById('rec-chave-admin').value;
         const novaSenha = document.getElementById('rec-nova-senha').value;
 
-        if (!mat || !chave || !novaSenha) {
-            mostrarAlerta('Preencha todos os campos!');
-            return;
-        }
-
-        if (chave !== SENHA_ADMIN) {
-            mostrarAlerta('Chave do Supervisor incorreta!');
-            return;
-        }
+        if (!mat || !chave || !novaSenha) { mostrarAlerta('Preencha todos os campos!'); return; }
+        if (chave !== SENHA_ADMIN) { mostrarAlerta('Chave do Supervisor incorreta!'); return; }
 
         await sincronizarPessoasDaNuvem();
 
         if (dbPessoas[mat]) {
             dbPessoas[mat].senha = novaSenha;
             localStorage.setItem('estande_pessoas', JSON.stringify(dbPessoas));
-
             if (URL_WEB_APP && URL_WEB_APP.startsWith("https://script.google.com")) {
                 fetch(URL_WEB_APP, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain' }, body: JSON.stringify(dbPessoas[mat]) });
             }
-
             fecharModal('modal-recuperar');
             mostrarAlerta('Senha redefinida com sucesso! Você já pode fazer login.');
-        } else {
-            mostrarAlerta('Matrícula não cadastrada no sistema!');
-        }
+        } else { mostrarAlerta('Matrícula não cadastrada no sistema!'); }
     }
 
     async function autenticarOperador(e) {
         e.preventDefault();
         const btn = document.getElementById('btn-login');
-        btn.disabled = true;
-        btn.innerText = "VERIFICANDO...";
-
+        btn.disabled = true; btn.innerText = "VERIFICANDO...";
         const mat = document.getElementById('login-usuario').value.trim();
         const senha = document.getElementById('login-senha').value;
 
         await sincronizarPessoasDaNuvem();
-
-        btn.disabled = false;
-        btn.innerText = "ENTRAR NO SISTEMA";
+        btn.disabled = false; btn.innerText = "ENTRAR NO SISTEMA";
 
         if (dbPessoas[mat]) {
             if (dbPessoas[mat].senha === senha || !dbPessoas[mat].senha) {
                 localStorage.setItem('estande_operador_ativo', JSON.stringify(dbPessoas[mat]));
                 iniciarSessaoOperador(dbPessoas[mat]);
                 showSection('sec-busca');
-            } else { 
-                mostrarAlerta("Senha incorreta!"); 
-            }
+            } else { mostrarAlerta("Senha incorreta!"); }
         } else {
             mostrarConfirmacao("Matrícula não localizada no banco de dados. Deseja realizar o cadastro agora?", function() {
                 document.getElementById('sec-login').style.display = 'none';
@@ -983,15 +948,100 @@
         } else { mostrarAlerta('Senha incorreta!'); }
     }
 
+    // ARMAS PARTICULARES
     function toggleArmaParticular() {
-        document.getElementById('box-particular').style.display = (document.getElementById('cad-tem-particular').value === 'Sim') ? 'block' : 'none';
+        const val = document.getElementById('cad-tem-particular').value;
+        const box = document.getElementById('box-particular');
+        box.style.display = (val === 'Sim') ? 'block' : 'none';
+        if (val === 'Sim' && document.getElementById('lista-armas-particulares').children.length === 0) {
+            adicionarCampoArmaParticular();
+        }
     }
 
+    function adicionarCampoArmaParticular(desc = '', craf = '', fotoCraf = '') {
+        const container = document.getElementById('lista-armas-particulares');
+        const index = container.children.length;
+        const div = document.createElement('div');
+        div.className = 'arma-card-item';
+        div.id = `arma-part-item-${index}`;
+        div.innerHTML = `
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                <strong>Arma Particular #${index + 1}</strong>
+                ${index > 0 ? `<button type="button" class="btn btn-danger" style="height:28px; font-size:0.75rem;" onclick="removerArmaParticular(${index})">Remover</button>` : ''}
+            </div>
+            <div class="form-group"><label>Modelo / Calibre / Série:</label><input type="text" class="input-part-desc" value="${desc}" placeholder="Ex: Glock G25 .380 Nº 12345"></div>
+            <div class="form-group"><label>Nº do CRAF:</label><input type="text" class="input-part-craf" value="${craf}"></div>
+            <div class="form-group">
+                <label>Foto do CRAF:</label>
+                <div style="display:flex; gap:8px; margin-bottom:6px;">
+                    <button type="button" class="btn btn-info" style="flex:1; height:34px; font-size:0.8rem;" onclick="iniciarWebcam('craf', ${index})">📷 Câmera</button>
+                    <input type="file" accept="image/*" id="file-craf-${index}" style="display:none;" onchange="previewFotoCraf(event, ${index})">
+                    <button type="button" class="btn btn-secondary" style="flex:1; height:34px; font-size:0.8rem;" onclick="document.getElementById('file-craf-${index}').click()">📂 Galeria</button>
+                </div>
+                <div style="text-align:center;">
+                    <img id="img-craf-preview-${index}" src="${fotoCraf}" data-base64="${fotoCraf}" style="max-width:120px; max-height:80px; display:${fotoCraf ? 'inline-block' : 'none'}; border:1px solid var(--accent-color); border-radius:4px;">
+                </div>
+            </div>
+        `;
+        container.appendChild(div);
+    }
+
+    function removerArmaParticular(index) {
+        const item = document.getElementById(`arma-part-item-${index}`);
+        if (item) item.remove();
+    }
+
+    function previewFotoCraf(e, index) {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(evt) {
+                otimizarFoto(evt.target.result, function(f) {
+                    const img = document.getElementById(`img-craf-preview-${index}`);
+                    if (img) {
+                        img.src = f;
+                        img.style.display = 'inline-block';
+                        img.dataset.base64 = f;
+                    }
+                });
+            };
+            reader.readAsDataURL(file);
+        }
+    }
+
+    // CAUTELAS FIXAS
     function toggleCautela() {
-        document.getElementById('box-cautela').style.display = (document.getElementById('cad-tem-cautela').value === 'Sim') ? 'block' : 'none';
+        const val = document.getElementById('cad-tem-cautela').value;
+        const box = document.getElementById('box-cautela');
+        box.style.display = (val === 'Sim') ? 'block' : 'none';
+        if (val === 'Sim' && document.getElementById('lista-armas-cautela').children.length === 0) {
+            adicionarCampoCautela();
+        }
     }
 
-    function previewFoto(e) {
+    function adicionarCampoCautela(desc = '', num = '') {
+        const container = document.getElementById('lista-armas-cautela');
+        const index = container.children.length;
+        const div = document.createElement('div');
+        div.className = 'arma-card-item';
+        div.id = `arma-caut-item-${index}`;
+        div.innerHTML = `
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                <strong>Cautela Fixa #${index + 1}</strong>
+                ${index > 0 ? `<button type="button" class="btn btn-danger" style="height:28px; font-size:0.75rem;" onclick="removerCautela(${index})">Remover</button>` : ''}
+            </div>
+            <div class="form-group"><label>Modelo / Calibre / Série:</label><input type="text" class="input-caut-desc" value="${desc}" placeholder="Ex: Imbel .40 Nº 54321"></div>
+            <div class="form-group"><label>Nº Termo Cautela:</label><input type="text" class="input-caut-num" value="${num}"></div>
+        `;
+        container.appendChild(div);
+    }
+
+    function removerCautela(index) {
+        const item = document.getElementById(`arma-caut-item-${index}`);
+        if (item) item.remove();
+    }
+
+    function previewFoto(e, alvo) {
         const file = e.target.files[0];
         if (file) {
             const reader = new FileReader();
@@ -1036,18 +1086,24 @@
             img.style.display = 'none';
         }
 
+        // Carregar Armas Particulares
         document.getElementById('cad-tem-particular').value = p.temParticular || 'Não';
+        document.getElementById('lista-armas-particulares').innerHTML = '';
         toggleArmaParticular();
-        if (p.temParticular === 'Sim') {
-            document.getElementById('cad-craf').value = p.craf || '';
-            document.getElementById('cad-particular-desc').value = p.particularDesc || '';
+        if (p.temParticular === 'Sim' && p.armasParticulares && p.armasParticulares.length > 0) {
+            p.armasParticulares.forEach(ap => adicionarCampoArmaParticular(ap.desc, ap.craf, ap.fotoCraf));
+        } else if (p.temParticular === 'Sim') {
+            adicionarCampoArmaParticular(p.particularDesc || '', p.craf || '', '');
         }
 
+        // Carregar Cautelas
         document.getElementById('cad-tem-cautela').value = p.temCautela || 'Não';
+        document.getElementById('lista-armas-cautela').innerHTML = '';
         toggleCautela();
-        if (p.temCautela === 'Sim') {
-            document.getElementById('cad-num-cautela').value = p.numCautela || '';
-            document.getElementById('cad-institucional-desc').value = p.institucionalDesc || '';
+        if (p.temCautela === 'Sim' && p.armasCautela && p.armasCautela.length > 0) {
+            p.armasCautela.forEach(ac => adicionarCampoCautela(ac.desc, ac.num));
+        } else if (p.temCautela === 'Sim') {
+            adicionarCampoCautela(p.institucionalDesc || '', p.numCautela || '');
         }
 
         document.getElementById('titulo-cadastro').innerText = `Editar - Matrícula ${p.matricula}`;
@@ -1103,18 +1159,46 @@
         pessoasExcluidas = pessoasExcluidas.filter(id => id !== mat);
         localStorage.setItem('estande_pessoas_excluidas', JSON.stringify(pessoasExcluidas));
 
+        // Coletar Armas Particulares Múltiplas
+        const temParticular = document.getElementById('cad-tem-particular').value;
+        const armasParticulares = [];
+        if (temParticular === 'Sim') {
+            const items = document.querySelectorAll('#lista-armas-particulares .arma-card-item');
+            items.forEach((item, idx) => {
+                const desc = item.querySelector('.input-part-desc').value || 'N/A';
+                const craf = item.querySelector('.input-part-craf').value || 'N/A';
+                const imgPreview = item.querySelector(`#img-craf-preview-${idx}`);
+                const fotoCraf = imgPreview ? (imgPreview.dataset.base64 || '') : '';
+                armasParticulares.push({ desc, craf, fotoCraf });
+            });
+        }
+
+        // Coletar Cautelas Múltiplas
+        const temCautela = document.getElementById('cad-tem-cautela').value;
+        const armasCautela = [];
+        if (temCautela === 'Sim') {
+            const items = document.querySelectorAll('#lista-armas-cautela .arma-card-item');
+            items.forEach(item => {
+                const desc = item.querySelector('.input-caut-desc').value || 'N/A';
+                const num = item.querySelector('.input-caut-num').value || 'N/A';
+                armasCautela.push({ desc, num });
+            });
+        }
+
         const pessoaData = {
             tipo: 'pessoa', matricula: mat,
             nome: document.getElementById('cad-nome').value,
             cargo: document.getElementById('cad-cargo').value,
             senha: document.getElementById('cad-senha').value,
             foto: fotoBase64 || (dbPessoas[mat] ? dbPessoas[mat].foto : ''),
-            temParticular: document.getElementById('cad-tem-particular').value,
-            craf: document.getElementById('cad-craf').value || 'N/A',
-            particularDesc: document.getElementById('cad-particular-desc').value || 'N/A',
-            temCautela: document.getElementById('cad-tem-cautela').value,
-            numCautela: document.getElementById('cad-num-cautela').value || 'N/A',
-            institucionalDesc: document.getElementById('cad-institucional-desc').value || 'N/A'
+            temParticular,
+            armasParticulares,
+            craf: armasParticulares.length > 0 ? armasParticulares[0].craf : 'N/A',
+            particularDesc: armasParticulares.length > 0 ? armasParticulares[0].desc : 'N/A',
+            temCautela,
+            armasCautela,
+            numCautela: armasCautela.length > 0 ? armasCautela[0].num : 'N/A',
+            institucionalDesc: armasCautela.length > 0 ? armasCautela[0].desc : 'N/A'
         };
 
         dbPessoas[mat] = pessoaData;
@@ -1140,7 +1224,48 @@
         document.getElementById('servidor-info').innerHTML = `${avatar}<div><strong>${p.nome}</strong> (${p.cargo})<br><small>Matrícula: ${p.matricula}</small></div>`;
         document.getElementById('acesso-data').value = new Date().toISOString().split('T')[0];
         document.getElementById('acesso-hora-in').value = new Date().toTimeString().substring(0, 5);
+
+        // Preencher Opções de Armas
+        const selectArma = document.getElementById('acesso-tipo-arma');
+        selectArma.innerHTML = '';
+        if (p.temParticular === 'Sim' && p.armasParticulares && p.armasParticulares.length > 0) {
+            p.armasParticulares.forEach((ap, idx) => {
+                selectArma.innerHTML += `<option value="Part:${idx}">Arma Particular: ${ap.desc}</option>`;
+            });
+        }
+        if (p.temCautela === 'Sim' && p.armasCautela && p.armasCautela.length > 0) {
+            p.armasCautela.forEach((ac, idx) => {
+                selectArma.innerHTML += `<option value="Caut:${idx}">Cautela Fixa: ${ac.desc}</option>`;
+            });
+        }
+        selectArma.innerHTML += `<option value="Avulsa">Cautela Avulsa (Dia)</option>`;
+        selectArma.innerHTML += `<option value="Instrucao">Sem Arma / Instrução</option>`;
+
+        carregarDadosArmaSelecionada();
         showSection('sec-acesso');
+    }
+
+    function carregarDadosArmaSelecionada() {
+        const mat = document.getElementById('acesso-matricula').value;
+        const p = dbPessoas[mat];
+        const val = document.getElementById('acesso-tipo-arma').value;
+
+        if (val.startsWith("Part:")) {
+            const idx = parseInt(val.split(":")[1]);
+            if (p && p.armasParticulares && p.armasParticulares[idx]) {
+                document.getElementById('acesso-serie-arma').value = p.armasParticulares[idx].craf;
+                document.getElementById('acesso-calibre').value = p.armasParticulares[idx].desc;
+            }
+        } else if (val.startsWith("Caut:")) {
+            const idx = parseInt(val.split(":")[1]);
+            if (p && p.armasCautela && p.armasCautela[idx]) {
+                document.getElementById('acesso-serie-arma').value = p.armasCautela[idx].num;
+                document.getElementById('acesso-calibre').value = p.armasCautela[idx].desc;
+            }
+        } else {
+            document.getElementById('acesso-serie-arma').value = '';
+            document.getElementById('acesso-calibre').value = '';
+        }
     }
 
     async function salvarAcessoDiario(e) {
@@ -1260,10 +1385,7 @@
         });
     }
 
-    // --- FUNÇÕES DE IMPRESSÃO / GERAÇÃO DE PDF ---
-    function gerarPDFLivro() {
-        window.print();
-    }
+    function gerarPDFLivro() { window.print(); }
 
     function gerarPDFComprovante(idAcesso) {
         const a = dbAcessos.find(item => item.id === idAcesso);
