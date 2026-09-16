@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SIGET - Estande Institucional de Tiro</title>
+    <!-- Biblioteca jsPDF e AutoTable para geração de PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
     <style>
         * {
             box-sizing: border-box;
@@ -199,12 +202,17 @@
             gap: 5px;
         }
 
+        .export-bar {
+            float: right;
+            margin-bottom: 15px;
+            display: flex;
+            gap: 10px;
+        }
+
         .btn-export {
             width: auto;
             padding: 8px 15px;
             font-size: 0.85rem;
-            margin-bottom: 15px;
-            float: right;
         }
 
         .camera-box {
@@ -324,6 +332,18 @@
             gap: 15px;
         }
 
+        .warning-card {
+            background: #2a1d0d;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            border-left: 4px solid #e67e22;
+            color: #f39c12;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
         .user-avatar {
             width: 60px;
             height: 60px;
@@ -361,6 +381,22 @@
             border: 1px solid #d1a13e;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.8);
         }
+
+        .sub-link {
+            text-align: center;
+            margin-top: 15px;
+        }
+
+        .sub-link a {
+            color: #d1a13e;
+            font-size: 0.8rem;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .sub-link a:hover {
+            text-decoration: underline;
+        }
     </style>
 </head>
 <body>
@@ -381,23 +417,33 @@
         </div>
     </nav>
 
-    <!-- TELA 1: BUSCA DE MATRÍCULA -->
+    <!-- TELA 1: LOGIN POR MATRÍCULA E SENHA INDIVIDUAL -->
     <div id="sec-busca" class="section active">
         <div class="login-box">
-            <form id="form-busca" onsubmit="buscarMatricula(event)">
+            <form id="form-busca" onsubmit="autenticarEBuscar(event)">
                 <div class="form-group">
                     <label for="busca-matricula">Matrícula Funcional:</label>
                     <input type="text" id="busca-matricula" required placeholder="Digite sua matrícula">
                 </div>
+
+                <div class="form-group" id="group-senha">
+                    <label for="busca-senha">Senha de Acesso:</label>
+                    <input type="password" id="busca-senha" placeholder="Digite sua senha">
+                </div>
+
                 <button type="submit" class="btn">Entrar no Sistema</button>
+
+                <div class="sub-link">
+                    <a onclick="abrirRecuperacaoSenha()">Esqueceu a senha? Clique aqui para redefinir</a>
+                </div>
             </form>
         </div>
     </div>
 
-    <!-- TELA 2: CADASTRO COMPLETO (COM SUPORTE A MÚLTIPLAS ARMAS) -->
+    <!-- TELA 2: CADASTRO COMPLETO (COM CRIAÇÃO DE SENHA E PERGUNTA DE SEGURANÇA) -->
     <div id="sec-cadastro" class="section">
         <h2 style="color: #ffffff; font-size: 1.3rem; margin-bottom: 5px;">Primeiro Acesso - Cadastro Completo</h2>
-        <p style="margin-bottom: 20px; color: #d1a13e; font-size: 0.85rem;">Matrícula não localizada. Preencha os dados abaixo para se cadastrar.</p>
+        <p style="margin-bottom: 20px; color: #d1a13e; font-size: 0.85rem;">Matrícula não localizada. Preencha os dados e crie sua senha de acesso abaixo.</p>
         
         <form id="form-cadastro" onsubmit="salvarCadastro(event)">
             <input type="hidden" id="cad-matricula">
@@ -413,7 +459,37 @@
                 </div>
             </div>
 
-            <!-- FOTO -->
+            <!-- CRIAÇÃO DE SENHA E SEGURANÇA -->
+            <div class="toggle-box">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Criar Senha de Acesso:</label>
+                        <input type="password" id="cad-senha" required placeholder="Sua senha">
+                    </div>
+                    <div class="form-group">
+                        <label>Confirmar Senha:</label>
+                        <input type="password" id="cad-senha-conf" required placeholder="Repita a senha">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Pergunta de Segurança (para recuperar senha):</label>
+                        <select id="cad-pergunta" required>
+                            <option value="">Selecione uma pergunta...</option>
+                            <option value="Qual o nome da sua mãe?">Qual o nome da sua mãe?</option>
+                            <option value="Qual o nome da sua primeira escola?">Qual o nome da sua primeira escola?</option>
+                            <option value="Qual a cidade de nascimento do seu pai?">Qual a cidade de nascimento do seu pai?</option>
+                            <option value="Qual o modelo do seu primeiro carro?">Qual o modelo do seu primeiro carro?</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Resposta Secreta:</label>
+                        <input type="text" id="cad-resposta" required placeholder="Sua resposta secreta">
+                    </div>
+                </div>
+            </div>
+
+            <!-- FOTO DA CÂMERA / ARQUIVO -->
             <div class="form-group">
                 <label>Foto do Servidor (Perfil):</label>
                 <div class="camera-box">
@@ -470,26 +546,22 @@
         </form>
     </div>
 
-    <!-- TELA 3: REGISTRO DE ACESSO DIÁRIO -->
+    <!-- TELA 3: REGISTRO DE ENTRADA DIÁRIA -->
     <div id="sec-acesso" class="section">
         <div id="servidor-info" class="user-card"></div>
 
-        <h2 style="color: #ffffff; font-size: 1.3rem; margin-bottom: 15px;">Registro de Acesso Diário</h2>
+        <h2 style="color: #ffffff; font-size: 1.3rem; margin-bottom: 15px;">Registro de Entrada no Estande</h2>
         <form id="form-acesso" onsubmit="salvarAcessoDiario(event)">
             <input type="hidden" id="acesso-matricula">
 
             <div class="form-row">
                 <div class="form-group">
-                    <label>Data:</label>
+                    <label>Data Entrada:</label>
                     <input type="date" id="acesso-data" required>
                 </div>
                 <div class="form-group">
                     <label>Hora Entrada:</label>
                     <input type="time" id="acesso-hora-in" required>
-                </div>
-                <div class="form-group">
-                    <label>Hora Saída (Estimada/Efetiva):</label>
-                    <input type="time" id="acesso-hora-out">
                 </div>
             </div>
 
@@ -497,7 +569,7 @@
                 <div class="form-group">
                     <label>Arma Utilizada:</label>
                     <select id="acesso-tipo-arma" required onchange="preencherArmaSelecionada(this.value)">
-                        <option value="">Selecione...</option>
+                        <option value="">Selecione a arma...</option>
                     </select>
                 </div>
                 <div class="form-group">
@@ -512,7 +584,7 @@
 
             <div class="form-row">
                 <div class="form-group">
-                    <label>Qtd. Munições Efetuadas:</label>
+                    <label>Qtd. Munições Previstas/Retiradas:</label>
                     <input type="number" id="acesso-municao" min="0" value="0" required>
                 </div>
                 <div class="form-group">
@@ -522,17 +594,46 @@
             </div>
 
             <div class="form-group">
-                <label>Observações / Ocorrências:</label>
-                <textarea id="acesso-obs" rows="3"></textarea>
+                <label>Observações de Entrada:</label>
+                <textarea id="acesso-obs" rows="2" placeholder="Ex: Treino individual, instrução prática, etc."></textarea>
             </div>
 
             <button type="submit" id="btn-registrar-acesso" class="btn btn-success">Registrar Entrada no Estande</button>
         </form>
     </div>
 
-    <!-- TELA 4: RELATÓRIOS E EXCLUSÃO -->
+    <!-- TELA 3.B: REGISTRO DE SAÍDA (SESSÃO EM ABERTO) -->
+    <div id="sec-saida" class="section">
+        <div id="saida-servidor-info" class="warning-card"></div>
+
+        <h2 style="color: #ffffff; font-size: 1.3rem; margin-bottom: 15px;">Dar Baixa na Saída do Estande</h2>
+        <form id="form-saida" onsubmit="salvarSaidaDiaria(event)">
+            <input type="hidden" id="saida-acesso-id">
+            <input type="hidden" id="saida-matricula">
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Hora de Saída Efetiva:</label>
+                    <input type="time" id="saida-hora-out" required>
+                </div>
+                <div class="form-group">
+                    <label>Qtd. Munições Deflagradas/Utilizadas:</label>
+                    <input type="number" id="saida-municao" min="0" required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Ocorrências / Observações do Término:</label>
+                <textarea id="saida-obs" rows="3" placeholder="Registre acidentes, nega de munições, pane no armamento ou observações gerais do treino."></textarea>
+            </div>
+
+            <button type="submit" id="btn-registrar-saida" class="btn btn-warning">Finalizar Sessão e Registrar Saída</button>
+        </form>
+    </div>
+
+    <!-- TELA 4: RELATÓRIOS E EXCLUSÃO (ÁREA RESTRITA) -->
     <div id="sec-relatorios" class="section">
-        <h2 style="color: #ffffff; font-size: 1.3rem; margin-bottom: 15px;">Área Restrita - Relatórios e Exclusão</h2>
+        <h2 style="color: #ffffff; font-size: 1.3rem; margin-bottom: 15px;">Área Restrita - Relatórios e Gestão</h2>
 
         <div class="tabs">
             <div class="tab active" onclick="switchTab('tab-acessos')">Livro de Acessos</div>
@@ -541,7 +642,10 @@
 
         <!-- ABA 1: ACESSOS -->
         <div id="tab-acessos" class="tab-content">
-            <button class="btn btn-export" onclick="exportarCSV('acessos')">Exportar CSV (Acessos)</button>
+            <div class="export-bar">
+                <button class="btn btn-secondary btn-export" onclick="exportarPDF('acessos')">Exportar PDF</button>
+                <button class="btn btn-secondary btn-export" onclick="exportarCSV('acessos')">Exportar CSV</button>
+            </div>
             <div class="clear"></div>
             <div style="overflow-x: auto;">
                 <table id="tbl-acessos">
@@ -554,6 +658,7 @@
                             <th>Calibre</th>
                             <th>Munições</th>
                             <th>Supervisor</th>
+                            <th>Obs / Ocorrências</th>
                             <th>Ações</th>
                         </tr>
                     </thead>
@@ -564,7 +669,10 @@
 
         <!-- ABA 2: PESSOAS -->
         <div id="tab-pessoas" class="tab-content" style="display:none;">
-            <button class="btn btn-export" onclick="exportarCSV('pessoas')">Exportar CSV (Pessoas)</button>
+            <div class="export-bar">
+                <button class="btn btn-secondary btn-export" onclick="exportarPDF('pessoas')">Exportar PDF</button>
+                <button class="btn btn-secondary btn-export" onclick="exportarCSV('pessoas')">Exportar CSV</button>
+            </div>
             <div class="clear"></div>
             <div style="overflow-x: auto;">
                 <table id="tbl-pessoas">
@@ -586,7 +694,7 @@
     </div>
 </div>
 
-<!-- MODAL DE SENHA -->
+<!-- MODAL DE SENHA DE ADMIN -->
 <div id="modal-auth" class="modal">
     <div class="modal-content">
         <h3 style="margin-bottom: 10px; color: #d1a13e;">Autenticação Requerida</h3>
@@ -596,7 +704,38 @@
             <input type="password" id="input-senha-admin">
         </div>
         <button class="btn" onclick="validarSenhaAdmin()">Entrar</button>
-        <button class="btn btn-danger" style="margin-top: 8px; width: 100%;" onclick="fecharModal()">Cancelar</button>
+        <button class="btn btn-danger" style="margin-top: 8px; width: 100%;" onclick="fecharModal('modal-auth')">Cancelar</button>
+    </div>
+</div>
+
+<!-- MODAL DE RECUPERAÇÃO DE SENHA DO USUÁRIO -->
+<div id="modal-recuperar" class="modal">
+    <div class="modal-content">
+        <h3 style="margin-bottom: 10px; color: #d1a13e;">Recuperar Senha</h3>
+        
+        <div id="rec-passo-1">
+            <p style="margin-bottom: 15px; color: #8899a6; font-size: 0.85rem;">Digite sua matrícula funcional para buscar sua pergunta de segurança.</p>
+            <div class="form-group">
+                <label>Matrícula Funcional:</label>
+                <input type="text" id="rec-matricula">
+            </div>
+            <button class="btn" onclick="buscarPerguntaSeguranca()">Buscar</button>
+        </div>
+
+        <div id="rec-passo-2" style="display:none;">
+            <p id="rec-exibir-pergunta" style="margin-bottom: 15px; color: #d1a13e; font-weight: bold; font-size: 0.9rem;"></p>
+            <div class="form-group">
+                <label>Resposta Secreta:</label>
+                <input type="text" id="rec-resposta" placeholder="Digite sua resposta">
+            </div>
+            <div class="form-group">
+                <label>Nova Senha:</label>
+                <input type="password" id="rec-nova-senha" placeholder="Digite a nova senha">
+            </div>
+            <button class="btn btn-success" onclick="redefinirSenhaComPergunta()">Redefinir Senha</button>
+        </div>
+
+        <button class="btn btn-danger" style="margin-top: 8px; width: 100%;" onclick="fecharModal('modal-recuperar')">Cancelar</button>
     </div>
 </div>
 
@@ -635,8 +774,8 @@
         }
     }
 
-    function fecharModal() {
-        document.getElementById('modal-auth').style.display = 'none';
+    function fecharModal(modalId) {
+        document.getElementById(modalId).style.display = 'none';
     }
 
     function validarSenhaAdmin() {
@@ -645,10 +784,99 @@
             isAdmin = true;
             document.getElementById('user-status').innerText = 'Sessão: Administrador';
             document.getElementById('user-status').className = 'user-badge badge-admin';
-            fecharModal();
+            fecharModal('modal-auth');
             showSection('sec-relatorios');
         } else {
             alert('Senha incorreta!');
+        }
+    }
+
+    // AUTENTICAÇÃO DE ENTRADA POR MATRÍCULA E SENHA INDIVIDUAL
+    function autenticarEBuscar(event) {
+        event.preventDefault();
+        const mat = document.getElementById('busca-matricula').value.trim();
+        const senhaInput = document.getElementById('busca-senha').value;
+
+        if (!mat) return;
+
+        if (dbPessoas[mat]) {
+            // Servidor já cadastrado: valida a senha
+            if (dbPessoas[mat].senha && dbPessoas[mat].senha !== senhaInput) {
+                alert("Senha incorreta para a matrícula informada!");
+                return;
+            }
+
+            // Verifica se há acesso em aberto
+            const acessoEmAberto = dbAcessos.find(a => a.matricula === mat && a.horaOut === 'Em andamento');
+
+            if (acessoEmAberto) {
+                abrirSaidaDiaria(acessoEmAberto);
+            } else {
+                abrirAcessoDiario(mat);
+            }
+        } else {
+            // Primeiro Acesso: Redireciona para o cadastro completo
+            document.getElementById('cad-matricula').value = mat;
+            document.getElementById('form-cadastro').reset();
+            document.getElementById('lista-armas-particulares').innerHTML = '';
+            document.getElementById('lista-armas-cautela').innerHTML = '';
+            fotoBase64 = "";
+            document.getElementById('img-preview').style.display = 'none';
+            document.getElementById('webcam-video').style.display = 'block';
+            toggleArmaParticular();
+            toggleCautela();
+            showSection('sec-cadastro');
+            iniciarCamera();
+        }
+    }
+
+    // RECUPERAÇÃO DE SENHA DO USUÁRIO
+    function abrirRecuperacaoSenha() {
+        document.getElementById('rec-matricula').value = '';
+        document.getElementById('rec-resposta').value = '';
+        document.getElementById('rec-nova-senha').value = '';
+        document.getElementById('rec-passo-1').style.display = 'block';
+        document.getElementById('rec-passo-2').style.display = 'none';
+        document.getElementById('modal-recuperar').style.display = 'flex';
+    }
+
+    function buscarPerguntaSeguranca() {
+        const mat = document.getElementById('rec-matricula').value.trim();
+        if (!mat || !dbPessoas[mat]) {
+            alert("Matrícula não cadastrada no sistema!");
+            return;
+        }
+
+        const p = dbPessoas[mat];
+        if (!p.pergunta) {
+            alert("Este usuário não possui pergunta de segurança cadastrada. Solicite apoio ao Administrador.");
+            return;
+        }
+
+        document.getElementById('rec-exibir-pergunta').innerText = p.pergunta;
+        document.getElementById('rec-passo-1').style.display = 'none';
+        document.getElementById('rec-passo-2').style.display = 'block';
+    }
+
+    function redefinirSenhaComPergunta() {
+        const mat = document.getElementById('rec-matricula').value.trim();
+        const respInput = document.getElementById('rec-resposta').value.trim();
+        const novaSenha = document.getElementById('rec-nova-senha').value;
+
+        if (!novaSenha) {
+            alert("Digite a nova senha!");
+            return;
+        }
+
+        const p = dbPessoas[mat];
+        if (p.resposta && p.resposta.toLowerCase() === respInput.toLowerCase()) {
+            dbPessoas[mat].senha = novaSenha;
+            localStorage.setItem('estande_pessoas', JSON.stringify(dbPessoas));
+            alert("Senha redefinida com sucesso! Faça login utilizando a nova senha.");
+            fecharModal('modal-recuperar');
+            document.getElementById('busca-senha').value = '';
+        } else {
+            alert("Resposta secreta incorreta!");
         }
     }
 
@@ -670,7 +898,6 @@
         }
     }
 
-    // ADICIONAR MÚLTIPLAS ARMAS PARTICULARES
     function adicionarCamposArmaParticular(craf = '', desc = '') {
         const container = document.getElementById('lista-armas-particulares');
         const div = document.createElement('div');
@@ -695,7 +922,6 @@
         container.appendChild(div);
     }
 
-    // ADICIONAR MÚLTIPLAS CAUTELAS FIXAS
     function adicionarCamposArmaCautela(numTermo = '', desc = '') {
         const container = document.getElementById('lista-armas-cautela');
         const div = document.createElement('div');
@@ -792,37 +1018,23 @@
         }
     }
 
-    function buscarMatricula(event) {
-        event.preventDefault();
-        const mat = document.getElementById('busca-matricula').value.trim();
-        if (!mat) return;
-
-        if (dbPessoas[mat]) {
-            abrirAcessoDiario(mat);
-        } else {
-            document.getElementById('cad-matricula').value = mat;
-            document.getElementById('form-cadastro').reset();
-            document.getElementById('lista-armas-particulares').innerHTML = '';
-            document.getElementById('lista-armas-cautela').innerHTML = '';
-            fotoBase64 = "";
-            document.getElementById('img-preview').style.display = 'none';
-            document.getElementById('webcam-video').style.display = 'block';
-            toggleArmaParticular();
-            toggleCautela();
-            showSection('sec-cadastro');
-            iniciarCamera();
-        }
-    }
-
     async function salvarCadastro(event) {
         event.preventDefault();
+
+        const senha = document.getElementById('cad-senha').value;
+        const senhaConf = document.getElementById('cad-senha-conf').value;
+
+        if (senha !== senhaConf) {
+            alert("As senhas digitadas não coincidem!");
+            return;
+        }
+
         const btn = document.getElementById('btn-cadastrar');
         btn.disabled = true;
         btn.innerText = "Enviando dados...";
 
         const mat = document.getElementById('cad-matricula').value;
 
-        // COLETAR TODAS AS ARMAS PARTICULARES
         const armasParticulares = [];
         document.querySelectorAll('#lista-armas-particulares .arma-item').forEach(el => {
             const craf = el.querySelector('.input-part-craf').value;
@@ -832,7 +1044,6 @@
             if (craf && desc) armasParticulares.push({ craf, desc, anexoName });
         });
 
-        // COLETAR TODAS AS CAUTELAS FIXAS
         const armasCautela = [];
         document.querySelectorAll('#lista-armas-cautela .arma-item').forEach(el => {
             const numTermo = el.querySelector('.input-caut-num').value;
@@ -847,6 +1058,9 @@
             matricula: mat,
             nome: document.getElementById('cad-nome').value,
             cargo: document.getElementById('cad-cargo').value,
+            senha: senha,
+            pergunta: document.getElementById('cad-pergunta').value,
+            resposta: document.getElementById('cad-resposta').value,
             foto: fotoBase64,
             temParticular: document.getElementById('cad-tem-particular').value,
             armasParticulares: JSON.stringify(armasParticulares),
@@ -883,7 +1097,11 @@
         document.getElementById('cad-matricula').value = p.matricula;
         document.getElementById('cad-nome').value = p.nome;
         document.getElementById('cad-cargo').value = p.cargo;
-        
+        document.getElementById('cad-senha').value = p.senha || '';
+        document.getElementById('cad-senha-conf').value = p.senha || '';
+        document.getElementById('cad-pergunta').value = p.pergunta || '';
+        document.getElementById('cad-resposta').value = p.resposta || '';
+
         fotoBase64 = p.foto || "";
         const img = document.getElementById('img-preview');
         const video = document.getElementById('webcam-video');
@@ -924,7 +1142,6 @@
         let infoHTML = `${avatarHTML}<div><strong>Servidor:</strong> ${p.nome} (${p.cargo}) | <strong>Matrícula:</strong> ${p.matricula}</div>`;
         document.getElementById('servidor-info').innerHTML = infoHTML;
 
-        // POPULAR DROPDOWN DE ARMAS DISPONÍVEIS
         const selectArma = document.getElementById('acesso-tipo-arma');
         selectArma.innerHTML = '<option value="">Selecione a arma...</option>';
 
@@ -975,7 +1192,7 @@
             id: Date.now(),
             data: document.getElementById('acesso-data').value,
             horaIn: document.getElementById('acesso-hora-in').value,
-            horaOut: document.getElementById('acesso-hora-out').value || 'Em andamento',
+            horaOut: 'Em andamento',
             matricula: mat,
             nome: p.nome,
             tipoArma: document.getElementById('acesso-tipo-arma').value,
@@ -1003,7 +1220,72 @@
 
         btn.disabled = false;
         btn.innerText = "Registrar Entrada no Estande";
-        alert('Acesso registrado no sistema e enviado para a planilha!');
+        alert('Entrada registrada no sistema! Lembre-se de dar baixa na saída ao término.');
+        document.getElementById('form-busca').reset();
+        showSection('sec-busca');
+    }
+
+    function abrirSaidaDiaria(acesso) {
+        document.getElementById('saida-acesso-id').value = acesso.id;
+        document.getElementById('saida-matricula').value = acesso.matricula;
+
+        const p = dbPessoas[acesso.matricula] || {};
+        const avatarHTML = p.foto ? `<img src="${p.foto}" class="user-avatar" alt="Foto">` : '';
+
+        document.getElementById('saida-servidor-info').innerHTML = `
+            ${avatarHTML}
+            <div>
+                ⚠️ <strong>SESSÃO EM ABERTO DETECTADA</strong><br>
+                <strong>Servidor:</strong> ${acesso.nome} | <strong>Matrícula:</strong> ${acesso.matricula}<br>
+                <small><b>Entrada:</b> ${acesso.data} às ${acesso.horaIn} | <b>Arma:</b> ${acesso.tipoArma} (${acesso.serieArma})</small>
+            </div>
+        `;
+
+        document.getElementById('saida-hora-out').value = new Date().toTimeString().split(' ')[0].substring(0, 5);
+        document.getElementById('saida-municao').value = acesso.municao;
+        document.getElementById('saida-obs').value = '';
+
+        showSection('sec-saida');
+    }
+
+    async function salvarSaidaDiaria(event) {
+        event.preventDefault();
+        const btn = document.getElementById('btn-registrar-saida');
+        btn.disabled = true;
+        btn.innerText = "Registrando saída...";
+
+        const idAcesso = parseInt(document.getElementById('saida-acesso-id').value);
+        const horaSaida = document.getElementById('saida-hora-out').value;
+        const municaoEfetiva = document.getElementById('saida-municao').value;
+        const ocorrencias = document.getElementById('saida-obs').value || 'Sem ocorrências';
+
+        const index = dbAcessos.findIndex(a => a.id === idAcesso);
+        if (index !== -1) {
+            dbAcessos[index].horaOut = horaSaida;
+            dbAcessos[index].municao = municaoEfetiva;
+            dbAcessos[index].obs += ` | [Saída às ${horaSaida}]: ${ocorrencias}`;
+
+            localStorage.setItem('estande_acessos', JSON.stringify(dbAcessos));
+
+            if (URL_WEB_APP) {
+                try {
+                    await fetch(URL_WEB_APP, {
+                        method: 'POST',
+                        mode: 'no-cors',
+                        body: new URLSearchParams({
+                            tipo: 'acesso',
+                            ...dbAcessos[index]
+                        })
+                    });
+                } catch (error) {
+                    console.error("Erro ao atualizar saída na planilha:", error);
+                }
+            }
+        }
+
+        btn.disabled = false;
+        btn.innerText = "Finalizar Sessão e Registrar Saída";
+        alert('Saída registrada com sucesso e sessão encerrada!');
         document.getElementById('form-busca').reset();
         showSection('sec-busca');
     }
@@ -1020,15 +1302,17 @@
         const tbodyAcessos = document.querySelector('#tbl-acessos tbody');
         tbodyAcessos.innerHTML = '';
         dbAcessos.forEach(a => {
+            const statusSaida = a.horaOut === 'Em andamento' ? '<span style="color: #e67e22; font-weight: bold;">Em andamento</span>' : a.horaOut;
             tbodyAcessos.innerHTML += `
                 <tr>
                     <td>${a.data}</td>
-                    <td>${a.horaIn} - ${a.horaOut}</td>
+                    <td><b>In:</b> ${a.horaIn}<br><b>Out:</b> ${statusSaida}</td>
                     <td>${a.nome} (${a.matricula})</td>
                     <td>${a.tipoArma}<br><small>Série: ${a.serieArma}</small></td>
                     <td>${a.calibre}</td>
                     <td>${a.municao}</td>
                     <td>${a.supervisor}</td>
+                    <td>${a.obs}</td>
                     <td><button class="btn-danger" onclick="excluirAcesso(${a.id})">Excluir</button></td>
                 </tr>
             `;
@@ -1087,6 +1371,57 @@
         }
     }
 
+    function exportarPDF(tipo) {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+
+        doc.setFontSize(16);
+        doc.text("SIGET - Estande Institucional de Tiro", 14, 15);
+        doc.setFontSize(10);
+        doc.text("Guarda Civil Municipal de Mariana — MG", 14, 21);
+        doc.text(`Relatório Oficial de ${tipo === 'acessos' ? 'Livro de Acessos' : 'Servidores Cadastrados'}`, 14, 27);
+
+        if (tipo === 'acessos') {
+            const headers = [["Data", "Entrada", "Saída", "Matrícula", "Nome", "Arma", "Calibre", "Munições", "Supervisor"]];
+            const data = dbAcessos.map(a => [
+                a.data, a.horaIn, a.horaOut, a.matricula, a.nome, a.tipoArma, a.calibre, a.municao, a.supervisor
+            ]);
+
+            doc.autoTable({
+                head: headers,
+                body: data,
+                startY: 32,
+                theme: 'grid',
+                headStyles: { fillColor: [17, 28, 46], textColor: [209, 161, 62] }
+            });
+        } else {
+            const headers = [["Matrícula", "Nome", "Cargo", "Armas Particulares", "Cautelas Fixas"]];
+            const data = Object.values(dbPessoas).map(p => {
+                let partStr = "Não";
+                if (p.temParticular === 'Sim' && p.armasParticulares) {
+                    partStr = JSON.parse(p.armasParticulares).map(a => `${a.desc}`).join(', ');
+                }
+
+                let cautStr = "Não";
+                if (p.temCautela === 'Sim' && p.armasCautela) {
+                    cautStr = JSON.parse(p.armasCautela).map(a => `${a.desc}`).join(', ');
+                }
+
+                return [p.matricula, p.nome, p.cargo, partStr, cautStr];
+            });
+
+            doc.autoTable({
+                head: headers,
+                body: data,
+                startY: 32,
+                theme: 'grid',
+                headStyles: { fillColor: [17, 28, 46], textColor: [209, 161, 62] }
+            });
+        }
+
+        doc.save(`relatorio_${tipo}_siget.pdf`);
+    }
+
     function exportarCSV(tipo) {
         let csvContent = "data:text/csv;charset=utf-8,\uFEFF";
 
@@ -1106,7 +1441,7 @@
         const encodedUri = encodeURI(csvContent);
         const link = document.createElement("a");
         link.setAttribute("href", encodedUri);
-        link.setAttribute("download", `relatorio_${tipo}_estande.csv`);
+        link.setAttribute("download", `relatorio_${tipo}_siget.csv`);
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
